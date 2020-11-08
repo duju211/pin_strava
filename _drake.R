@@ -6,6 +6,7 @@ dir_ls("R/") %>%
 
 strava_pin_plan <- drake_plan(
   ex_act = "1327205128",
+  board_name = "duju211/strava_act",
   act_col_types = list(
     moving = col_logical(), velocity_smooth = col_number(),
     grade_smooth = col_number(), distance = col_number(),
@@ -21,10 +22,10 @@ strava_pin_plan <- drake_plan(
   df_act_raw = read_all_activities(my_sig),
   df_act = pre_process_act(df_act_raw),
   existing_act = target(
-    existing_activities(),
+    existing_activities(board_name),
     trigger = trigger(condition = TRUE)),
 
-  pin_result = pin_new_rides(df_act, existing_act, my_sig)
+  pin_result = pin_new_rides(df_act, existing_act, my_sig, board_name)
 )
 
 drake_config(strava_pin_plan)

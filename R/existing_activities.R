@@ -1,5 +1,5 @@
-existing_activities <- function(variables) {
-  board_register_github(repo = "duju211/strava_act", name = "strava_act")
+existing_activities <- function(board_name) {
+  board_register_github(repo = board_name, name = "strava_act")
 
   df_all_pins_raw <- pin_find(board = "strava_act")
 
