@@ -20,7 +20,6 @@ strava_pin_plan <- drake_plan(
     trigger = trigger(condition = TRUE)),
   df_act_raw = read_all_activities(my_sig),
   df_act = pre_process_act(df_act_raw),
-  df_act_ex = read_github_act(ex_act, act_col_types),
   existing_act = target(
     existing_activities(),
     trigger = trigger(condition = TRUE)),
