@@ -8,7 +8,7 @@ pre_process_act <- function(df_act_raw, board_name) {
     bind_rows(df_act_old) %>%
     distinct(id, `athlete.id`, .keep_all = TRUE)
 
-  pin("df_act", board = "strava_act")
+  pin(df_act, "df_act", board = "strava_act")
 
   board_disconnect("strava_act")
 
