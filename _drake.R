@@ -20,11 +20,14 @@ strava_pin_plan <- drake_plan(
     define_strava_sig(my_endpoint, my_app),
     trigger = trigger(condition = TRUE)),
   df_act_raw = read_all_activities(my_sig),
-  df_act = pre_process_act(df_act_raw, board_name),
+  df_act_old = existing_act(board_name),
+  df_act = pre_process_act(df_act_raw, df_act_old),
+
   df_existing_act = target(
     existing_activities(board_name),
     trigger = trigger(condition = TRUE)),
 
+  pin_act = pin_new_activities(df_act),
   pin_result = pin_new_rides(df_act, df_existing_act, my_sig, board_name)
 )
 
