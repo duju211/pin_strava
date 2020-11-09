@@ -1,6 +1,6 @@
-pin_new_rides <- function(df_act, existing_act, my_sig, board_name) {
+pin_new_rides <- function(df_act, df_existing_act, my_sig, board_name) {
   df_act_new <- df_act %>%
-    filter(!(id %in% existing_act))
+    anti_join(df_existing_act, by = c("id", "athlete.id"))
 
   df_meas <- df_act_new %>%
     transmute(

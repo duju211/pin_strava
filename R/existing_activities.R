@@ -5,9 +5,9 @@ existing_activities <- function(board_name) {
 
   df_all_pins <- df_all_pins_raw %>%
     distinct(name) %>%
+    filter(str_detect(name, "^act")) %>%
     mutate(name = str_remove(name, "^act_")) %>%
-    filter(str_detect(name, "^\\d*$")) %>%
-    pull()
+    separate(col = name, into = c("id", "athlete.id"))
 
   board_disconnect("strava_act")
 
