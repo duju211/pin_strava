@@ -4,20 +4,24 @@ pin_new_rides <- function(df_act, df_existing_act, my_sig, board_name) {
 
   df_meas <- df_act_new %>%
     transmute(
-      id, stream = map(id, ~ read_activity_stream(id = .x, sig = my_sig))) %>%
+      id, `athlete.id`,
+      stream = map(id, ~ read_activity_stream(id = .x, sig = my_sig))) %>%
     tidy_streams() %>%
     unnest(stream) %>%
-    select(id, where(is_list)) %>%
+    select(id, `athlete.id`, where(is_list)) %>%
     unnest(where(purrr::is_list))
 
   df_meas_nested <- df_meas %>%
-    nest(meas = -id)
+    nest(meas = -c(id, `athlete.id`))
 
-  board_register_github(repo = board_name, name = "strava_act")
+  board_register_github(repo = board_name, name = board_name)
 
-  walk2(
-    df_meas_nested$meas, df_meas_nested$id,
-    ~ pin(.x, str_glue("act_{.y}"), board = "strava_act"))
+  pwalk(
+    list(
+      m = df_meas_nested$meas, id = df_meas_nested$id,
+      a_id = df_meas_nested$`athlete.id`),
+    function(m, id, a_id)
+      pin(m, str_glue("act_{id}_{a_id}"), board = board_name))
 
-  board_disconnect("strava_act")
+  board_disconnect(board_name)
 }
