@@ -14,7 +14,7 @@ pin_new_rides <- function(df_act, df_existing_act, my_sig, board_name) {
   df_meas_nested <- df_meas %>%
     nest(meas = -c(id, `athlete.id`))
 
-  board_register_github(repo = board_name, name = board_name)
+  board_register_github(repo = board_name, name = board_name, branch = "master")
 
   pwalk(
     list(
