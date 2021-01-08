@@ -21,6 +21,10 @@ strava_pin_plan <- drake_plan(
     trigger = trigger(condition = TRUE)),
   df_act_raw = read_all_activities(my_sig),
   df_act = pre_process_act(df_act_raw),
+  df_act_ids = distinct(df_act, id, `athlete.id`),
+  df_act_meas_nested = read_meas_nested(df_act_ids),
+  df_act_meas = unnest(df_act_meas_nested, meas),
+  gg_act_meas = vis_act_meas(df_act, df_act_meas),
 
   df_existing_act = target(
     existing_activities(board_name),
