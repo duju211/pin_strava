@@ -6,6 +6,7 @@ dir_ls("R/") %>%
 
 strava_pin_plan <- drake_plan(
   ex_act = "1327205128",
+  athlete_id = "26845822",
   board_name = "duju211/strava_act",
   act_col_types = list(
     moving = col_logical(), velocity_smooth = col_number(),
@@ -20,11 +21,8 @@ strava_pin_plan <- drake_plan(
     define_strava_sig(my_endpoint, my_app),
     trigger = trigger(condition = TRUE)),
   df_act_raw = read_all_activities(my_sig),
-  df_act = pre_process_act(df_act_raw),
+  df_act = pre_process_act(df_act_raw, athlete_id),
   df_act_ids = distinct(df_act, id, `athlete.id`),
-  df_act_meas_nested = read_meas_nested(df_act_ids),
-  df_act_meas = unnest(df_act_meas_nested, meas),
-  gg_act_meas = vis_act_meas(df_act, df_act_meas),
 
   df_existing_act = target(
     existing_activities(board_name),
