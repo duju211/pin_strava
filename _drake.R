@@ -29,7 +29,8 @@ strava_pin_plan <- drake_plan(
     trigger = trigger(condition = TRUE)),
 
   pin_act = pin_new_activities(df_act),
-  pin_result = pin_new_rides(df_act, df_existing_act, my_sig, board_name)
+  pin_result = pin_new_rides(df_act, df_existing_act, my_sig, board_name),
+  df_act_meas = act_meas(board_name, pin_result)
 )
 
 drake_config(strava_pin_plan)
