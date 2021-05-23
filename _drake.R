@@ -30,7 +30,13 @@ strava_pin_plan <- drake_plan(
 
   pin_act = pin_new_activities(df_act),
   pin_result = pin_new_rides(df_act, df_existing_act, my_sig, board_name),
-  df_act_meas = act_meas(board_name, pin_result)
+  df_act_meas = act_meas(board_name, pin_result),
+
+  strava_report = target(
+    command = {
+      rmarkdown::render(knitr_in("scrape_strava.Rmd"))
+      file_out("scrape_strava.html")
+    })
 )
 
 drake_config(strava_pin_plan)
