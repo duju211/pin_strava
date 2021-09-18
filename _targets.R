@@ -34,5 +34,8 @@ list(
   tar_render(
     strava_post, "scrape_strava.Rmd",
     output_format = distill::distill_article(),
-    output_file = "scrape_strava_post.html")
+    output_file = "scrape_strava_post.html"),
+  tar_render(
+    strava_readme, "scrape_strava.Rmd", output_format = "md_document",
+    output_file = "README.md")
 )
