@@ -5,7 +5,10 @@ description: |
 author:
   - name: Julian During
 date: "`r Sys.Date()`"
-output: distill::distill_article
+output:
+  html_document:
+    code_folding: hide
+    theme: cosmo
 repository_url: https://github.com/duju211/pin_strava
 creative_commons: CC BY
 ---
@@ -23,32 +26,15 @@ is stored as a pin in a private github repository. By doing so, the data is
 easily accessible in other analysis or shiny apps.
 
 ```{r setup, include=FALSE}
-pin_home_path <- here::here()
-pin_fun_path <- paste0(pin_home_path, "/R")
-rava_home_path <- paste0(fs::path_dir(here::here()), "/rava")
-rava_fun_path <- paste0(rava_home_path, "/R")
+source("libraries.R")
 
-source(paste0(pin_fun_path, "/libraries.R"))
-
-code_fun <- dir_ls(c(pin_fun_path, rava_fun_path)) %>% 
-  map(read_lines) %>% 
-  map(~ str_subset(.x, "^#'", negate = TRUE))
-
-walk2(
-  code_fun, path_ext_remove(path_file(names(code_fun))),
-  ~ knitr::read_chunk(lines = .x, labels = .y))
+tar_make(-c(strava_report, strava_post))
+Sys.setenv("RSTUDIO_VERSION" = '1.4.1725')
 ```
 
 In this analysis, the following packages are used:
 
-```{r libraries, eval=FALSE}
-```
-
-The `rava` package is a package with helper functions regarding Strava data. It
-can be installed via the following command:
-
-```{r, eval=FALSE}
-remotes::install_github("duju211/rava")
+```{r, code=read_lines("libraries.R"), eval=FALSE}
 ```
 
 
@@ -65,37 +51,25 @@ can be done from within R is described in the following section.
 
 Create an OAuth Strava app:
 
-```{r define_strava_app}
+```{r, code=read_lines("R/define_strava_app.R"), eval=FALSE}
 ```
 
 You can find your `STRAVA_KEY` and `STRAVA_SECRET` variables under the Strava 
 api settings after you have created your own personal api. The name of api is
 determined during creation. In my case I named it `r_api`.
 
-```{r}
-my_app <- define_strava_app()
-```
-
 Define an endpoint:
 
-```{r define_strava_endpoint}
+```{r, code=read_lines("R/define_strava_endpoint.R"), eval=FALSE}
 ```
 
 The `authorize` parameter describes the url to send client to for authorization.
 And the `access` argument is used to exchange the authenticated token.
 
-```{r}
-my_endpoint <- define_strava_endpoint()
-```
-
 The final authentication step. Before the user can execute the following steps,
 he has to authenticate the api in the web browser.
 
-```{r define_strava_sig}
-```
-
-```{r eval=FALSE}
-my_sig <- define_strava_sig(my_app, my_endpoint)
+```{r, code=read_lines("R/define_strava_sig.R"), eval=FALSE}
 ```
 
 The information in `my_sig` can now be used to access Strava data.
@@ -108,34 +82,16 @@ At first load an overview table of all available activities
 Because the total number of activities is unknown, use a while loop.
 Break the execution of the loop, if there are no more activities to read.
 
-```{r read_all_activities}
+```{r, code=read_lines("R/read_all_activities.R"), eval=FALSE}
 ```
 
-```{r, eval=FALSE}
-df_act_raw <- read_all_activities(my_sig)
-df_act_raw
+```{r, echo=FALSE}
+tar_read(df_act_raw)
 ```
 
-```{r echo=FALSE}
-readd(df_act_raw, path = paste0(pin_home_path, "/.drake"))
-```
+Preprocess activities:
 
-Determine activities, that were already scraped:
-
-```{r existing_activities}
-```
-
-```{r, eval=FALSE}
-df_existing_act <- existing_activities(board_name)
-```
-
-Pin all activities to a private github repository:
-
-```{r pin_new_activities}
-```
-
-```{r, eval=FALSE}
-pin_new_activities(df_act)
+```{r, code=read_lines("R/pre_process_act.R"), eval=FALSE}
 ```
 
 ## Measurements
@@ -148,33 +104,7 @@ To get all available variables and turn the result into a data frame,
 define a helper function. This function takes an id of an activity and
 an authentication token, which we have created earlier.
 
-```{r read_activity_stream}
-```
-
-Extract the measurements for each new activity and pin the result to the
-repository:
-
-```{r pin_new_rides}
-```
-
-Download all measurement data from the repository and combine in one big data
-frame:
-
-```{r act_meas}
-```
-
-```{r, eval=FALSE}
-df_act_meas = act_meas(board_name, pin_result)
-```
-
-```{r, include=FALSE}
-loadd(df_act_meas)
-loadd(df_act)
-```
-
-```{r}
-df_act_meas %>%
-  select(-name)
+```{r, code=read_lines("R/read_activity_stream.R"), eval=FALSE}
 ```
 
 
@@ -183,25 +113,9 @@ df_act_meas %>%
 Visualize the final data. Every facet is a activity and the color represents the
 type.
 
+```{r, code=read_lines("R/vis_meas.R"), eval=FALSE}
+```
 
-```{r}
-df_act_meas %>%
-  filter(!is.na(lat)) %>%
-  ggplot(aes(x = lng, y = lat)) +
-    geom_path() +
-    facet_wrap(~ name, scales = "free") +
-    theme(
-      axis.line = element_blank(),
-      axis.text.x = element_blank(),
-      axis.text.y = element_blank(),
-      axis.ticks = element_blank(),
-      axis.title.x = element_blank(),
-      axis.title.y = element_blank(),
-      legend.position = "bottom",
-      panel.background = element_blank(),
-      panel.border = element_blank(),
-      panel.grid.major = element_blank(),
-      panel.grid.minor = element_blank(),
-      plot.background = element_blank(),
-      strip.text = element_blank())
+```{r, echo=FALSE}
+tar_read(gg_meas)
 ```
