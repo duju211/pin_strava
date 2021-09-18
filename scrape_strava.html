@@ -308,6 +308,8 @@ conflict_prefer(&quot;filter&quot;, &quot;dplyr&quot;)</code></pre>
         temp,moving,grade_smooth&quot;))) %&gt;%
     GET()
 
+  stop_for_status(r)
+
   fromJSON(content(r, as = &quot;text&quot;), flatten = TRUE) %&gt;%
     as_tibble() %&gt;%
     mutate(id = id)

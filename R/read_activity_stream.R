@@ -12,6 +12,8 @@ read_activity_stream <- function(id, sig) {
         temp,moving,grade_smooth"))) %>%
     GET()
 
+  stop_for_status(r)
+
   fromJSON(content(r, as = "text"), flatten = TRUE) %>%
     as_tibble() %>%
     mutate(id = id)

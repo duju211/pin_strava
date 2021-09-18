@@ -28,7 +28,6 @@ easily accessible in other analysis or shiny apps.
 ```{r setup, include=FALSE}
 source("libraries.R")
 
-tar_make(-c(strava_report, strava_post))
 Sys.setenv("RSTUDIO_VERSION" = '1.4.1725')
 ```
 

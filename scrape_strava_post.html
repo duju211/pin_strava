@@ -1631,6 +1631,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
         temp,moving,grade_smooth&quot;</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
     <span class="fu"><a href="https://httr.r-lib.org/reference/GET.html">GET</a></span><span class="op">(</span><span class="op">)</span>
 
+  <span class="fu"><a href="https://httr.r-lib.org/reference/stop_for_status.html">stop_for_status</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span>
+
   <span class="fu"><a href="https://rdrr.io/pkg/jsonlite/man/fromJSON.html">fromJSON</a></span><span class="op">(</span><span class="fu"><a href="https://httr.r-lib.org/reference/content.html">content</a></span><span class="op">(</span><span class="va">r</span>, as <span class="op">=</span> <span class="st">&quot;text&quot;</span><span class="op">)</span>, flatten <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">%&gt;%</span>
     <span class="fu">as_tibble</span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
     <span class="fu">mutate</span><span class="op">(</span>id <span class="op">=</span> <span class="va">id</span><span class="op">)</span>
