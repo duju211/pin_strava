@@ -64,72 +64,66 @@ The manifest of the target plan looks like this:
 <td style="text-align: left;">thorough</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">my_sig_change</td>
-<td style="text-align: left;">tarchetypes::tar_force_change(FALSE)</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: left;">always</td>
-</tr>
-<tr class="even">
 <td style="text-align: left;">act_col_types</td>
 <td style="text-align: left;">list(moving = col_logical(), velocity_smooth = col_number(), grade_smooth = col_number(), distance = col_number(), altitude = col_number(), heartrate = col_integer(), time = col_integer(), lat = col_number(), lng = col_number(), cadence = col_integer(), watts = col_integer())</td>
 <td style="text-align: left;">NA</td>
 <td style="text-align: left;">thorough</td>
 </tr>
-<tr class="odd">
-<td style="text-align: left;">my_sig</td>
-<td style="text-align: left;">{ my_sig_change define_strava_sig(my_endpoint, my_app) }</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: left;">thorough</td>
-</tr>
 <tr class="even">
+<td style="text-align: left;">my_sig</td>
+<td style="text-align: left;">define_strava_sig(my_endpoint, my_app)</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">never</td>
+</tr>
+<tr class="odd">
 <td style="text-align: left;">df_act_raw</td>
 <td style="text-align: left;">read_all_activities(my_sig)</td>
 <td style="text-align: left;">NA</td>
 <td style="text-align: left;">thorough</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">df_act</td>
 <td style="text-align: left;">pre_process_act(df_act_raw, athlete_id)</td>
 <td style="text-align: left;">NA</td>
 <td style="text-align: left;">thorough</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">act_ids</td>
 <td style="text-align: left;">pull(distinct(df_act, id))</td>
 <td style="text-align: left;">NA</td>
 <td style="text-align: left;">thorough</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">df_meas</td>
 <td style="text-align: left;">read_activity_stream(act_ids, my_sig)</td>
 <td style="text-align: left;">map(act_ids)</td>
 <td style="text-align: left;">never</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">df_meas_all</td>
 <td style="text-align: left;">bind_rows(df_meas)</td>
 <td style="text-align: left;">NA</td>
 <td style="text-align: left;">thorough</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">df_meas_wide</td>
 <td style="text-align: left;">meas_wide(df_meas_all)</td>
 <td style="text-align: left;">NA</td>
 <td style="text-align: left;">thorough</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">df_meas_pro</td>
 <td style="text-align: left;">meas_pro(df_meas_wide)</td>
 <td style="text-align: left;">NA</td>
 <td style="text-align: left;">thorough</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">gg_meas</td>
 <td style="text-align: left;">vis_meas(df_meas_pro)</td>
 <td style="text-align: left;">NA</td>
 <td style="text-align: left;">thorough</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">gg_meas_save</td>
 <td style="text-align: left;">save_gg_meas(gg_meas)</td>
 <td style="text-align: left;">NA</td>
@@ -152,6 +146,25 @@ from within R is described in the following section.
 
 Create an OAuth Strava app:
 
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">name</th>
+<th style="text-align: left;">command</th>
+<th style="text-align: left;">pattern</th>
+<th style="text-align: left;">cue_mode</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">my_app</td>
+<td style="text-align: left;">define_strava_app()</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">thorough</td>
+</tr>
+</tbody>
+</table>
+
     define_strava_app <- function() {
       oauth_app(
         appname = "r_api",
@@ -165,6 +178,25 @@ name of api is determined during creation. In my case I named it
 `r_api`.
 
 Define an endpoint:
+
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">name</th>
+<th style="text-align: left;">command</th>
+<th style="text-align: left;">pattern</th>
+<th style="text-align: left;">cue_mode</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">my_endpoint</td>
+<td style="text-align: left;">define_strava_endpoint()</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">thorough</td>
+</tr>
+</tbody>
+</table>
 
     define_strava_endpoint <- function() {
       oauth_endpoint(
@@ -180,6 +212,25 @@ authenticated token.
 The final authentication step. Before the user can execute the following
 steps, he has to authenticate the api in the web browser.
 
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">name</th>
+<th style="text-align: left;">command</th>
+<th style="text-align: left;">pattern</th>
+<th style="text-align: left;">cue_mode</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">my_sig</td>
+<td style="text-align: left;">define_strava_sig(my_endpoint, my_app)</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">always</td>
+</tr>
+</tbody>
+</table>
+
     define_strava_sig <- function(endpoint, app) {
       oauth2.0_token(
         endpoint, app,
@@ -188,15 +239,36 @@ steps, he has to authenticate the api in the web browser.
         use_basic_auth = FALSE, cache = FALSE)
     }
 
-The information in `my_sig` can now be used to access Strava data.
+The information in `my_sig` can now be used to access Strava data. Set
+the `cue_mode` of the target to ‘always’, so that the user has to
+authenticate and the following api calls are all executed with an up to
+date authorization token.
 
 ## Activities
 
 We are now authenticated and can directly access Strava data. At first
-load an overview table of all available activities (one activity per
-row). Because the total number of activities is unknown, use a while
-loop. Break the execution of the loop, if there are no more activities
-to read.
+load an overview table of all available activities. Because the total
+number of activities is unknown, use a while loop. Break the execution
+of the loop, if there are no more activities to read.
+
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">name</th>
+<th style="text-align: left;">command</th>
+<th style="text-align: left;">pattern</th>
+<th style="text-align: left;">cue_mode</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">df_act_raw</td>
+<td style="text-align: left;">read_all_activities(my_sig)</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">thorough</td>
+</tr>
+</tbody>
+</table>
 
     read_all_activities <- function(sig) {
       activities_url <- parse_url(
@@ -227,6 +299,8 @@ to read.
         mutate(start_date = ymd_hms(start_date))
     }
 
+The resulting data frame consists of one row per activity:
+
     ## # A tibble: 592 x 60
     ##    resource_state name  distance moving_time elapsed_time total_elevation~ type 
     ##             <int> <chr>    <dbl>       <int>        <int>            <dbl> <chr>
@@ -248,7 +322,27 @@ to read.
     ## #   start_longitude <dbl>, achievement_count <int>, kudos_count <int>,
     ## #   comment_count <int>, athlete_count <int>, photo_count <int>, ...
 
-Preprocess activities:
+Preprocess activities. Make sure that all id columns are represented as
+characters and improve the column names:
+
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">name</th>
+<th style="text-align: left;">command</th>
+<th style="text-align: left;">pattern</th>
+<th style="text-align: left;">cue_mode</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">df_act</td>
+<td style="text-align: left;">pre_process_act(df_act_raw, athlete_id)</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">thorough</td>
+</tr>
+</tbody>
+</table>
 
     pre_process_act <- function(df_act_raw, athlete_id) {
       df_act <- df_act_raw %>%
@@ -256,6 +350,27 @@ Preprocess activities:
           across(contains("id"), as.character),
           `athlete.id` = athlete_id)
     }
+
+Extract all ids of the activities:
+
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">name</th>
+<th style="text-align: left;">command</th>
+<th style="text-align: left;">pattern</th>
+<th style="text-align: left;">cue_mode</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">act_ids</td>
+<td style="text-align: left;">pull(distinct(df_act, id))</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">thorough</td>
+</tr>
+</tbody>
+</table>
 
 ## Measurements
 
@@ -265,6 +380,25 @@ format) with all available measurements of the corresponding activity.
 To get all available variables and turn the result into a data frame,
 define a helper function. This function takes an id of an activity and
 an authentication token, which we have created earlier.
+
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">name</th>
+<th style="text-align: left;">command</th>
+<th style="text-align: left;">pattern</th>
+<th style="text-align: left;">cue_mode</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">df_meas</td>
+<td style="text-align: left;">read_activity_stream(act_ids, my_sig)</td>
+<td style="text-align: left;">map(act_ids)</td>
+<td style="text-align: left;">never</td>
+</tr>
+</tbody>
+</table>
 
     read_activity_stream <- function(id, sig) {
       act_url <- parse_url(stringr::str_glue(
@@ -287,32 +421,9 @@ an authentication token, which we have created earlier.
         mutate(id = id)
     }
 
-Extract all ids of the activities:
-
-    pull(distinct(df_act, id))
-
-Define a target with dynamic branching which maps over all activity ids.
-Define the cue mode as `never` to make sure, that every target runs
-exactly once.
-
-<table>
-<thead>
-<tr class="header">
-<th style="text-align: left;">name</th>
-<th style="text-align: left;">command</th>
-<th style="text-align: left;">pattern</th>
-<th style="text-align: left;">cue_mode</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">df_meas</td>
-<td style="text-align: left;">read_activity_stream(act_ids, my_sig)</td>
-<td style="text-align: left;">map(act_ids)</td>
-<td style="text-align: left;">never</td>
-</tr>
-</tbody>
-</table>
+The target is defined with dynamic branching which maps over all
+activity ids. Define the cue mode as `never` to make sure, that every
+target runs exactly once.
 
 Bind the single targets into one data frame:
 
@@ -355,6 +466,25 @@ The data now is represented by one row per measurement series:
 Turn the data into a wide format so that every activity is one row
 again:
 
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">name</th>
+<th style="text-align: left;">command</th>
+<th style="text-align: left;">pattern</th>
+<th style="text-align: left;">cue_mode</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">df_meas_wide</td>
+<td style="text-align: left;">meas_wide(df_meas_all)</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">thorough</td>
+</tr>
+</tbody>
+</table>
+
     meas_wide <- function(df_meas) {
       pivot_wider(df_meas, names_from = type, values_from = data)
     }
@@ -379,6 +509,25 @@ again:
 Preprocess and unnest the data. The column `latlng` needs special
 attention, because it contains latitude and longitude information.
 Separate the two measurements before unnesting all list columns.
+
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">name</th>
+<th style="text-align: left;">command</th>
+<th style="text-align: left;">pattern</th>
+<th style="text-align: left;">cue_mode</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">df_meas_pro</td>
+<td style="text-align: left;">meas_pro(df_meas_wide)</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">thorough</td>
+</tr>
+</tbody>
+</table>
 
     meas_pro <- function(df_meas_wide) {
       df_meas_wide %>%
@@ -416,6 +565,25 @@ present) a measurement at this point in time.
 Visualize the final data by displaying the geospatial information in the
 data. Every facet is one activity. Keep the rest of the plot as minimal
 as possible.
+
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">name</th>
+<th style="text-align: left;">command</th>
+<th style="text-align: left;">pattern</th>
+<th style="text-align: left;">cue_mode</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">gg_meas</td>
+<td style="text-align: left;">vis_meas(df_meas_pro)</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">thorough</td>
+</tr>
+</tbody>
+</table>
 
     vis_meas <- function(df_meas_pro) {
       df_meas_pro %>%

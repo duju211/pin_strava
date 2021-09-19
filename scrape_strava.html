@@ -234,72 +234,66 @@ conflict_prefer(&quot;filter&quot;, &quot;dplyr&quot;)</code></pre>
 <td align="left">thorough</td>
 </tr>
 <tr class="odd">
-<td align="left">my_sig_change</td>
-<td align="left">tarchetypes::tar_force_change(FALSE)</td>
-<td align="left">NA</td>
-<td align="left">always</td>
-</tr>
-<tr class="even">
 <td align="left">act_col_types</td>
 <td align="left">list(moving = col_logical(), velocity_smooth = col_number(), grade_smooth = col_number(), distance = col_number(), altitude = col_number(), heartrate = col_integer(), time = col_integer(), lat = col_number(), lng = col_number(), cadence = col_integer(), watts = col_integer())</td>
 <td align="left">NA</td>
 <td align="left">thorough</td>
 </tr>
-<tr class="odd">
-<td align="left">my_sig</td>
-<td align="left">{ my_sig_change define_strava_sig(my_endpoint, my_app) }</td>
-<td align="left">NA</td>
-<td align="left">thorough</td>
-</tr>
 <tr class="even">
+<td align="left">my_sig</td>
+<td align="left">define_strava_sig(my_endpoint, my_app)</td>
+<td align="left">NA</td>
+<td align="left">never</td>
+</tr>
+<tr class="odd">
 <td align="left">df_act_raw</td>
 <td align="left">read_all_activities(my_sig)</td>
 <td align="left">NA</td>
 <td align="left">thorough</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">df_act</td>
 <td align="left">pre_process_act(df_act_raw, athlete_id)</td>
 <td align="left">NA</td>
 <td align="left">thorough</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">act_ids</td>
 <td align="left">pull(distinct(df_act, id))</td>
 <td align="left">NA</td>
 <td align="left">thorough</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">df_meas</td>
 <td align="left">read_activity_stream(act_ids, my_sig)</td>
 <td align="left">map(act_ids)</td>
 <td align="left">never</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">df_meas_all</td>
 <td align="left">bind_rows(df_meas)</td>
 <td align="left">NA</td>
 <td align="left">thorough</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">df_meas_wide</td>
 <td align="left">meas_wide(df_meas_all)</td>
 <td align="left">NA</td>
 <td align="left">thorough</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">df_meas_pro</td>
 <td align="left">meas_pro(df_meas_wide)</td>
 <td align="left">NA</td>
 <td align="left">thorough</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">gg_meas</td>
 <td align="left">vis_meas(df_meas_pro)</td>
 <td align="left">NA</td>
 <td align="left">thorough</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">gg_meas_save</td>
 <td align="left">save_gg_meas(gg_meas)</td>
 <td align="left">NA</td>
@@ -314,6 +308,24 @@ conflict_prefer(&quot;filter&quot;, &quot;dplyr&quot;)</code></pre>
 <p>To get access to your Strava data from R, you have to create a Strava api. How to do this is documented <a href="https://developers.strava.com/docs/getting-started/">here</a>.</p>
 <p>The Strava api requires a so called OAuth dance. How this can be done from within R is described in the following section.</p>
 <p>Create an OAuth Strava app:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">name</th>
+<th align="left">command</th>
+<th align="left">pattern</th>
+<th align="left">cue_mode</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">my_app</td>
+<td align="left">define_strava_app()</td>
+<td align="left">NA</td>
+<td align="left">thorough</td>
+</tr>
+</tbody>
+</table>
 <pre class="r"><code>define_strava_app &lt;- function() {
   oauth_app(
     appname = &quot;r_api&quot;,
@@ -322,6 +334,24 @@ conflict_prefer(&quot;filter&quot;, &quot;dplyr&quot;)</code></pre>
 }</code></pre>
 <p>You can find your <code>STRAVA_KEY</code> and <code>STRAVA_SECRET</code> variables under the Strava api settings after you have created your own personal api. The name of api is determined during creation. In my case I named it <code>r_api</code>.</p>
 <p>Define an endpoint:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">name</th>
+<th align="left">command</th>
+<th align="left">pattern</th>
+<th align="left">cue_mode</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">my_endpoint</td>
+<td align="left">define_strava_endpoint()</td>
+<td align="left">NA</td>
+<td align="left">thorough</td>
+</tr>
+</tbody>
+</table>
 <pre class="r"><code>define_strava_endpoint &lt;- function() {
   oauth_endpoint(
     request = NULL,
@@ -330,6 +360,24 @@ conflict_prefer(&quot;filter&quot;, &quot;dplyr&quot;)</code></pre>
 }</code></pre>
 <p>The <code>authorize</code> parameter describes the url to send client to for authorization. And the <code>access</code> argument is used to exchange the authenticated token.</p>
 <p>The final authentication step. Before the user can execute the following steps, he has to authenticate the api in the web browser.</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">name</th>
+<th align="left">command</th>
+<th align="left">pattern</th>
+<th align="left">cue_mode</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">my_sig</td>
+<td align="left">define_strava_sig(my_endpoint, my_app)</td>
+<td align="left">NA</td>
+<td align="left">always</td>
+</tr>
+</tbody>
+</table>
 <pre class="r"><code>define_strava_sig &lt;- function(endpoint, app) {
   oauth2.0_token(
     endpoint, app,
@@ -337,11 +385,29 @@ conflict_prefer(&quot;filter&quot;, &quot;dplyr&quot;)</code></pre>
     type = NULL, use_oob = FALSE, as_header = FALSE,
     use_basic_auth = FALSE, cache = FALSE)
 }</code></pre>
-<p>The information in <code>my_sig</code> can now be used to access Strava data.</p>
+<p>The information in <code>my_sig</code> can now be used to access Strava data. Set the <code>cue_mode</code> of the target to ‘always’, so that the user has to authenticate and the following api calls are all executed with an up to date authorization token.</p>
 </div>
 <div id="activities" class="section level2">
 <h2>Activities</h2>
-<p>We are now authenticated and can directly access Strava data. At first load an overview table of all available activities (one activity per row). Because the total number of activities is unknown, use a while loop. Break the execution of the loop, if there are no more activities to read.</p>
+<p>We are now authenticated and can directly access Strava data. At first load an overview table of all available activities. Because the total number of activities is unknown, use a while loop. Break the execution of the loop, if there are no more activities to read.</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">name</th>
+<th align="left">command</th>
+<th align="left">pattern</th>
+<th align="left">cue_mode</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">df_act_raw</td>
+<td align="left">read_all_activities(my_sig)</td>
+<td align="left">NA</td>
+<td align="left">thorough</td>
+</tr>
+</tbody>
+</table>
 <pre class="r"><code>read_all_activities &lt;- function(sig) {
   activities_url &lt;- parse_url(
     &quot;https://www.strava.com/api/v3/athlete/activities&quot;)
@@ -370,6 +436,7 @@ conflict_prefer(&quot;filter&quot;, &quot;dplyr&quot;)</code></pre>
     bind_rows() %&gt;%
     mutate(start_date = ymd_hms(start_date))
 }</code></pre>
+<p>The resulting data frame consists of one row per activity:</p>
 <pre><code>## # A tibble: 592 x 60
 ##    resource_state name  distance moving_time elapsed_time total_elevation~ type 
 ##             &lt;int&gt; &lt;chr&gt;    &lt;dbl&gt;       &lt;int&gt;        &lt;int&gt;            &lt;dbl&gt; &lt;chr&gt;
@@ -390,18 +457,73 @@ conflict_prefer(&quot;filter&quot;, &quot;dplyr&quot;)</code></pre>
 ## #   location_state &lt;lgl&gt;, location_country &lt;chr&gt;, start_latitude &lt;dbl&gt;,
 ## #   start_longitude &lt;dbl&gt;, achievement_count &lt;int&gt;, kudos_count &lt;int&gt;,
 ## #   comment_count &lt;int&gt;, athlete_count &lt;int&gt;, photo_count &lt;int&gt;, ...</code></pre>
-<p>Preprocess activities:</p>
+<p>Preprocess activities. Make sure that all id columns are represented as characters and improve the column names:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">name</th>
+<th align="left">command</th>
+<th align="left">pattern</th>
+<th align="left">cue_mode</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">df_act</td>
+<td align="left">pre_process_act(df_act_raw, athlete_id)</td>
+<td align="left">NA</td>
+<td align="left">thorough</td>
+</tr>
+</tbody>
+</table>
 <pre class="r"><code>pre_process_act &lt;- function(df_act_raw, athlete_id) {
   df_act &lt;- df_act_raw %&gt;%
     mutate(
       across(contains(&quot;id&quot;), as.character),
       `athlete.id` = athlete_id)
 }</code></pre>
+<p>Extract all ids of the activities:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">name</th>
+<th align="left">command</th>
+<th align="left">pattern</th>
+<th align="left">cue_mode</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">act_ids</td>
+<td align="left">pull(distinct(df_act, id))</td>
+<td align="left">NA</td>
+<td align="left">thorough</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div id="measurements" class="section level2">
 <h2>Measurements</h2>
 <p>Read the ‘stream’ data from Strava. A ‘stream’ is a nested list (json format) with all available measurements of the corresponding activity.</p>
 <p>To get all available variables and turn the result into a data frame, define a helper function. This function takes an id of an activity and an authentication token, which we have created earlier.</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">name</th>
+<th align="left">command</th>
+<th align="left">pattern</th>
+<th align="left">cue_mode</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">df_meas</td>
+<td align="left">read_activity_stream(act_ids, my_sig)</td>
+<td align="left">map(act_ids)</td>
+<td align="left">never</td>
+</tr>
+</tbody>
+</table>
 <pre class="r"><code>read_activity_stream &lt;- function(id, sig) {
   act_url &lt;- parse_url(stringr::str_glue(
     &quot;https://www.strava.com/api/v3/activities/{id}/streams&quot;))
@@ -422,27 +544,7 @@ conflict_prefer(&quot;filter&quot;, &quot;dplyr&quot;)</code></pre>
     as_tibble() %&gt;%
     mutate(id = id)
 }</code></pre>
-<p>Extract all ids of the activities:</p>
-<pre class="r"><code>pull(distinct(df_act, id))</code></pre>
-<p>Define a target with dynamic branching which maps over all activity ids. Define the cue mode as <code>never</code> to make sure, that every target runs exactly once.</p>
-<table>
-<thead>
-<tr class="header">
-<th align="left">name</th>
-<th align="left">command</th>
-<th align="left">pattern</th>
-<th align="left">cue_mode</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">df_meas</td>
-<td align="left">read_activity_stream(act_ids, my_sig)</td>
-<td align="left">map(act_ids)</td>
-<td align="left">never</td>
-</tr>
-</tbody>
-</table>
+<p>The target is defined with dynamic branching which maps over all activity ids. Define the cue mode as <code>never</code> to make sure, that every target runs exactly once.</p>
 <p>Bind the single targets into one data frame:</p>
 <table>
 <thead>
@@ -478,6 +580,24 @@ conflict_prefer(&quot;filter&quot;, &quot;dplyr&quot;)</code></pre>
 ## 10 velocity_smooth &lt;dbl [5,607]&gt;     distance             5607 high       59472~
 ## # ... with 4,714 more rows</code></pre>
 <p>Turn the data into a wide format so that every activity is one row again:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">name</th>
+<th align="left">command</th>
+<th align="left">pattern</th>
+<th align="left">cue_mode</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">df_meas_wide</td>
+<td align="left">meas_wide(df_meas_all)</td>
+<td align="left">NA</td>
+<td align="left">thorough</td>
+</tr>
+</tbody>
+</table>
 <pre class="r"><code>meas_wide &lt;- function(df_meas) {
   pivot_wider(df_meas, names_from = type, values_from = data)
 }</code></pre>
@@ -498,6 +618,24 @@ conflict_prefer(&quot;filter&quot;, &quot;dplyr&quot;)</code></pre>
 ## #   distance &lt;list&gt;, altitude &lt;list&gt;, time &lt;list&gt;, heartrate &lt;list&gt;,
 ## #   cadence &lt;list&gt;, watts &lt;list&gt;</code></pre>
 <p>Preprocess and unnest the data. The column <code>latlng</code> needs special attention, because it contains latitude and longitude information. Separate the two measurements before unnesting all list columns.</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">name</th>
+<th align="left">command</th>
+<th align="left">pattern</th>
+<th align="left">cue_mode</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">df_meas_pro</td>
+<td align="left">meas_pro(df_meas_wide)</td>
+<td align="left">NA</td>
+<td align="left">thorough</td>
+</tr>
+</tbody>
+</table>
 <pre class="r"><code>meas_pro &lt;- function(df_meas_wide) {
   df_meas_wide %&gt;%
     mutate(
@@ -530,6 +668,24 @@ conflict_prefer(&quot;filter&quot;, &quot;dplyr&quot;)</code></pre>
 <div id="visualisation" class="section level1">
 <h1>Visualisation</h1>
 <p>Visualize the final data by displaying the geospatial information in the data. Every facet is one activity. Keep the rest of the plot as minimal as possible.</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">name</th>
+<th align="left">command</th>
+<th align="left">pattern</th>
+<th align="left">cue_mode</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">gg_meas</td>
+<td align="left">vis_meas(df_meas_pro)</td>
+<td align="left">NA</td>
+<td align="left">thorough</td>
+</tr>
+</tbody>
+</table>
 <pre class="r"><code>vis_meas &lt;- function(df_meas_pro) {
   df_meas_pro %&gt;%
     filter(!is.na(lat)) %&gt;%

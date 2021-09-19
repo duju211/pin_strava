@@ -1533,72 +1533,66 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <td style="text-align: left;">thorough</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">my_sig_change</td>
-<td style="text-align: left;">tarchetypes::tar_force_change(FALSE)</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: left;">always</td>
-</tr>
-<tr class="even">
 <td style="text-align: left;">act_col_types</td>
 <td style="text-align: left;">list(moving = col_logical(), velocity_smooth = col_number(), grade_smooth = col_number(), distance = col_number(), altitude = col_number(), heartrate = col_integer(), time = col_integer(), lat = col_number(), lng = col_number(), cadence = col_integer(), watts = col_integer())</td>
 <td style="text-align: left;">NA</td>
 <td style="text-align: left;">thorough</td>
 </tr>
-<tr class="odd">
-<td style="text-align: left;">my_sig</td>
-<td style="text-align: left;">{ my_sig_change define_strava_sig(my_endpoint, my_app) }</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: left;">thorough</td>
-</tr>
 <tr class="even">
+<td style="text-align: left;">my_sig</td>
+<td style="text-align: left;">define_strava_sig(my_endpoint, my_app)</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">never</td>
+</tr>
+<tr class="odd">
 <td style="text-align: left;">df_act_raw</td>
 <td style="text-align: left;">read_all_activities(my_sig)</td>
 <td style="text-align: left;">NA</td>
 <td style="text-align: left;">thorough</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">df_act</td>
 <td style="text-align: left;">pre_process_act(df_act_raw, athlete_id)</td>
 <td style="text-align: left;">NA</td>
 <td style="text-align: left;">thorough</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">act_ids</td>
 <td style="text-align: left;">pull(distinct(df_act, id))</td>
 <td style="text-align: left;">NA</td>
 <td style="text-align: left;">thorough</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">df_meas</td>
 <td style="text-align: left;">read_activity_stream(act_ids, my_sig)</td>
 <td style="text-align: left;">map(act_ids)</td>
 <td style="text-align: left;">never</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">df_meas_all</td>
 <td style="text-align: left;">bind_rows(df_meas)</td>
 <td style="text-align: left;">NA</td>
 <td style="text-align: left;">thorough</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">df_meas_wide</td>
 <td style="text-align: left;">meas_wide(df_meas_all)</td>
 <td style="text-align: left;">NA</td>
 <td style="text-align: left;">thorough</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">df_meas_pro</td>
 <td style="text-align: left;">meas_pro(df_meas_wide)</td>
 <td style="text-align: left;">NA</td>
 <td style="text-align: left;">thorough</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">gg_meas</td>
 <td style="text-align: left;">vis_meas(df_meas_pro)</td>
 <td style="text-align: left;">NA</td>
 <td style="text-align: left;">thorough</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">gg_meas_save</td>
 <td style="text-align: left;">save_gg_meas(gg_meas)</td>
 <td style="text-align: left;">NA</td>
@@ -1613,6 +1607,26 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <p>The Strava api requires a so called OAuth dance. How this can be done from within R is described in the following section.</p>
 <p>Create an OAuth Strava app:</p>
 <div class="layout-chunk" data-layout="l-body">
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">name</th>
+<th style="text-align: left;">command</th>
+<th style="text-align: left;">pattern</th>
+<th style="text-align: left;">cue_mode</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">my_app</td>
+<td style="text-align: left;">define_strava_app()</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">thorough</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class="va">define_strava_app</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="op">{</span>
   <span class="fu"><a href="https://httr.r-lib.org/reference/oauth_app.html">oauth_app</a></span><span class="op">(</span>
@@ -1625,6 +1639,26 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 </div>
 <p>You can find your <code>STRAVA_KEY</code> and <code>STRAVA_SECRET</code> variables under the Strava api settings after you have created your own personal api. The name of api is determined during creation. In my case I named it <code>r_api</code>.</p>
 <p>Define an endpoint:</p>
+<div class="layout-chunk" data-layout="l-body">
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">name</th>
+<th style="text-align: left;">command</th>
+<th style="text-align: left;">pattern</th>
+<th style="text-align: left;">cue_mode</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">my_endpoint</td>
+<td style="text-align: left;">define_strava_endpoint()</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">thorough</td>
+</tr>
+</tbody>
+</table>
+</div>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class="va">define_strava_endpoint</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="op">{</span>
@@ -1639,6 +1673,26 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <p>The <code>authorize</code> parameter describes the url to send client to for authorization. And the <code>access</code> argument is used to exchange the authenticated token.</p>
 <p>The final authentication step. Before the user can execute the following steps, he has to authenticate the api in the web browser.</p>
 <div class="layout-chunk" data-layout="l-body">
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">name</th>
+<th style="text-align: left;">command</th>
+<th style="text-align: left;">pattern</th>
+<th style="text-align: left;">cue_mode</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">my_sig</td>
+<td style="text-align: left;">define_strava_sig(my_endpoint, my_app)</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">always</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class="va">define_strava_sig</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">endpoint</span>, <span class="va">app</span><span class="op">)</span> <span class="op">{</span>
   <span class="fu"><a href="https://httr.r-lib.org/reference/oauth2.0_token.html">oauth2.0_token</a></span><span class="op">(</span>
@@ -1650,9 +1704,29 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 </code></pre>
 </div>
 </div>
-<p>The information in <code>my_sig</code> can now be used to access Strava data.</p>
+<p>The information in <code>my_sig</code> can now be used to access Strava data. Set the <code>cue_mode</code> of the target to ‘always’, so that the user has to authenticate and the following api calls are all executed with an up to date authorization token.</p>
 <h2 id="activities">Activities</h2>
-<p>We are now authenticated and can directly access Strava data. At first load an overview table of all available activities (one activity per row). Because the total number of activities is unknown, use a while loop. Break the execution of the loop, if there are no more activities to read.</p>
+<p>We are now authenticated and can directly access Strava data. At first load an overview table of all available activities. Because the total number of activities is unknown, use a while loop. Break the execution of the loop, if there are no more activities to read.</p>
+<div class="layout-chunk" data-layout="l-body">
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">name</th>
+<th style="text-align: left;">command</th>
+<th style="text-align: left;">pattern</th>
+<th style="text-align: left;">cue_mode</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">df_act_raw</td>
+<td style="text-align: left;">read_all_activities(my_sig)</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">thorough</td>
+</tr>
+</tbody>
+</table>
+</div>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class="va">read_all_activities</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">sig</span><span class="op">)</span> <span class="op">{</span>
@@ -1686,6 +1760,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 </code></pre>
 </div>
 </div>
+<p>The resulting data frame consists of one row per activity:</p>
 <div class="layout-chunk" data-layout="l-body">
 <pre><code># A tibble: 592 x 60
    resource_state name               distance moving_time elapsed_time
@@ -1708,7 +1783,27 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 #   location_state &lt;lgl&gt;, location_country &lt;chr&gt;,
 #   start_latitude &lt;dbl&gt;, start_longitude &lt;dbl&gt;, ...</code></pre>
 </div>
-<p>Preprocess activities:</p>
+<p>Preprocess activities. Make sure that all id columns are represented as characters and improve the column names:</p>
+<div class="layout-chunk" data-layout="l-body">
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">name</th>
+<th style="text-align: left;">command</th>
+<th style="text-align: left;">pattern</th>
+<th style="text-align: left;">cue_mode</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">df_act</td>
+<td style="text-align: left;">pre_process_act(df_act_raw, athlete_id)</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">thorough</td>
+</tr>
+</tbody>
+</table>
+</div>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class="va">pre_process_act</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">df_act_raw</span>, <span class="va">athlete_id</span><span class="op">)</span> <span class="op">{</span>
@@ -1720,9 +1815,50 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 </code></pre>
 </div>
 </div>
+<p>Extract all ids of the activities:</p>
+<div class="layout-chunk" data-layout="l-body">
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">name</th>
+<th style="text-align: left;">command</th>
+<th style="text-align: left;">pattern</th>
+<th style="text-align: left;">cue_mode</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">act_ids</td>
+<td style="text-align: left;">pull(distinct(df_act, id))</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">thorough</td>
+</tr>
+</tbody>
+</table>
+</div>
 <h2 id="measurements">Measurements</h2>
 <p>Read the ‘stream’ data from Strava. A ‘stream’ is a nested list (json format) with all available measurements of the corresponding activity.</p>
 <p>To get all available variables and turn the result into a data frame, define a helper function. This function takes an id of an activity and an authentication token, which we have created earlier.</p>
+<div class="layout-chunk" data-layout="l-body">
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">name</th>
+<th style="text-align: left;">command</th>
+<th style="text-align: left;">pattern</th>
+<th style="text-align: left;">cue_mode</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">df_meas</td>
+<td style="text-align: left;">read_activity_stream(act_ids, my_sig)</td>
+<td style="text-align: left;">map(act_ids)</td>
+<td style="text-align: left;">never</td>
+</tr>
+</tbody>
+</table>
+</div>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class="va">read_activity_stream</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">id</span>, <span class="va">sig</span><span class="op">)</span> <span class="op">{</span>
@@ -1748,34 +1884,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 </code></pre>
 </div>
 </div>
-<p>Extract all ids of the activities:</p>
-<div class="layout-chunk" data-layout="l-body">
-<div class="sourceCode">
-<pre class="sourceCode r"><code class="sourceCode r"><span class="fu">pull</span><span class="op">(</span><span class="fu">distinct</span><span class="op">(</span><span class="va">df_act</span>, <span class="va">id</span><span class="op">)</span><span class="op">)</span>
-</code></pre>
-</div>
-</div>
-<p>Define a target with dynamic branching which maps over all activity ids. Define the cue mode as <code>never</code> to make sure, that every target runs exactly once.</p>
-<div class="layout-chunk" data-layout="l-body">
-<table>
-<thead>
-<tr class="header">
-<th style="text-align: left;">name</th>
-<th style="text-align: left;">command</th>
-<th style="text-align: left;">pattern</th>
-<th style="text-align: left;">cue_mode</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">df_meas</td>
-<td style="text-align: left;">read_activity_stream(act_ids, my_sig)</td>
-<td style="text-align: left;">map(act_ids)</td>
-<td style="text-align: left;">never</td>
-</tr>
-</tbody>
-</table>
-</div>
+<p>The target is defined with dynamic branching which maps over all activity ids. Define the cue mode as <code>never</code> to make sure, that every target runs exactly once.</p>
 <p>Bind the single targets into one data frame:</p>
 <div class="layout-chunk" data-layout="l-body">
 <table>
@@ -1816,6 +1925,26 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 </div>
 <p>Turn the data into a wide format so that every activity is one row again:</p>
 <div class="layout-chunk" data-layout="l-body">
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">name</th>
+<th style="text-align: left;">command</th>
+<th style="text-align: left;">pattern</th>
+<th style="text-align: left;">cue_mode</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">df_meas_wide</td>
+<td style="text-align: left;">meas_wide(df_meas_all)</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">thorough</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class="va">meas_wide</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">df_meas</span><span class="op">)</span> <span class="op">{</span>
   <span class="fu">pivot_wider</span><span class="op">(</span><span class="va">df_meas</span>, names_from <span class="op">=</span> <span class="va">type</span>, values_from <span class="op">=</span> <span class="va">data</span><span class="op">)</span>
@@ -1843,6 +1972,26 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 #   watts &lt;list&gt;</code></pre>
 </div>
 <p>Preprocess and unnest the data. The column <code>latlng</code> needs special attention, because it contains latitude and longitude information. Separate the two measurements before unnesting all list columns.</p>
+<div class="layout-chunk" data-layout="l-body">
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">name</th>
+<th style="text-align: left;">command</th>
+<th style="text-align: left;">pattern</th>
+<th style="text-align: left;">cue_mode</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">df_meas_pro</td>
+<td style="text-align: left;">meas_pro(df_meas_wide)</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">thorough</td>
+</tr>
+</tbody>
+</table>
+</div>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class="va">meas_pro</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">df_meas_wide</span><span class="op">)</span> <span class="op">{</span>
@@ -1879,6 +2028,26 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 </div>
 <h1 id="visualisation">Visualisation</h1>
 <p>Visualize the final data by displaying the geospatial information in the data. Every facet is one activity. Keep the rest of the plot as minimal as possible.</p>
+<div class="layout-chunk" data-layout="l-body">
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">name</th>
+<th style="text-align: left;">command</th>
+<th style="text-align: left;">pattern</th>
+<th style="text-align: left;">cue_mode</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">gg_meas</td>
+<td style="text-align: left;">vis_meas(df_meas_pro)</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">thorough</td>
+</tr>
+</tbody>
+</table>
+</div>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class="va">vis_meas</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">df_meas_pro</span><span class="op">)</span> <span class="op">{</span>

@@ -69,6 +69,10 @@ can be done from within R is described in the following section.
 
 Create an OAuth Strava app:
 
+```{r, echo=FALSE}
+knitr::kable(df_manifest[df_manifest$name == "my_app", ])
+```
+
 ```{r, code=read_lines("R/define_strava_app.R"), eval=FALSE}
 ```
 
@@ -77,6 +81,10 @@ api settings after you have created your own personal api. The name of api is
 determined during creation. In my case I named it `r_api`.
 
 Define an endpoint:
+
+```{r, echo=FALSE}
+knitr::kable(df_manifest[df_manifest$name == "my_endpoint", ])
+```
 
 ```{r, code=read_lines("R/define_strava_endpoint.R"), eval=FALSE}
 ```
@@ -87,29 +95,54 @@ And the `access` argument is used to exchange the authenticated token.
 The final authentication step. Before the user can execute the following steps,
 he has to authenticate the api in the web browser.
 
+```{r, echo=FALSE}
+df_manifest[df_manifest$name == "my_sig", ] %>%
+  mutate(cue_mode = "always") %>%
+  knitr::kable()
+```
+
 ```{r, code=read_lines("R/define_strava_sig.R"), eval=FALSE}
 ```
 
-The information in `my_sig` can now be used to access Strava data.
+The information in `my_sig` can now be used to access Strava data. Set the
+`cue_mode` of the target to 'always', so that the user has to authenticate and
+the following api calls are all executed with an up to date authorization
+token.
 
 ## Activities
 
 We are now authenticated and can directly access Strava data.
-At first load an overview table of all available activities 
-(one activity per row). 
+At first load an overview table of all available activities.
 Because the total number of activities is unknown, use a while loop.
 Break the execution of the loop, if there are no more activities to read.
 
+```{r, echo=FALSE}
+knitr::kable(df_manifest[df_manifest$name == "df_act_raw", ])
+```
+
 ```{r, code=read_lines("R/read_all_activities.R"), eval=FALSE}
 ```
+
+The resulting data frame consists of one row per activity:
 
 ```{r, echo=FALSE}
 tar_read(df_act_raw)
 ```
 
-Preprocess activities:
+Preprocess activities. Make sure that all id columns are represented as
+characters and improve the column names:
+
+```{r, echo=FALSE}
+knitr::kable(df_manifest[df_manifest$name == "df_act", ])
+```
 
 ```{r, code=read_lines("R/pre_process_act.R"), eval=FALSE}
+```
+
+Extract all ids of the activities:
+
+```{r, echo=FALSE}
+knitr::kable(df_manifest[df_manifest$name == "act_ids", ])
 ```
 
 ## Measurements
@@ -122,23 +155,16 @@ To get all available variables and turn the result into a data frame,
 define a helper function. This function takes an id of an activity and
 an authentication token, which we have created earlier.
 
+```{r, echo=FALSE}
+knitr::kable(df_manifest[df_manifest$name == "df_meas", ])
+```
+
 ```{r, code=read_lines("R/read_activity_stream.R"), eval=FALSE}
 ```
 
-Extract all ids of the activities:
-
-```{r, code=df_manifest$command[df_manifest$name == "act_ids"], eval=FALSE}
-```
-
-Define a target with dynamic branching which maps over all activity ids.
+The target is defined with dynamic branching which maps over all activity ids.
 Define the cue mode as `never` to make sure, that every target runs exactly
 once.
-
-```{r, echo=FALSE}
-df_manifest %>%
-  filter(name == "df_meas") %>%
-  knitr::kable()
-```
 
 Bind the single targets into one data frame:
 
@@ -154,6 +180,10 @@ tar_read(df_meas_all)
 
 Turn the data into a wide format so that every activity is one row again:
 
+```{r, echo=FALSE}
+knitr::kable(df_manifest[df_manifest$name == "df_meas_wide", ])
+```
+
 ```{r, code=read_lines("R/meas_wide.R"), eval=FALSE}
 ```
 
@@ -164,6 +194,10 @@ tar_read(df_meas_wide)
 Preprocess and unnest the data. The column `latlng` needs special attention,
 because it contains latitude and longitude information. Separate the two
 measurements before unnesting all list columns.
+
+```{r, echo=FALSE}
+knitr::kable(df_manifest[df_manifest$name == "df_meas_pro", ])
+```
 
 ```{r, code=read_lines("R/meas_pro.R"), eval=FALSE}
 ```
@@ -179,6 +213,10 @@ tar_read(df_meas_pro)
 
 Visualize the final data by displaying the geospatial information in the data.
 Every facet is one activity. Keep the rest of the plot as minimal as possible.
+
+```{r, echo=FALSE}
+knitr::kable(df_manifest[df_manifest$name == "gg_meas", ])
+```
 
 ```{r, code=read_lines("R/vis_meas.R"), eval=FALSE}
 ```
