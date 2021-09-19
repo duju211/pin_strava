@@ -29,6 +29,8 @@ easily accessible in other analysis or shiny apps.
 source("libraries.R")
 
 Sys.setenv("RSTUDIO_VERSION" = '1.4.1725')
+df_manifest <- tar_manifest(
+  fields = c("name", "command", "pattern", "cue_mode"))
 ```
 
 In this analysis, the following packages are used:
@@ -105,11 +107,59 @@ an authentication token, which we have created earlier.
 ```{r, code=read_lines("R/read_activity_stream.R"), eval=FALSE}
 ```
 
+Extract all ids of the activities:
+
+```{r, code=df_manifest$command[df_manifest$name == "act_ids"], eval=FALSE}
+```
+
+Define a target with dynamic branching which maps over all activity ids.
+Define the cue mode as `never` to make sure, that every target runs exactly
+once.
+
+```{r}
+df_manifest %>%
+  filter(name == "df_meas") %>%
+  knitr::kable()
+```
+
+Bind the single targets into one data frame:
+
+```{r code=df_manifest$command[df_manifest$name == "df_meas_all"], eval=FALSE}
+```
+
+The data now is represented by one row per measurement series:
+
+```{r}
+tar_read(df_meas_all)
+```
+
+Turn the data into a wide format so that every activity is one row again:
+
+```{r, code=read_lines("R/meas_wide.R"), eval=FALSE}
+```
+
+```{r, echo=FALSE}
+tar_read(df_meas_wide)
+```
+
+Preprocess and unnest the data. The column `latlng` needs special attention,
+because it contains latitude and longitude information. Separate the two
+measurements before unnesting all list columns.
+
+```{r, code=read_lines("R/meas_pro.R"), eval=FALSE}
+```
+
+After this step every row is one point in time and every column is (if present)
+a measurement at this point in time.
+
+```{r, echo=FALSE}
+tar_read(df_meas_pro)
+```
 
 # Visualisation
 
-Visualize the final data. Every facet is one activity. Keep the rest of the plot
-as minimal as possible.
+Visualize the final data by displaying the geospation information in the data.
+Every facet is one activity. Keep the rest of the plot as minimal as possible.
 
 ```{r, code=read_lines("R/vis_meas.R"), eval=FALSE}
 ```

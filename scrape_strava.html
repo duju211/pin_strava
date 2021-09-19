@@ -314,11 +314,101 @@ conflict_prefer(&quot;filter&quot;, &quot;dplyr&quot;)</code></pre>
     as_tibble() %&gt;%
     mutate(id = id)
 }</code></pre>
+<p>Extract all ids of the activities:</p>
+<pre class="r"><code>pull(distinct(df_act, id))</code></pre>
+<p>Define a target with dynamic branching which maps over all activity ids. Define the cue mode as <code>never</code> to make sure, that every target runs exactly once.</p>
+<pre class="r"><code>df_manifest %&gt;%
+  filter(name == &quot;df_meas&quot;) %&gt;%
+  knitr::kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">name</th>
+<th align="left">command</th>
+<th align="left">pattern</th>
+<th align="left">cue_mode</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">df_meas</td>
+<td align="left">read_activity_stream(act_ids, my_sig)</td>
+<td align="left">map(act_ids)</td>
+<td align="left">never</td>
+</tr>
+</tbody>
+</table>
+<p>Bind the single targets into one data frame:</p>
+<pre class="r"><code>bind_rows(df_meas)</code></pre>
+<p>The data now is represented by one row per measurement series:</p>
+<pre class="r"><code>tar_read(df_meas_all)</code></pre>
+<pre><code>## # A tibble: 4,724 x 6
+##    type            data              series_type original_size resolution id    
+##    &lt;chr&gt;           &lt;list&gt;            &lt;chr&gt;               &lt;int&gt; &lt;chr&gt;      &lt;chr&gt; 
+##  1 moving          &lt;lgl [9,045]&gt;     distance             9045 high       59753~
+##  2 latlng          &lt;dbl [9,045 x 2]&gt; distance             9045 high       59753~
+##  3 velocity_smooth &lt;dbl [9,045]&gt;     distance             9045 high       59753~
+##  4 grade_smooth    &lt;dbl [9,045]&gt;     distance             9045 high       59753~
+##  5 distance        &lt;dbl [9,045]&gt;     distance             9045 high       59753~
+##  6 altitude        &lt;dbl [9,045]&gt;     distance             9045 high       59753~
+##  7 time            &lt;int [9,045]&gt;     distance             9045 high       59753~
+##  8 moving          &lt;lgl [5,607]&gt;     distance             5607 high       59472~
+##  9 latlng          &lt;dbl [5,607 x 2]&gt; distance             5607 high       59472~
+## 10 velocity_smooth &lt;dbl [5,607]&gt;     distance             5607 high       59472~
+## # ... with 4,714 more rows</code></pre>
+<p>Turn the data into a wide format so that every activity is one row again:</p>
+<pre class="r"><code>meas_wide &lt;- function(df_meas) {
+  pivot_wider(df_meas, names_from = type, values_from = data)
+}</code></pre>
+<pre><code>## # A tibble: 592 x 14
+##    series_type original_size resolution id         moving        latlng velocity_smooth
+##    &lt;chr&gt;               &lt;int&gt; &lt;chr&gt;      &lt;chr&gt;      &lt;list&gt;        &lt;list&gt; &lt;list&gt;         
+##  1 distance             9045 high       5975328478 &lt;lgl [9,045]&gt; &lt;dbl ~ &lt;dbl [9,045]&gt;  
+##  2 distance             5607 high       5947271836 &lt;lgl [5,607]&gt; &lt;dbl ~ &lt;dbl [5,607]&gt;  
+##  3 distance             3460 high       5944515311 &lt;lgl [3,460]&gt; &lt;dbl ~ &lt;dbl [3,460]&gt;  
+##  4 distance             4234 high       5936333308 &lt;lgl [4,234]&gt; &lt;dbl ~ &lt;dbl [4,234]&gt;  
+##  5 distance                4 high       5936332751 &lt;lgl [4]&gt;     &lt;dbl ~ &lt;dbl [4]&gt;      
+##  6 distance             9151 high       5937299994 &lt;lgl [9,151]&gt; &lt;dbl ~ &lt;dbl [9,151]&gt;  
+##  7 distance             5551 high       5882522249 &lt;lgl [5,551]&gt; &lt;dbl ~ &lt;dbl [5,551]&gt;  
+##  8 distance             1211 high       5882541097 &lt;lgl [1,211]&gt; &lt;dbl ~ &lt;dbl [1,211]&gt;  
+##  9 distance             2186 high       5852593500 &lt;lgl [2,186]&gt; &lt;dbl ~ &lt;dbl [2,186]&gt;  
+## 10 distance             2733 high       5843110297 &lt;lgl [2,733]&gt; &lt;dbl ~ &lt;dbl [2,733]&gt;  
+## # ... with 582 more rows, and 7 more variables: grade_smooth &lt;list&gt;,
+## #   distance &lt;list&gt;, altitude &lt;list&gt;, time &lt;list&gt;, heartrate &lt;list&gt;,
+## #   cadence &lt;list&gt;, watts &lt;list&gt;</code></pre>
+<p>Preprocess and unnest the data. The column <code>latlng</code> needs special attention, because it contains latitude and longitude information. Separate the two measurements before unnesting all list columns.</p>
+<pre class="r"><code>meas_pro &lt;- function(df_meas_wide) {
+  df_meas_wide %&gt;%
+    mutate(
+      lat = map_if(
+        .x = latlng, .p = ~ !is.null(.x), .f = ~ .x[, 1]),
+      lng = map_if(
+        .x = latlng, .p = ~ !is.null(.x), .f = ~ .x[, 2])) %&gt;%
+    select(-latlng) %&gt;%
+    unnest(where(is_list))
+}</code></pre>
+<p>After this step every row is one point in time and every column is (if present) a measurement at this point in time.</p>
+<pre><code>## # A tibble: 2,111,660 x 15
+##    series_type original_size resolution id         moving velocity_smooth
+##    &lt;chr&gt;               &lt;int&gt; &lt;chr&gt;      &lt;chr&gt;      &lt;lgl&gt;            &lt;dbl&gt;
+##  1 distance             9045 high       5975328478 FALSE              0  
+##  2 distance             9045 high       5975328478 TRUE               0  
+##  3 distance             9045 high       5975328478 TRUE               0  
+##  4 distance             9045 high       5975328478 TRUE               0  
+##  5 distance             9045 high       5975328478 TRUE               6.9
+##  6 distance             9045 high       5975328478 TRUE               6.9
+##  7 distance             9045 high       5975328478 TRUE               7  
+##  8 distance             9045 high       5975328478 TRUE               7  
+##  9 distance             9045 high       5975328478 TRUE               7  
+## 10 distance             9045 high       5975328478 TRUE               6.9
+## # ... with 2,111,650 more rows, and 9 more variables: grade_smooth &lt;dbl&gt;,
+## #   distance &lt;dbl&gt;, altitude &lt;dbl&gt;, time &lt;int&gt;, heartrate &lt;int&gt;, cadence &lt;int&gt;,
+## #   watts &lt;int&gt;, lat &lt;dbl&gt;, lng &lt;dbl&gt;</code></pre>
 </div>
 </div>
 <div id="visualisation" class="section level1">
 <h1>Visualisation</h1>
-<p>Visualize the final data. Every facet is a activity and the color represents the type.</p>
+<p>Visualize the final data by displaying the geospation information in the data. Every facet is one activity. Keep the rest of the plot as minimal as possible.</p>
 <pre class="r"><code>vis_meas &lt;- function(df_meas_pro) {
   df_meas_pro %&gt;%
     filter(!is.na(lat)) %&gt;%
