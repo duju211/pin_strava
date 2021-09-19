@@ -3,9 +3,7 @@ source("libraries.R")
 walk(dir_ls("R"), source)
 
 list(
-  tar_target(ex_act, "1327205128"),
   tar_target(athlete_id, "26845822"),
-  tar_target(board_name, "duju211/strava_act"),
   tar_target(act_col_types, list(
     moving = col_logical(), velocity_smooth = col_number(),
     grade_smooth = col_number(), distance = col_number(),

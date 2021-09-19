@@ -1500,8 +1500,116 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 </div>
 </div>
 <h1 class="tabset" id="data">Data</h1>
-<p>To get access to your Strava data from R, you have to create a Strava api. How to do this is documented <a href="https://developers.strava.com/docs/getting-started/">here</a>.</p>
+<p>The whole data pipeline is implemented with the help of the <code>targets</code> package. <a href="https://docs.ropensci.org/targets/">Here</a> you can learn more about the package and its functionalities.</p>
+<h2 id="target-plan">Target Plan</h2>
+<p>The manifest of the target plan looks like this:</p>
+<div class="layout-chunk" data-layout="l-body">
+<table>
+<colgroup>
+<col style="width: 4%" />
+<col style="width: 89%" />
+<col style="width: 3%" />
+<col style="width: 2%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">name</th>
+<th style="text-align: left;">command</th>
+<th style="text-align: left;">pattern</th>
+<th style="text-align: left;">cue_mode</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">my_app</td>
+<td style="text-align: left;">define_strava_app()</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">thorough</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">my_endpoint</td>
+<td style="text-align: left;">define_strava_endpoint()</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">thorough</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">my_sig_change</td>
+<td style="text-align: left;">tarchetypes::tar_force_change(FALSE)</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">always</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">act_col_types</td>
+<td style="text-align: left;">list(moving = col_logical(), velocity_smooth = col_number(), grade_smooth = col_number(), distance = col_number(), altitude = col_number(), heartrate = col_integer(), time = col_integer(), lat = col_number(), lng = col_number(), cadence = col_integer(), watts = col_integer())</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">thorough</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">my_sig</td>
+<td style="text-align: left;">{ my_sig_change define_strava_sig(my_endpoint, my_app) }</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">thorough</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">df_act_raw</td>
+<td style="text-align: left;">read_all_activities(my_sig)</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">thorough</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">df_act</td>
+<td style="text-align: left;">pre_process_act(df_act_raw, athlete_id)</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">thorough</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">act_ids</td>
+<td style="text-align: left;">pull(distinct(df_act, id))</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">thorough</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">df_meas</td>
+<td style="text-align: left;">read_activity_stream(act_ids, my_sig)</td>
+<td style="text-align: left;">map(act_ids)</td>
+<td style="text-align: left;">never</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">df_meas_all</td>
+<td style="text-align: left;">bind_rows(df_meas)</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">thorough</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">df_meas_wide</td>
+<td style="text-align: left;">meas_wide(df_meas_all)</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">thorough</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">df_meas_pro</td>
+<td style="text-align: left;">meas_pro(df_meas_wide)</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">thorough</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">gg_meas</td>
+<td style="text-align: left;">vis_meas(df_meas_pro)</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">thorough</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">gg_meas_save</td>
+<td style="text-align: left;">save_gg_meas(gg_meas)</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">thorough</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The most important targets of the plan are described in detail in the following subsections.</p>
 <h2 id="oauth-dance-from-r">OAuth Dance from R</h2>
+<p>To get access to your Strava data from R, you have to create a Strava api. How to do this is documented <a href="https://developers.strava.com/docs/getting-started/">here</a>.</p>
 <p>The Strava api requires a so called OAuth dance. How this can be done from within R is described in the following section.</p>
 <p>Create an OAuth Strava app:</p>
 <div class="layout-chunk" data-layout="l-body">
@@ -1649,12 +1757,6 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 </div>
 <p>Define a target with dynamic branching which maps over all activity ids. Define the cue mode as <code>never</code> to make sure, that every target runs exactly once.</p>
 <div class="layout-chunk" data-layout="l-body">
-<div class="sourceCode">
-<pre class="sourceCode r"><code class="sourceCode r"><span class="va">df_manifest</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">name</span> <span class="op">==</span> <span class="st">&quot;df_meas&quot;</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="op">)</span>
-</code></pre>
-</div>
 <table>
 <thead>
 <tr class="header">
@@ -1676,17 +1778,27 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 </div>
 <p>Bind the single targets into one data frame:</p>
 <div class="layout-chunk" data-layout="l-body">
-<div class="sourceCode">
-<pre class="sourceCode r"><code class="sourceCode r"><span class="fu">bind_rows</span><span class="op">(</span><span class="va">df_meas</span><span class="op">)</span>
-</code></pre>
-</div>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">name</th>
+<th style="text-align: left;">command</th>
+<th style="text-align: left;">pattern</th>
+<th style="text-align: left;">cue_mode</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">df_meas_all</td>
+<td style="text-align: left;">bind_rows(df_meas)</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">thorough</td>
+</tr>
+</tbody>
+</table>
 </div>
 <p>The data now is represented by one row per measurement series:</p>
 <div class="layout-chunk" data-layout="l-body">
-<div class="sourceCode">
-<pre class="sourceCode r"><code class="sourceCode r"><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_read.html">tar_read</a></span><span class="op">(</span><span class="va">df_meas_all</span><span class="op">)</span>
-</code></pre>
-</div>
 <pre><code># A tibble: 4,724 x 6
    type            data     series_type original_size resolution id   
    &lt;chr&gt;           &lt;list&gt;   &lt;chr&gt;               &lt;int&gt; &lt;chr&gt;      &lt;chr&gt;
@@ -1766,7 +1878,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 #   heartrate &lt;int&gt;, cadence &lt;int&gt;, watts &lt;int&gt;, lat &lt;dbl&gt;, lng &lt;dbl&gt;</code></pre>
 </div>
 <h1 id="visualisation">Visualisation</h1>
-<p>Visualize the final data by displaying the geospation information in the data. Every facet is one activity. Keep the rest of the plot as minimal as possible.</p>
+<p>Visualize the final data by displaying the geospatial information in the data. Every facet is one activity. Keep the rest of the plot as minimal as possible.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class="va">vis_meas</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">df_meas_pro</span><span class="op">)</span> <span class="op">{</span>

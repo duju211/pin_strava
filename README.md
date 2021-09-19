@@ -27,11 +27,125 @@ In this analysis, the following packages are used:
 
 # Data
 
+The whole data pipeline is implemented with the help of the `targets`
+package. [Here](https://docs.ropensci.org/targets/) you can learn more
+about the package and its functionalities.
+
+## Target Plan
+
+The manifest of the target plan looks like this:
+
+<table>
+<colgroup>
+<col style="width: 4%" />
+<col style="width: 89%" />
+<col style="width: 3%" />
+<col style="width: 2%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">name</th>
+<th style="text-align: left;">command</th>
+<th style="text-align: left;">pattern</th>
+<th style="text-align: left;">cue_mode</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">my_app</td>
+<td style="text-align: left;">define_strava_app()</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">thorough</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">my_endpoint</td>
+<td style="text-align: left;">define_strava_endpoint()</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">thorough</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">my_sig_change</td>
+<td style="text-align: left;">tarchetypes::tar_force_change(FALSE)</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">always</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">act_col_types</td>
+<td style="text-align: left;">list(moving = col_logical(), velocity_smooth = col_number(), grade_smooth = col_number(), distance = col_number(), altitude = col_number(), heartrate = col_integer(), time = col_integer(), lat = col_number(), lng = col_number(), cadence = col_integer(), watts = col_integer())</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">thorough</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">my_sig</td>
+<td style="text-align: left;">{ my_sig_change define_strava_sig(my_endpoint, my_app) }</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">thorough</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">df_act_raw</td>
+<td style="text-align: left;">read_all_activities(my_sig)</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">thorough</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">df_act</td>
+<td style="text-align: left;">pre_process_act(df_act_raw, athlete_id)</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">thorough</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">act_ids</td>
+<td style="text-align: left;">pull(distinct(df_act, id))</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">thorough</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">df_meas</td>
+<td style="text-align: left;">read_activity_stream(act_ids, my_sig)</td>
+<td style="text-align: left;">map(act_ids)</td>
+<td style="text-align: left;">never</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">df_meas_all</td>
+<td style="text-align: left;">bind_rows(df_meas)</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">thorough</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">df_meas_wide</td>
+<td style="text-align: left;">meas_wide(df_meas_all)</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">thorough</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">df_meas_pro</td>
+<td style="text-align: left;">meas_pro(df_meas_wide)</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">thorough</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">gg_meas</td>
+<td style="text-align: left;">vis_meas(df_meas_pro)</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">thorough</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">gg_meas_save</td>
+<td style="text-align: left;">save_gg_meas(gg_meas)</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">thorough</td>
+</tr>
+</tbody>
+</table>
+
+The most important targets of the plan are described in detail in the
+following subsections.
+
+## OAuth Dance from R
+
 To get access to your Strava data from R, you have to create a Strava
 api. How to do this is documented
 [here](https://developers.strava.com/docs/getting-started/).
-
-## OAuth Dance from R
 
 The Strava api requires a so called OAuth dance. How this can be done
 from within R is described in the following section.
@@ -181,10 +295,6 @@ Define a target with dynamic branching which maps over all activity ids.
 Define the cue mode as `never` to make sure, that every target runs
 exactly once.
 
-    df_manifest %>%
-      filter(name == "df_meas") %>%
-      knitr::kable()
-
 <table>
 <thead>
 <tr class="header">
@@ -206,11 +316,26 @@ exactly once.
 
 Bind the single targets into one data frame:
 
-    bind_rows(df_meas)
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">name</th>
+<th style="text-align: left;">command</th>
+<th style="text-align: left;">pattern</th>
+<th style="text-align: left;">cue_mode</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">df_meas_all</td>
+<td style="text-align: left;">bind_rows(df_meas)</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">thorough</td>
+</tr>
+</tbody>
+</table>
 
 The data now is represented by one row per measurement series:
-
-    tar_read(df_meas_all)
 
     ## # A tibble: 4,724 x 6
     ##    type            data              series_type original_size resolution id    
@@ -288,7 +413,7 @@ present) a measurement at this point in time.
 
 # Visualisation
 
-Visualize the final data by displaying the geospation information in the
+Visualize the final data by displaying the geospatial information in the
 data. Every facet is one activity. Keep the rest of the plot as minimal
 as possible.
 

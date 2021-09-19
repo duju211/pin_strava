@@ -201,9 +201,117 @@ library(fs)
 conflict_prefer(&quot;filter&quot;, &quot;dplyr&quot;)</code></pre>
 <div id="data" class="section level1 tabset">
 <h1 class="tabset">Data</h1>
-<p>To get access to your Strava data from R, you have to create a Strava api. How to do this is documented <a href="https://developers.strava.com/docs/getting-started/">here</a>.</p>
+<p>The whole data pipeline is implemented with the help of the <code>targets</code> package. <a href="https://docs.ropensci.org/targets/">Here</a> you can learn more about the package and its functionalities.</p>
+<div id="target-plan" class="section level2">
+<h2>Target Plan</h2>
+<p>The manifest of the target plan looks like this:</p>
+<table>
+<colgroup>
+<col width="4%" />
+<col width="89%" />
+<col width="3%" />
+<col width="2%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">name</th>
+<th align="left">command</th>
+<th align="left">pattern</th>
+<th align="left">cue_mode</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">my_app</td>
+<td align="left">define_strava_app()</td>
+<td align="left">NA</td>
+<td align="left">thorough</td>
+</tr>
+<tr class="even">
+<td align="left">my_endpoint</td>
+<td align="left">define_strava_endpoint()</td>
+<td align="left">NA</td>
+<td align="left">thorough</td>
+</tr>
+<tr class="odd">
+<td align="left">my_sig_change</td>
+<td align="left">tarchetypes::tar_force_change(FALSE)</td>
+<td align="left">NA</td>
+<td align="left">always</td>
+</tr>
+<tr class="even">
+<td align="left">act_col_types</td>
+<td align="left">list(moving = col_logical(), velocity_smooth = col_number(), grade_smooth = col_number(), distance = col_number(), altitude = col_number(), heartrate = col_integer(), time = col_integer(), lat = col_number(), lng = col_number(), cadence = col_integer(), watts = col_integer())</td>
+<td align="left">NA</td>
+<td align="left">thorough</td>
+</tr>
+<tr class="odd">
+<td align="left">my_sig</td>
+<td align="left">{ my_sig_change define_strava_sig(my_endpoint, my_app) }</td>
+<td align="left">NA</td>
+<td align="left">thorough</td>
+</tr>
+<tr class="even">
+<td align="left">df_act_raw</td>
+<td align="left">read_all_activities(my_sig)</td>
+<td align="left">NA</td>
+<td align="left">thorough</td>
+</tr>
+<tr class="odd">
+<td align="left">df_act</td>
+<td align="left">pre_process_act(df_act_raw, athlete_id)</td>
+<td align="left">NA</td>
+<td align="left">thorough</td>
+</tr>
+<tr class="even">
+<td align="left">act_ids</td>
+<td align="left">pull(distinct(df_act, id))</td>
+<td align="left">NA</td>
+<td align="left">thorough</td>
+</tr>
+<tr class="odd">
+<td align="left">df_meas</td>
+<td align="left">read_activity_stream(act_ids, my_sig)</td>
+<td align="left">map(act_ids)</td>
+<td align="left">never</td>
+</tr>
+<tr class="even">
+<td align="left">df_meas_all</td>
+<td align="left">bind_rows(df_meas)</td>
+<td align="left">NA</td>
+<td align="left">thorough</td>
+</tr>
+<tr class="odd">
+<td align="left">df_meas_wide</td>
+<td align="left">meas_wide(df_meas_all)</td>
+<td align="left">NA</td>
+<td align="left">thorough</td>
+</tr>
+<tr class="even">
+<td align="left">df_meas_pro</td>
+<td align="left">meas_pro(df_meas_wide)</td>
+<td align="left">NA</td>
+<td align="left">thorough</td>
+</tr>
+<tr class="odd">
+<td align="left">gg_meas</td>
+<td align="left">vis_meas(df_meas_pro)</td>
+<td align="left">NA</td>
+<td align="left">thorough</td>
+</tr>
+<tr class="even">
+<td align="left">gg_meas_save</td>
+<td align="left">save_gg_meas(gg_meas)</td>
+<td align="left">NA</td>
+<td align="left">thorough</td>
+</tr>
+</tbody>
+</table>
+<p>The most important targets of the plan are described in detail in the following subsections.</p>
+</div>
 <div id="oauth-dance-from-r" class="section level2">
 <h2>OAuth Dance from R</h2>
+<p>To get access to your Strava data from R, you have to create a Strava api. How to do this is documented <a href="https://developers.strava.com/docs/getting-started/">here</a>.</p>
 <p>The Strava api requires a so called OAuth dance. How this can be done from within R is described in the following section.</p>
 <p>Create an OAuth Strava app:</p>
 <pre class="r"><code>define_strava_app &lt;- function() {
@@ -317,9 +425,6 @@ conflict_prefer(&quot;filter&quot;, &quot;dplyr&quot;)</code></pre>
 <p>Extract all ids of the activities:</p>
 <pre class="r"><code>pull(distinct(df_act, id))</code></pre>
 <p>Define a target with dynamic branching which maps over all activity ids. Define the cue mode as <code>never</code> to make sure, that every target runs exactly once.</p>
-<pre class="r"><code>df_manifest %&gt;%
-  filter(name == &quot;df_meas&quot;) %&gt;%
-  knitr::kable()</code></pre>
 <table>
 <thead>
 <tr class="header">
@@ -339,9 +444,25 @@ conflict_prefer(&quot;filter&quot;, &quot;dplyr&quot;)</code></pre>
 </tbody>
 </table>
 <p>Bind the single targets into one data frame:</p>
-<pre class="r"><code>bind_rows(df_meas)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">name</th>
+<th align="left">command</th>
+<th align="left">pattern</th>
+<th align="left">cue_mode</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">df_meas_all</td>
+<td align="left">bind_rows(df_meas)</td>
+<td align="left">NA</td>
+<td align="left">thorough</td>
+</tr>
+</tbody>
+</table>
 <p>The data now is represented by one row per measurement series:</p>
-<pre class="r"><code>tar_read(df_meas_all)</code></pre>
 <pre><code>## # A tibble: 4,724 x 6
 ##    type            data              series_type original_size resolution id    
 ##    &lt;chr&gt;           &lt;list&gt;            &lt;chr&gt;               &lt;int&gt; &lt;chr&gt;      &lt;chr&gt; 
@@ -408,7 +529,7 @@ conflict_prefer(&quot;filter&quot;, &quot;dplyr&quot;)</code></pre>
 </div>
 <div id="visualisation" class="section level1">
 <h1>Visualisation</h1>
-<p>Visualize the final data by displaying the geospation information in the data. Every facet is one activity. Keep the rest of the plot as minimal as possible.</p>
+<p>Visualize the final data by displaying the geospatial information in the data. Every facet is one activity. Keep the rest of the plot as minimal as possible.</p>
 <pre class="r"><code>vis_meas &lt;- function(df_meas_pro) {
   df_meas_pro %&gt;%
     filter(!is.na(lat)) %&gt;%
