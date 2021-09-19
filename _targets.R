@@ -15,7 +15,7 @@ list(
 
   tar_target(my_app, define_strava_app()),
   tar_target(my_endpoint, define_strava_endpoint()),
-  tar_force(my_sig, define_strava_sig(my_endpoint, my_app), force = TRUE),
+  tar_force(my_sig, define_strava_sig(my_endpoint, my_app), force = FALSE),
   tar_target(df_act_raw, read_all_activities(my_sig)),
   tar_target(df_act, pre_process_act(df_act_raw, athlete_id)),
   tar_target(act_ids, pull(distinct(df_act, id))),
@@ -29,6 +29,7 @@ list(
   tar_target(df_meas_wide, meas_wide(df_meas_all)),
   tar_target(df_meas_pro, meas_pro(df_meas_wide)),
   tar_target(gg_meas, vis_meas(df_meas_pro)),
+  tar_target(gg_meas_save, save_gg_meas(gg_meas)),
 
   tar_render(strava_report, "scrape_strava.Rmd"),
   tar_render(

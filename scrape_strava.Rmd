@@ -36,8 +36,7 @@ In this analysis, the following packages are used:
 ```{r, code=read_lines("libraries.R"), eval=FALSE}
 ```
 
-
-# Data
+# Data {.tabset}
 
 To get access to your Strava data from R, you have to create a Strava api.
 How to do this is
@@ -109,12 +108,12 @@ an authentication token, which we have created earlier.
 
 # Visualisation
 
-Visualize the final data. Every facet is a activity and the color represents the
-type.
+Visualize the final data. Every facet is one activity. Keep the rest of the plot
+as minimal as possible.
 
 ```{r, code=read_lines("R/vis_meas.R"), eval=FALSE}
 ```
 
 ```{r, echo=FALSE}
-tar_read(gg_meas)
+knitr::include_graphics("gg_meas.png")
 ```

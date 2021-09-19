@@ -200,4 +200,4 @@ represents the type.
           strip.text = element_blank())
     }
 
-![](README_files/figure-markdown_strict/unnamed-chunk-10-1.png)
+<img src="gg_meas.png" width="2100" />
