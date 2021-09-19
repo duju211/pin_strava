@@ -13,7 +13,7 @@ list(
 
   tar_target(my_app, define_strava_app()),
   tar_target(my_endpoint, define_strava_endpoint()),
-  tar_force(my_sig, define_strava_sig(my_endpoint, my_app), force = FALSE),
+  tar_force(my_sig, define_strava_sig(my_endpoint, my_app), force = TRUE),
   tar_target(df_act_raw, read_all_activities(my_sig)),
   tar_target(df_act, pre_process_act(df_act_raw, athlete_id)),
   tar_target(act_ids, pull(distinct(df_act, id))),
