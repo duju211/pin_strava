@@ -88,30 +88,33 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   <!--radix_placeholder_meta_tags-->
   <title>Strava Data</title>
 
-  <meta property="description" itemprop="description" content="Article on how to effectively scrape and store Strava data" />
+  <meta property="description" itemprop="description" content="Article on how to effectively scrape and store Strava data using the `targets`
+package" />
 
 
   <!--  https://schema.org/Article -->
-  <meta property="article:published" itemprop="datePublished" content="2021-09-19" />
-  <meta property="article:created" itemprop="dateCreated" content="2021-09-19" />
+  <meta property="article:published" itemprop="datePublished" content="2021-09-20" />
+  <meta property="article:created" itemprop="dateCreated" content="2021-09-20" />
   <meta name="article:author" content="Julian During" />
 
   <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
   <meta property="og:title" content="Strava Data" />
   <meta property="og:type" content="article" />
-  <meta property="og:description" content="Article on how to effectively scrape and store Strava data" />
+  <meta property="og:description" content="Article on how to effectively scrape and store Strava data using the `targets`
+package" />
   <meta property="og:locale" content="en_US" />
 
   <!--  https://dev.twitter.com/cards/types/summary -->
   <meta property="twitter:card" content="summary" />
   <meta property="twitter:title" content="Strava Data" />
-  <meta property="twitter:description" content="Article on how to effectively scrape and store Strava data" />
+  <meta property="twitter:description" content="Article on how to effectively scrape and store Strava data using the `targets`
+package" />
 
   <!--/radix_placeholder_meta_tags-->
   <!--radix_placeholder_rmarkdown_metadata-->
 
   <script type="text/json" id="radix-rmarkdown-metadata">
-  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","author","date","output","repository_url","creative_commons"]}},"value":[{"type":"character","attributes":{},"value":["Strava Data"]},{"type":"character","attributes":{},"value":["Article on how to effectively scrape and store Strava data\n"]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name"]}},"value":[{"type":"character","attributes":{},"value":["Julian During"]}]}]},{"type":"character","attributes":{},"value":["2021-09-19"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["html_document"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["code_folding","theme"]}},"value":[{"type":"character","attributes":{},"value":["hide"]},{"type":"character","attributes":{},"value":["cosmo"]}]}]},{"type":"character","attributes":{},"value":["https://github.com/duju211/pin_strava"]},{"type":"character","attributes":{},"value":["CC BY"]}]}
+  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","author","date","output","repository_url","creative_commons"]}},"value":[{"type":"character","attributes":{},"value":["Strava Data"]},{"type":"character","attributes":{},"value":["Article on how to effectively scrape and store Strava data using the `targets`\npackage\n"]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name"]}},"value":[{"type":"character","attributes":{},"value":["Julian During"]}]}]},{"type":"character","attributes":{},"value":["2021-09-20"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["html_document"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["code_folding","theme"]}},"value":[{"type":"character","attributes":{},"value":["hide"]},{"type":"character","attributes":{},"value":["cosmo"]}]}]},{"type":"character","attributes":{},"value":["https://github.com/duju211/pin_strava"]},{"type":"character","attributes":{},"value":["CC BY"]}]}
   </script>
   <!--/radix_placeholder_rmarkdown_metadata-->
   
@@ -1455,7 +1458,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"Strava Data","description":"Article on how to effectively scrape and store Strava data","authors":[{"author":"Julian During","authorURL":"#","affiliation":"&nbsp;","affiliationURL":"#","orcidID":""}],"publishedDate":"2021-09-19T00:00:00.000+02:00","citationText":"During, 2021"}
+{"title":"Strava Data","description":"Article on how to effectively scrape and store Strava data using the `targets`\npackage","authors":[{"author":"Julian During","authorURL":"#","affiliation":"&nbsp;","affiliationURL":"#","orcidID":""}],"publishedDate":"2021-09-20T00:00:00.000+02:00","citationText":"During, 2021"}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -1468,19 +1471,19 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <h1>Strava Data</h1>
 <!--radix_placeholder_categories-->
 <!--/radix_placeholder_categories-->
-<p><p>Article on how to effectively scrape and store Strava data</p></p>
+<p><p>Article on how to effectively scrape and store Strava data using the <code>targets</code> package</p></p>
 </div>
 
 <div class="d-byline">
   Julian During  
   
-<br />2021-09-19
+<br />2021-09-20
 </div>
 
 <div class="d-article">
-<p>I am a vivid runner and cyclist. Since a few years, I’m recording almost all my activities with some kind of GPS device.</p>
+<p>I am a vivid runner and cyclist. Since a couple of years, I’m recording almost all my activities with some kind of GPS device.</p>
 <p>I record my runs with a Garmin device and my bike rides with a Wahoo device. Both accounts get synchronized with my Strava account. I figured that it would be nice to directly access my data from my Strava account.</p>
-<p>In the following text, I will describe the progress to get the data into R. Once available in a nice format in R, the data is stored as a pin in a private github repository. By doing so, the data is easily accessible in other analysis or shiny apps.</p>
+<p>In the following text, I will describe the progress to get the data into R.</p>
 <p>In this analysis, the following packages are used:</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
@@ -1670,7 +1673,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 </code></pre>
 </div>
 </div>
-<p>The <code>authorize</code> parameter describes the url to send client to for authorization. And the <code>access</code> argument is used to exchange the authenticated token.</p>
+<p>The <code>authorize</code> parameter describes the authorization url. And the <code>access</code> argument is used to exchange the authenticated token.</p>
 <p>The final authentication step. Before the user can execute the following steps, he has to authenticate the api in the web browser.</p>
 <div class="layout-chunk" data-layout="l-body">
 <table>
@@ -2001,7 +2004,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
         .x <span class="op">=</span> <span class="va">latlng</span>, .p <span class="op">=</span> <span class="op">~</span> <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html">is.null</a></span><span class="op">(</span><span class="va">.x</span><span class="op">)</span>, .f <span class="op">=</span> <span class="op">~</span> <span class="va">.x</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span><span class="op">)</span>,
       lng <span class="op">=</span> <span class="fu">map_if</span><span class="op">(</span>
         .x <span class="op">=</span> <span class="va">latlng</span>, .p <span class="op">=</span> <span class="op">~</span> <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html">is.null</a></span><span class="op">(</span><span class="va">.x</span><span class="op">)</span>, .f <span class="op">=</span> <span class="op">~</span> <span class="va">.x</span><span class="op">[</span>, <span class="fl">2</span><span class="op">]</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
-    <span class="fu">select</span><span class="op">(</span><span class="op">-</span><span class="va">latlng</span><span class="op">)</span> <span class="op">%&gt;%</span>
+    <span class="fu">select</span><span class="op">(</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">latlng</span>, <span class="va">original_size</span>, <span class="va">resolution</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
     <span class="fu">unnest</span><span class="op">(</span><span class="fu">where</span><span class="op">(</span><span class="va">is_list</span><span class="op">)</span><span class="op">)</span>
 <span class="op">}</span>
 </code></pre>
@@ -2009,22 +2012,22 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 </div>
 <p>After this step every row is one point in time and every column is (if present) a measurement at this point in time.</p>
 <div class="layout-chunk" data-layout="l-body">
-<pre><code># A tibble: 2,111,660 x 15
-   series_type original_size resolution id         moving velocity_smooth
-   &lt;chr&gt;               &lt;int&gt; &lt;chr&gt;      &lt;chr&gt;      &lt;lgl&gt;            &lt;dbl&gt;
- 1 distance             9045 high       5975328478 FALSE              0  
- 2 distance             9045 high       5975328478 TRUE               0  
- 3 distance             9045 high       5975328478 TRUE               0  
- 4 distance             9045 high       5975328478 TRUE               0  
- 5 distance             9045 high       5975328478 TRUE               6.9
- 6 distance             9045 high       5975328478 TRUE               6.9
- 7 distance             9045 high       5975328478 TRUE               7  
- 8 distance             9045 high       5975328478 TRUE               7  
- 9 distance             9045 high       5975328478 TRUE               7  
-10 distance             9045 high       5975328478 TRUE               6.9
-# ... with 2,111,650 more rows, and 9 more variables:
-#   grade_smooth &lt;dbl&gt;, distance &lt;dbl&gt;, altitude &lt;dbl&gt;, time &lt;int&gt;,
-#   heartrate &lt;int&gt;, cadence &lt;int&gt;, watts &lt;int&gt;, lat &lt;dbl&gt;, lng &lt;dbl&gt;</code></pre>
+<pre><code># A tibble: 2,111,660 x 13
+   series_type id         moving velocity_smooth grade_smooth distance
+   &lt;chr&gt;       &lt;chr&gt;      &lt;lgl&gt;            &lt;dbl&gt;        &lt;dbl&gt;    &lt;dbl&gt;
+ 1 distance    5975328478 FALSE              0            1.5      0  
+ 2 distance    5975328478 TRUE               0            2        6.7
+ 3 distance    5975328478 TRUE               0            2.2     13.5
+ 4 distance    5975328478 TRUE               0            2.9     20.5
+ 5 distance    5975328478 TRUE               6.9          2.1     27.6
+ 6 distance    5975328478 TRUE               6.9          1.4     34.7
+ 7 distance    5975328478 TRUE               7            1.4     41.5
+ 8 distance    5975328478 TRUE               7            0.7     48.4
+ 9 distance    5975328478 TRUE               7            0.7     55.3
+10 distance    5975328478 TRUE               6.9          1.5     62.2
+# ... with 2,111,650 more rows, and 7 more variables: altitude &lt;dbl&gt;,
+#   time &lt;int&gt;, heartrate &lt;int&gt;, cadence &lt;int&gt;, watts &lt;int&gt;,
+#   lat &lt;dbl&gt;, lng &lt;dbl&gt;</code></pre>
 </div>
 <h1 id="visualisation">Visualisation</h1>
 <p>Visualize the final data by displaying the geospatial information in the data. Every facet is one activity. Keep the rest of the plot as minimal as possible.</p>

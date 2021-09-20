@@ -1,14 +1,12 @@
-I am a vivid runner and cyclist. Since a few years, I’m recording almost
-all my activities with some kind of GPS device.
+I am a vivid runner and cyclist. Since a couple of years, I’m recording
+almost all my activities with some kind of GPS device.
 
 I record my runs with a Garmin device and my bike rides with a Wahoo
 device. Both accounts get synchronized with my Strava account. I figured
 that it would be nice to directly access my data from my Strava account.
 
 In the following text, I will describe the progress to get the data into
-R. Once available in a nice format in R, the data is stored as a pin in
-a private github repository. By doing so, the data is easily accessible
-in other analysis or shiny apps.
+R.
 
 In this analysis, the following packages are used:
 
@@ -205,9 +203,8 @@ Define an endpoint:
         access = "https://www.strava.com/oauth/token")
     }
 
-The `authorize` parameter describes the url to send client to for
-authorization. And the `access` argument is used to exchange the
-authenticated token.
+The `authorize` parameter describes the authorization url. And the
+`access` argument is used to exchange the authenticated token.
 
 The final authentication step. Before the user can execute the following
 steps, he has to authenticate the api in the web browser.
@@ -536,29 +533,28 @@ Separate the two measurements before unnesting all list columns.
             .x = latlng, .p = ~ !is.null(.x), .f = ~ .x[, 1]),
           lng = map_if(
             .x = latlng, .p = ~ !is.null(.x), .f = ~ .x[, 2])) %>%
-        select(-latlng) %>%
+        select(-c(latlng, original_size, resolution)) %>%
         unnest(where(is_list))
     }
 
 After this step every row is one point in time and every column is (if
 present) a measurement at this point in time.
 
-    ## # A tibble: 2,111,660 x 15
-    ##    series_type original_size resolution id         moving velocity_smooth
-    ##    <chr>               <int> <chr>      <chr>      <lgl>            <dbl>
-    ##  1 distance             9045 high       5975328478 FALSE              0  
-    ##  2 distance             9045 high       5975328478 TRUE               0  
-    ##  3 distance             9045 high       5975328478 TRUE               0  
-    ##  4 distance             9045 high       5975328478 TRUE               0  
-    ##  5 distance             9045 high       5975328478 TRUE               6.9
-    ##  6 distance             9045 high       5975328478 TRUE               6.9
-    ##  7 distance             9045 high       5975328478 TRUE               7  
-    ##  8 distance             9045 high       5975328478 TRUE               7  
-    ##  9 distance             9045 high       5975328478 TRUE               7  
-    ## 10 distance             9045 high       5975328478 TRUE               6.9
-    ## # ... with 2,111,650 more rows, and 9 more variables: grade_smooth <dbl>,
-    ## #   distance <dbl>, altitude <dbl>, time <int>, heartrate <int>, cadence <int>,
-    ## #   watts <int>, lat <dbl>, lng <dbl>
+    ## # A tibble: 2,111,660 x 13
+    ##    series_type id    moving velocity_smooth grade_smooth distance altitude  time
+    ##    <chr>       <chr> <lgl>            <dbl>        <dbl>    <dbl>    <dbl> <int>
+    ##  1 distance    5975~ FALSE              0            1.5      0       570.     0
+    ##  2 distance    5975~ TRUE               0            2        6.7     570.     1
+    ##  3 distance    5975~ TRUE               0            2.2     13.5     571.     2
+    ##  4 distance    5975~ TRUE               0            2.9     20.5     571.     3
+    ##  5 distance    5975~ TRUE               6.9          2.1     27.6     571      4
+    ##  6 distance    5975~ TRUE               6.9          1.4     34.7     571.     5
+    ##  7 distance    5975~ TRUE               7            1.4     41.5     571.     6
+    ##  8 distance    5975~ TRUE               7            0.7     48.4     571.     7
+    ##  9 distance    5975~ TRUE               7            0.7     55.3     571.     8
+    ## 10 distance    5975~ TRUE               6.9          1.5     62.2     571.     9
+    ## # ... with 2,111,650 more rows, and 5 more variables: heartrate <int>,
+    ## #   cadence <int>, watts <int>, lat <dbl>, lng <dbl>
 
 # Visualisation
 

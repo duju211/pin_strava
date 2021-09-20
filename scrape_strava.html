@@ -10,7 +10,7 @@
 
 
 
-<meta name="date" content="2021-09-19" />
+<meta name="date" content="2021-09-20" />
 
 <title>Strava Data</title>
 
@@ -178,14 +178,14 @@ pre code {
 
 <h1 class="title toc-ignore">Strava Data</h1>
 <h4 class="author">Julian During</h4>
-<h4 class="date">2021-09-19</h4>
+<h4 class="date">2021-09-20</h4>
 
 </div>
 
 
-<p>I am a vivid runner and cyclist. Since a few years, I’m recording almost all my activities with some kind of GPS device.</p>
+<p>I am a vivid runner and cyclist. Since a couple of years, I’m recording almost all my activities with some kind of GPS device.</p>
 <p>I record my runs with a Garmin device and my bike rides with a Wahoo device. Both accounts get synchronized with my Strava account. I figured that it would be nice to directly access my data from my Strava account.</p>
-<p>In the following text, I will describe the progress to get the data into R. Once available in a nice format in R, the data is stored as a pin in a private github repository. By doing so, the data is easily accessible in other analysis or shiny apps.</p>
+<p>In the following text, I will describe the progress to get the data into R.</p>
 <p>In this analysis, the following packages are used:</p>
 <pre class="r"><code>library(tarchetypes)
 library(conflicted)
@@ -358,7 +358,7 @@ conflict_prefer(&quot;filter&quot;, &quot;dplyr&quot;)</code></pre>
     authorize = &quot;https://www.strava.com/oauth/authorize&quot;,
     access = &quot;https://www.strava.com/oauth/token&quot;)
 }</code></pre>
-<p>The <code>authorize</code> parameter describes the url to send client to for authorization. And the <code>access</code> argument is used to exchange the authenticated token.</p>
+<p>The <code>authorize</code> parameter describes the authorization url. And the <code>access</code> argument is used to exchange the authenticated token.</p>
 <p>The final authentication step. Before the user can execute the following steps, he has to authenticate the api in the web browser.</p>
 <table>
 <thead>
@@ -643,26 +643,25 @@ conflict_prefer(&quot;filter&quot;, &quot;dplyr&quot;)</code></pre>
         .x = latlng, .p = ~ !is.null(.x), .f = ~ .x[, 1]),
       lng = map_if(
         .x = latlng, .p = ~ !is.null(.x), .f = ~ .x[, 2])) %&gt;%
-    select(-latlng) %&gt;%
+    select(-c(latlng, original_size, resolution)) %&gt;%
     unnest(where(is_list))
 }</code></pre>
 <p>After this step every row is one point in time and every column is (if present) a measurement at this point in time.</p>
-<pre><code>## # A tibble: 2,111,660 x 15
-##    series_type original_size resolution id         moving velocity_smooth
-##    &lt;chr&gt;               &lt;int&gt; &lt;chr&gt;      &lt;chr&gt;      &lt;lgl&gt;            &lt;dbl&gt;
-##  1 distance             9045 high       5975328478 FALSE              0  
-##  2 distance             9045 high       5975328478 TRUE               0  
-##  3 distance             9045 high       5975328478 TRUE               0  
-##  4 distance             9045 high       5975328478 TRUE               0  
-##  5 distance             9045 high       5975328478 TRUE               6.9
-##  6 distance             9045 high       5975328478 TRUE               6.9
-##  7 distance             9045 high       5975328478 TRUE               7  
-##  8 distance             9045 high       5975328478 TRUE               7  
-##  9 distance             9045 high       5975328478 TRUE               7  
-## 10 distance             9045 high       5975328478 TRUE               6.9
-## # ... with 2,111,650 more rows, and 9 more variables: grade_smooth &lt;dbl&gt;,
-## #   distance &lt;dbl&gt;, altitude &lt;dbl&gt;, time &lt;int&gt;, heartrate &lt;int&gt;, cadence &lt;int&gt;,
-## #   watts &lt;int&gt;, lat &lt;dbl&gt;, lng &lt;dbl&gt;</code></pre>
+<pre><code>## # A tibble: 2,111,660 x 13
+##    series_type id    moving velocity_smooth grade_smooth distance altitude  time
+##    &lt;chr&gt;       &lt;chr&gt; &lt;lgl&gt;            &lt;dbl&gt;        &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt; &lt;int&gt;
+##  1 distance    5975~ FALSE              0            1.5      0       570.     0
+##  2 distance    5975~ TRUE               0            2        6.7     570.     1
+##  3 distance    5975~ TRUE               0            2.2     13.5     571.     2
+##  4 distance    5975~ TRUE               0            2.9     20.5     571.     3
+##  5 distance    5975~ TRUE               6.9          2.1     27.6     571      4
+##  6 distance    5975~ TRUE               6.9          1.4     34.7     571.     5
+##  7 distance    5975~ TRUE               7            1.4     41.5     571.     6
+##  8 distance    5975~ TRUE               7            0.7     48.4     571.     7
+##  9 distance    5975~ TRUE               7            0.7     55.3     571.     8
+## 10 distance    5975~ TRUE               6.9          1.5     62.2     571.     9
+## # ... with 2,111,650 more rows, and 5 more variables: heartrate &lt;int&gt;,
+## #   cadence &lt;int&gt;, watts &lt;int&gt;, lat &lt;dbl&gt;, lng &lt;dbl&gt;</code></pre>
 </div>
 </div>
 <div id="visualisation" class="section level1">
