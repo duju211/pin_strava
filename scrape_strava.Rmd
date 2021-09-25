@@ -178,7 +178,7 @@ The data now is represented by one row per measurement series:
 tar_read(df_meas_all)
 ```
 
-Turn the data into a wide format so that every activity is one row again:
+Turn the data into a wide format:
 
 ```{r, echo=FALSE}
 knitr::kable(df_manifest[df_manifest$name == "df_meas_wide", ])
@@ -186,6 +186,8 @@ knitr::kable(df_manifest[df_manifest$name == "df_meas_wide", ])
 
 ```{r, code=read_lines("R/meas_wide.R"), eval=FALSE}
 ```
+
+In this format every activity is one row again:
 
 ```{r, echo=FALSE}
 tar_read(df_meas_wide)
