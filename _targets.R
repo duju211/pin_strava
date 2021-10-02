@@ -28,6 +28,7 @@ list(
   tar_target(df_meas_all, bind_rows(df_meas)),
   tar_target(df_meas_wide, meas_wide(df_meas_all)),
   tar_target(df_meas_pro, meas_pro(df_meas_wide)),
+  tar_target(df_meas_norm, meas_norm(df_meas_pro)),
   tar_target(gg_meas, vis_meas(df_meas_pro)),
   tar_target(gg_meas_save, save_gg_meas(gg_meas)),
 
