@@ -304,20 +304,20 @@ of the loop, if there are no more activities to read.
 
 The resulting data frame consists of one row per activity:
 
-    ## # A tibble: 595 x 60
+    ## # A tibble: 596 x 60
     ##    resource_state name  distance moving_time elapsed_time total_elevation~ type 
     ##             <int> <chr>    <dbl>       <int>        <int>            <dbl> <chr>
-    ##  1              2 "Mon~  28069.         4195         6650             391  Ride 
-    ##  2              2 "Aft~  41243.         5962         5962             606. Ride 
-    ##  3              2 "Aut~  51372.         7313         8020             556  Ride 
-    ##  4              2 "Wee~  55641          9037        10610             923. Ride 
-    ##  5              2 "Bre~  43892.         5594         5721             606  Ride 
-    ##  6              2 "Rad~  18244.         3454        35536             300. Ride 
-    ##  7              2 "Sta~  28529.         4214        11105             370  Ride 
-    ##  8              2 "Abe~     26.5           3            3               0  Ride 
-    ##  9              2 "Men~  32175.         9077        16895             996  Ride 
-    ## 10              2 "Boz~  29377.         5411        12836             310  Ride 
-    ## # ... with 585 more rows, and 53 more variables: workout_type <int>, id <dbl>,
+    ##  1              2 "Mit~  33862.         5293         6958             372  Ride 
+    ##  2              2 "Mon~  28069.         4195         6650             391  Ride 
+    ##  3              2 "Aft~  41243.         5962         5962             606. Ride 
+    ##  4              2 "Aut~  51372.         7313         8020             556  Ride 
+    ##  5              2 "Wee~  55641          9037        10610             923. Ride 
+    ##  6              2 "Bre~  43892.         5594         5721             606  Ride 
+    ##  7              2 "Rad~  18244.         3454        35536             300. Ride 
+    ##  8              2 "Sta~  28529.         4214        11105             370  Ride 
+    ##  9              2 "Abe~     26.5           3            3               0  Ride 
+    ## 10              2 "Men~  32175.         9077        16895             996  Ride 
+    ## # ... with 586 more rows, and 53 more variables: workout_type <int>, id <dbl>,
     ## #   external_id <chr>, upload_id <dbl>, start_date <dttm>,
     ## #   start_date_local <chr>, timezone <chr>, utc_offset <dbl>,
     ## #   start_latlng <list>, end_latlng <list>, location_city <lgl>,
@@ -451,20 +451,20 @@ Bind the single targets into one data frame:
 
 The data now is represented by one row per measurement series:
 
-    ## # A tibble: 4,746 x 6
+    ## # A tibble: 4,754 x 6
     ##    type            data              series_type original_size resolution id    
     ##    <chr>           <list>            <chr>               <int> <chr>      <chr> 
-    ##  1 moving          <lgl [4,186]>     distance             4186 high       60382~
-    ##  2 latlng          <dbl [4,186 x 2]> distance             4186 high       60382~
-    ##  3 velocity_smooth <dbl [4,186]>     distance             4186 high       60382~
-    ##  4 grade_smooth    <dbl [4,186]>     distance             4186 high       60382~
-    ##  5 distance        <dbl [4,186]>     distance             4186 high       60382~
-    ##  6 altitude        <dbl [4,186]>     distance             4186 high       60382~
-    ##  7 heartrate       <int [4,186]>     distance             4186 high       60382~
-    ##  8 time            <int [4,186]>     distance             4186 high       60382~
-    ##  9 moving          <lgl [5,811]>     distance             5811 high       60284~
-    ## 10 latlng          <dbl [5,811 x 2]> distance             5811 high       60284~
-    ## # ... with 4,736 more rows
+    ##  1 moving          <lgl [5,281]>     distance             5281 high       60572~
+    ##  2 latlng          <dbl [5,281 x 2]> distance             5281 high       60572~
+    ##  3 velocity_smooth <dbl [5,281]>     distance             5281 high       60572~
+    ##  4 grade_smooth    <dbl [5,281]>     distance             5281 high       60572~
+    ##  5 distance        <dbl [5,281]>     distance             5281 high       60572~
+    ##  6 altitude        <dbl [5,281]>     distance             5281 high       60572~
+    ##  7 heartrate       <int [5,281]>     distance             5281 high       60572~
+    ##  8 time            <int [5,281]>     distance             5281 high       60572~
+    ##  9 moving          <lgl [4,186]>     distance             4186 high       60382~
+    ## 10 latlng          <dbl [4,186 x 2]> distance             4186 high       60382~
+    ## # ... with 4,744 more rows
 
 Turn the data into a wide format:
 
@@ -493,20 +493,20 @@ Turn the data into a wide format:
 
 In this format every activity is one row again:
 
-    ## # A tibble: 595 x 14
+    ## # A tibble: 596 x 14
     ##    series_type original_size resolution id         moving        latlng velocity_smooth
     ##    <chr>               <int> <chr>      <chr>      <list>        <list> <list>         
-    ##  1 distance             4186 high       6038252742 <lgl [4,186]> <dbl ~ <dbl [4,186]>  
-    ##  2 distance             5811 high       6028456784 <lgl [5,811]> <dbl ~ <dbl [5,811]>  
-    ##  3 distance             7262 high       6002615359 <lgl [7,262]> <dbl ~ <dbl [7,262]>  
-    ##  4 distance             9045 high       5975328478 <lgl [9,045]> <dbl ~ <dbl [9,045]>  
-    ##  5 distance             5607 high       5947271836 <lgl [5,607]> <dbl ~ <dbl [5,607]>  
-    ##  6 distance             3460 high       5944515311 <lgl [3,460]> <dbl ~ <dbl [3,460]>  
-    ##  7 distance             4234 high       5936333308 <lgl [4,234]> <dbl ~ <dbl [4,234]>  
-    ##  8 distance                4 high       5936332751 <lgl [4]>     <dbl ~ <dbl [4]>      
-    ##  9 distance             9151 high       5937299994 <lgl [9,151]> <dbl ~ <dbl [9,151]>  
-    ## 10 distance             5551 high       5882522249 <lgl [5,551]> <dbl ~ <dbl [5,551]>  
-    ## # ... with 585 more rows, and 7 more variables: grade_smooth <list>,
+    ##  1 distance             5281 high       6057232328 <lgl [5,281]> <dbl ~ <dbl [5,281]>  
+    ##  2 distance             4186 high       6038252742 <lgl [4,186]> <dbl ~ <dbl [4,186]>  
+    ##  3 distance             5811 high       6028456784 <lgl [5,811]> <dbl ~ <dbl [5,811]>  
+    ##  4 distance             7262 high       6002615359 <lgl [7,262]> <dbl ~ <dbl [7,262]>  
+    ##  5 distance             9045 high       5975328478 <lgl [9,045]> <dbl ~ <dbl [9,045]>  
+    ##  6 distance             5607 high       5947271836 <lgl [5,607]> <dbl ~ <dbl [5,607]>  
+    ##  7 distance             3460 high       5944515311 <lgl [3,460]> <dbl ~ <dbl [3,460]>  
+    ##  8 distance             4234 high       5936333308 <lgl [4,234]> <dbl ~ <dbl [4,234]>  
+    ##  9 distance                4 high       5936332751 <lgl [4]>     <dbl ~ <dbl [4]>      
+    ## 10 distance             9151 high       5937299994 <lgl [9,151]> <dbl ~ <dbl [9,151]>  
+    ## # ... with 586 more rows, and 7 more variables: grade_smooth <list>,
     ## #   distance <list>, altitude <list>, heartrate <list>, time <list>,
     ## #   cadence <list>, watts <list>
 
@@ -540,28 +540,28 @@ Separate the two measurements before unnesting all list columns.
             .x = latlng, .p = ~ !is.null(.x), .f = ~ .x[, 1]),
           lng = map_if(
             .x = latlng, .p = ~ !is.null(.x), .f = ~ .x[, 2])) %>%
-        select(-c(latlng, original_size, resolution)) %>%
+        select(-c(latlng, original_size, resolution, series_type)) %>%
         unnest(where(is_list))
     }
 
 After this step every row is one point in time and every column is (if
 present) a measurement at this point in time.
 
-    ## # A tibble: 2,128,919 x 13
-    ##    series_type id         moving velocity_smooth grade_smooth distance altitude
-    ##    <chr>       <chr>      <lgl>            <dbl>        <dbl>    <dbl>    <dbl>
-    ##  1 distance    6038252742 FALSE              0              0      0       576.
-    ##  2 distance    6038252742 TRUE               0              0      6.3     576.
-    ##  3 distance    6038252742 TRUE               0              0     12.6     576.
-    ##  4 distance    6038252742 TRUE               0              0     19.7     576.
-    ##  5 distance    6038252742 TRUE               6.7            0     26.6     576.
-    ##  6 distance    6038252742 TRUE               6.7            0     33.6     576.
-    ##  7 distance    6038252742 TRUE               6.8            0     40.1     576.
-    ##  8 distance    6038252742 TRUE               6.8            0     46.8     576.
-    ##  9 distance    6038252742 TRUE               6.8            0     53.6     576.
-    ## 10 distance    6038252742 TRUE               6.8            0     60.5     576.
-    ## # ... with 2,128,909 more rows, and 6 more variables: heartrate <int>,
-    ## #   time <int>, cadence <int>, watts <int>, lat <dbl>, lng <dbl>
+    ## # A tibble: 2,134,200 x 12
+    ##    id      moving velocity_smooth grade_smooth distance altitude heartrate  time
+    ##    <chr>   <lgl>            <dbl>        <dbl>    <dbl>    <dbl>     <int> <int>
+    ##  1 605723~ FALSE              0            0        0       585.       137     0
+    ##  2 605723~ TRUE               0            0        4.9     585.       138     1
+    ##  3 605723~ TRUE               0            0.8     10.9     585.       138     2
+    ##  4 605723~ TRUE               0            0.7     18.5     585.       138     3
+    ##  5 605723~ TRUE               6.6          0.7     26.2     586.       137     4
+    ##  6 605723~ TRUE               6.8          1.3     33.9     586.       138     5
+    ##  7 605723~ TRUE               7.3          0.7     41.6     586.       138     6
+    ##  8 605723~ TRUE               7.6          1.3     49.1     586.       138     7
+    ##  9 605723~ TRUE               7.6          1.3     56.5     586.       138     8
+    ## 10 605723~ TRUE               7.5          1.3     63.9     586        139     9
+    ## # ... with 2,134,190 more rows, and 4 more variables: cadence <int>,
+    ## #   watts <int>, lat <dbl>, lng <dbl>
 
 # Visualisation
 
