@@ -93,8 +93,8 @@ package" />
 
 
   <!--  https://schema.org/Article -->
-  <meta property="article:published" itemprop="datePublished" content="2021-10-04" />
-  <meta property="article:created" itemprop="dateCreated" content="2021-10-04" />
+  <meta property="article:published" itemprop="datePublished" content="2021-10-06" />
+  <meta property="article:created" itemprop="dateCreated" content="2021-10-06" />
   <meta name="article:author" content="Julian During" />
 
   <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
@@ -114,7 +114,7 @@ package" />
   <!--radix_placeholder_rmarkdown_metadata-->
 
   <script type="text/json" id="radix-rmarkdown-metadata">
-  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","author","date","output","repository_url","creative_commons"]}},"value":[{"type":"character","attributes":{},"value":["Strava Data"]},{"type":"character","attributes":{},"value":["Article on how to effectively scrape and store Strava data using the `targets`\npackage\n"]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name"]}},"value":[{"type":"character","attributes":{},"value":["Julian During"]}]}]},{"type":"character","attributes":{},"value":["2021-10-04"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["html_document"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["code_folding","theme"]}},"value":[{"type":"character","attributes":{},"value":["hide"]},{"type":"character","attributes":{},"value":["cosmo"]}]}]},{"type":"character","attributes":{},"value":["https://github.com/duju211/pin_strava"]},{"type":"character","attributes":{},"value":["CC BY"]}]}
+  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","author","date","output","repository_url","creative_commons"]}},"value":[{"type":"character","attributes":{},"value":["Strava Data"]},{"type":"character","attributes":{},"value":["Article on how to effectively scrape and store Strava data using the `targets`\npackage\n"]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name"]}},"value":[{"type":"character","attributes":{},"value":["Julian During"]}]}]},{"type":"character","attributes":{},"value":["2021-10-06"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["html_document"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["code_folding","theme"]}},"value":[{"type":"character","attributes":{},"value":["hide"]},{"type":"character","attributes":{},"value":["cosmo"]}]}]},{"type":"character","attributes":{},"value":["https://github.com/duju211/pin_strava"]},{"type":"character","attributes":{},"value":["CC BY"]}]}
   </script>
   <!--/radix_placeholder_rmarkdown_metadata-->
   
@@ -1458,7 +1458,7 @@ package" />
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"Strava Data","description":"Article on how to effectively scrape and store Strava data using the `targets`\npackage","authors":[{"author":"Julian During","authorURL":"#","affiliation":"&nbsp;","affiliationURL":"#","orcidID":""}],"publishedDate":"2021-10-04T00:00:00.000+02:00","citationText":"During, 2021"}
+{"title":"Strava Data","description":"Article on how to effectively scrape and store Strava data using the `targets`\npackage","authors":[{"author":"Julian During","authorURL":"#","affiliation":"&nbsp;","affiliationURL":"#","orcidID":""}],"publishedDate":"2021-10-06T00:00:00.000+02:00","citationText":"During, 2021"}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -1477,7 +1477,7 @@ package" />
 <div class="d-byline">
   Julian During  
   
-<br />2021-10-04
+<br />2021-10-06
 </div>
 
 <div class="d-article">
@@ -1764,27 +1764,27 @@ package" />
 
   <span class="va">df_activities</span> <span class="op">&lt;-</span> <span class="va">act_vec</span> <span class="op">%&gt;%</span>
     <span class="fu">bind_rows</span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
-    <span class="fu">mutate</span><span class="op">(</span>start_date <span class="op">=</span> <span class="fu"><a href="http://lubridate.tidyverse.org/reference/ymd_hms.html">ymd_hms</a></span><span class="op">(</span><span class="va">start_date</span><span class="op">)</span><span class="op">)</span>
+    <span class="fu">mutate</span><span class="op">(</span>start_date <span class="op">=</span> <span class="fu"><a href="https://lubridate.tidyverse.org/reference/ymd_hms.html">ymd_hms</a></span><span class="op">(</span><span class="va">start_date</span><span class="op">)</span><span class="op">)</span>
 <span class="op">}</span>
 </code></pre>
 </div>
 </div>
 <p>The resulting data frame consists of one row per activity:</p>
 <div class="layout-chunk" data-layout="l-body">
-<pre><code># A tibble: 596 x 60
+<pre><code># A tibble: 597 x 60
    resource_state name               distance moving_time elapsed_time
             &lt;int&gt; &lt;chr&gt;                 &lt;dbl&gt;       &lt;int&gt;        &lt;int&gt;
- 1              2 &quot;Mittagsradfahrt&quot;   33862.         5293         6958
- 2              2 &quot;MondayFunday&quot;      28069.         4195         6650
- 3              2 &quot;AfterVote &lt;U+2714&gt;&lt;U+FE0F&gt; &quot;      41243.         5962         5962
- 4              2 &quot;Autumn \U0001f34~  51372.         7313         8020
- 5              2 &quot;Weekend Starter ~  55641          9037        10610
- 6              2 &quot;Brezel \U0001f96~  43892.         5594         5721
- 7              2 &quot;Radfahrt am Mitt~  18244.         3454        35536
- 8              2 &quot;Stausee Backward~  28529.         4214        11105
- 9              2 &quot;Abendradfahrt&quot;        26.5           3            3
-10              2 &quot;Mendel Pass&quot;       32175.         9077        16895
-# ... with 586 more rows, and 55 more variables:
+ 1              2 &quot;Shoe \U0001f45e ~  32580.         5646         6027
+ 2              2 &quot;Mittagsradfahrt&quot;   33862.         5293         6958
+ 3              2 &quot;MondayFunday&quot;      28069.         4195         6650
+ 4              2 &quot;AfterVote &lt;U+2714&gt;&lt;U+FE0F&gt; &quot;      41243.         5962         5962
+ 5              2 &quot;Autumn \U0001f34~  51372.         7313         8020
+ 6              2 &quot;Weekend Starter ~  55641          9037        10610
+ 7              2 &quot;Brezel \U0001f96~  43892.         5594         5721
+ 8              2 &quot;Radfahrt am Mitt~  18244.         3454        35536
+ 9              2 &quot;Stausee Backward~  28529.         4214        11105
+10              2 &quot;Abendradfahrt&quot;        26.5           3            3
+# ... with 587 more rows, and 55 more variables:
 #   total_elevation_gain &lt;dbl&gt;, type &lt;chr&gt;, workout_type &lt;int&gt;,
 #   id &lt;dbl&gt;, external_id &lt;chr&gt;, upload_id &lt;dbl&gt;, start_date &lt;dttm&gt;,
 #   start_date_local &lt;chr&gt;, timezone &lt;chr&gt;, utc_offset &lt;dbl&gt;,
@@ -1917,20 +1917,20 @@ package" />
 </div>
 <p>The data now is represented by one row per measurement series:</p>
 <div class="layout-chunk" data-layout="l-body">
-<pre><code># A tibble: 4,754 x 6
+<pre><code># A tibble: 4,761 x 6
    type            data     series_type original_size resolution id   
    &lt;chr&gt;           &lt;list&gt;   &lt;chr&gt;               &lt;int&gt; &lt;chr&gt;      &lt;chr&gt;
- 1 moving          &lt;lgl [5~ distance             5281 high       6057~
- 2 latlng          &lt;dbl [5~ distance             5281 high       6057~
- 3 velocity_smooth &lt;dbl [5~ distance             5281 high       6057~
- 4 grade_smooth    &lt;dbl [5~ distance             5281 high       6057~
- 5 distance        &lt;dbl [5~ distance             5281 high       6057~
- 6 altitude        &lt;dbl [5~ distance             5281 high       6057~
- 7 heartrate       &lt;int [5~ distance             5281 high       6057~
- 8 time            &lt;int [5~ distance             5281 high       6057~
- 9 moving          &lt;lgl [4~ distance             4186 high       6038~
-10 latlng          &lt;dbl [4~ distance             4186 high       6038~
-# ... with 4,744 more rows</code></pre>
+ 1 moving          &lt;lgl [5~ distance             5587 high       6073~
+ 2 latlng          &lt;dbl [5~ distance             5587 high       6073~
+ 3 velocity_smooth &lt;dbl [5~ distance             5587 high       6073~
+ 4 grade_smooth    &lt;dbl [5~ distance             5587 high       6073~
+ 5 distance        &lt;dbl [5~ distance             5587 high       6073~
+ 6 altitude        &lt;dbl [5~ distance             5587 high       6073~
+ 7 time            &lt;int [5~ distance             5587 high       6073~
+ 8 moving          &lt;lgl [5~ distance             5281 high       6057~
+ 9 latlng          &lt;dbl [5~ distance             5281 high       6057~
+10 velocity_smooth &lt;dbl [5~ distance             5281 high       6057~
+# ... with 4,751 more rows</code></pre>
 </div>
 <p>Turn the data into a wide format:</p>
 <div class="layout-chunk" data-layout="l-body">
@@ -1963,22 +1963,22 @@ package" />
 </div>
 <p>In this format every activity is one row again:</p>
 <div class="layout-chunk" data-layout="l-body">
-<pre><code># A tibble: 596 x 14
+<pre><code># A tibble: 597 x 14
    series_type original_size resolution id         moving    latlng   
    &lt;chr&gt;               &lt;int&gt; &lt;chr&gt;      &lt;chr&gt;      &lt;list&gt;    &lt;list&gt;   
- 1 distance             5281 high       6057232328 &lt;lgl [5,~ &lt;dbl [5,~
- 2 distance             4186 high       6038252742 &lt;lgl [4,~ &lt;dbl [4,~
- 3 distance             5811 high       6028456784 &lt;lgl [5,~ &lt;dbl [5,~
- 4 distance             7262 high       6002615359 &lt;lgl [7,~ &lt;dbl [7,~
- 5 distance             9045 high       5975328478 &lt;lgl [9,~ &lt;dbl [9,~
- 6 distance             5607 high       5947271836 &lt;lgl [5,~ &lt;dbl [5,~
- 7 distance             3460 high       5944515311 &lt;lgl [3,~ &lt;dbl [3,~
- 8 distance             4234 high       5936333308 &lt;lgl [4,~ &lt;dbl [4,~
- 9 distance                4 high       5936332751 &lt;lgl [4]&gt; &lt;dbl [4 ~
-10 distance             9151 high       5937299994 &lt;lgl [9,~ &lt;dbl [9,~
-# ... with 586 more rows, and 8 more variables:
+ 1 distance             5587 high       6073551706 &lt;lgl [5,~ &lt;dbl [5,~
+ 2 distance             5281 high       6057232328 &lt;lgl [5,~ &lt;dbl [5,~
+ 3 distance             4186 high       6038252742 &lt;lgl [4,~ &lt;dbl [4,~
+ 4 distance             5811 high       6028456784 &lt;lgl [5,~ &lt;dbl [5,~
+ 5 distance             7262 high       6002615359 &lt;lgl [7,~ &lt;dbl [7,~
+ 6 distance             9045 high       5975328478 &lt;lgl [9,~ &lt;dbl [9,~
+ 7 distance             5607 high       5947271836 &lt;lgl [5,~ &lt;dbl [5,~
+ 8 distance             3460 high       5944515311 &lt;lgl [3,~ &lt;dbl [3,~
+ 9 distance             4234 high       5936333308 &lt;lgl [4,~ &lt;dbl [4,~
+10 distance                4 high       5936332751 &lt;lgl [4]&gt; &lt;dbl [4 ~
+# ... with 587 more rows, and 8 more variables:
 #   velocity_smooth &lt;list&gt;, grade_smooth &lt;list&gt;, distance &lt;list&gt;,
-#   altitude &lt;list&gt;, heartrate &lt;list&gt;, time &lt;list&gt;, cadence &lt;list&gt;,
+#   altitude &lt;list&gt;, time &lt;list&gt;, heartrate &lt;list&gt;, cadence &lt;list&gt;,
 #   watts &lt;list&gt;</code></pre>
 </div>
 <p>Preprocess and unnest the data. The column <code>latlng</code> needs special attention, because it contains latitude and longitude information. Separate the two measurements before unnesting all list columns.</p>
@@ -2019,22 +2019,21 @@ package" />
 </div>
 <p>After this step every row is one point in time and every column is (if present) a measurement at this point in time.</p>
 <div class="layout-chunk" data-layout="l-body">
-<pre><code># A tibble: 2,134,200 x 12
-   id         moving velocity_smooth grade_smooth distance altitude
-   &lt;chr&gt;      &lt;lgl&gt;            &lt;dbl&gt;        &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
- 1 6057232328 FALSE              0            0        0       585.
- 2 6057232328 TRUE               0            0        4.9     585.
- 3 6057232328 TRUE               0            0.8     10.9     585.
- 4 6057232328 TRUE               0            0.7     18.5     585.
- 5 6057232328 TRUE               6.6          0.7     26.2     586.
- 6 6057232328 TRUE               6.8          1.3     33.9     586.
- 7 6057232328 TRUE               7.3          0.7     41.6     586.
- 8 6057232328 TRUE               7.6          1.3     49.1     586.
- 9 6057232328 TRUE               7.6          1.3     56.5     586.
-10 6057232328 TRUE               7.5          1.3     63.9     586 
-# ... with 2,134,190 more rows, and 6 more variables:
-#   heartrate &lt;int&gt;, time &lt;int&gt;, cadence &lt;int&gt;, watts &lt;int&gt;,
-#   lat &lt;dbl&gt;, lng &lt;dbl&gt;</code></pre>
+<pre><code># A tibble: 2,139,787 x 12
+   id      moving velocity_smooth grade_smooth distance altitude  time
+   &lt;chr&gt;   &lt;lgl&gt;            &lt;dbl&gt;        &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt; &lt;int&gt;
+ 1 607355~ FALSE              0            0        0       554.     0
+ 2 607355~ TRUE               0            0.7      3.3     554.     1
+ 3 607355~ TRUE               3.3          1        6.5     554.     2
+ 4 607355~ TRUE               4.5          1       13.6     555.     3
+ 5 607355~ TRUE               5            0.9     20.1     555.     4
+ 6 607355~ TRUE               4.7          1.1     23.6     555.     5
+ 7 607355~ TRUE               4.9          0.6     27.8     555.     6
+ 8 607355~ TRUE               5            0.5     31.3     555.     7
+ 9 607355~ TRUE               4.7          1       36.9     555.     8
+10 607355~ TRUE               4.4          0.5     42       555.     9
+# ... with 2,139,777 more rows, and 5 more variables:
+#   heartrate &lt;int&gt;, cadence &lt;int&gt;, watts &lt;int&gt;, lat &lt;dbl&gt;, lng &lt;dbl&gt;</code></pre>
 </div>
 <h1 id="visualisation">Visualisation</h1>
 <p>Visualize the final data by displaying the geospatial information in the data. Every facet is one activity. Keep the rest of the plot as minimal as possible.</p>
