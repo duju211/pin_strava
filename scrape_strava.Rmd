@@ -223,6 +223,6 @@ knitr::kable(df_manifest[df_manifest$name == "gg_meas", ])
 ```{r, code=read_lines("R/vis_meas.R"), eval=FALSE}
 ```
 
-```{r, echo=FALSE}
-knitr::include_graphics("gg_meas.png")
+```{r gg_strava, echo=FALSE}
+knitr::include_graphics(tar_read(gg_meas_save))
 ```
