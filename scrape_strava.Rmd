@@ -12,6 +12,7 @@ output:
     theme: cosmo
 repository_url: https://github.com/duju211/pin_strava
 creative_commons: CC BY
+base_url: https://www.datannery.com/posts/strava-data/
 ---
 
 I am a vivid runner and cyclist. Since a couple of years,
