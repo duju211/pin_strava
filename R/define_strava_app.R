@@ -3,7 +3,9 @@ define_strava_app <- function() {
     stop(str_glue(
       "Please set system variables 'STRAVA_KEY' and 'STRAVA_SECRET' before ",
       "continuing. How you can create these variables is described here: ",
-      "https://developers.strava.com/docs/getting-started/"))
+      "https://developers.strava.com/docs/getting-started/. ",
+      "You can set the system variables with the `usethis::edit_r_environ` ",
+      "function."))
 
   oauth_app(
     appname = "r_api",
