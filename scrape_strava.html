@@ -554,8 +554,8 @@ conflict_prefer(&quot;filter&quot;, &quot;dplyr&quot;)</code></pre>
     query = list(
       access_token = access_token,
       keys = str_glue(
-        &quot;distance,time,latlng,altitude,velocity_smooth,heartrate,cadence,watts,
-        temp,moving,grade_smooth&quot;))) %&gt;%
+        &quot;distance,time,latlng,altitude,velocity_smooth,heartrate,cadence,&quot;,
+        &quot;watts,temp,moving,grade_smooth&quot;))) %&gt;%
     GET()
 
   stop_for_status(r)

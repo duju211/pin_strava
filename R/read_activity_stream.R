@@ -8,8 +8,8 @@ read_activity_stream <- function(id, sig) {
     query = list(
       access_token = access_token,
       keys = str_glue(
-        "distance,time,latlng,altitude,velocity_smooth,heartrate,cadence,watts,
-        temp,moving,grade_smooth"))) %>%
+        "distance,time,latlng,altitude,velocity_smooth,heartrate,cadence,",
+        "watts,temp,moving,grade_smooth"))) %>%
     GET()
 
   stop_for_status(r)

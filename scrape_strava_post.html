@@ -1650,14 +1650,14 @@ package" />
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class="va">define_strava_app</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="op">{</span>
   <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html">Sys.getenv</a></span><span class="op">(</span><span class="st">&quot;STRAVA_KEY&quot;</span><span class="op">)</span> <span class="op">==</span> <span class="st">&quot;&quot;</span> <span class="op">|</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html">Sys.getenv</a></span><span class="op">(</span><span class="st">&quot;STRAVA_SECRET&quot;</span><span class="op">)</span> <span class="op">==</span> <span class="st">&quot;&quot;</span><span class="op">)</span>
-    <span class="kw"><a href="https://rdrr.io/r/base/stop.html">stop</a></span><span class="op">(</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_glue.html">str_glue</a></span><span class="op">(</span>
+    <span class="kw"><a href="https://rdrr.io/r/base/stop.html">stop</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/stringr/man/str_glue.html">str_glue</a></span><span class="op">(</span>
       <span class="st">&quot;Please set system variables &#39;STRAVA_KEY&#39; and &#39;STRAVA_SECRET&#39; before &quot;</span>,
       <span class="st">&quot;continuing. How you can create these variables is described here: &quot;</span>,
       <span class="st">&quot;https://developers.strava.com/docs/getting-started/. &quot;</span>,
       <span class="st">&quot;You can set the system variables with the `usethis::edit_r_environ` &quot;</span>,
       <span class="st">&quot;function.&quot;</span><span class="op">)</span><span class="op">)</span>
 
-  <span class="fu"><a href="https://httr.r-lib.org/reference/oauth_app.html">oauth_app</a></span><span class="op">(</span>
+  <span class="fu"><a href="https://rdrr.io/pkg/httr/man/oauth_app.html">oauth_app</a></span><span class="op">(</span>
     appname <span class="op">=</span> <span class="st">&quot;r_api&quot;</span>,
     key <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html">Sys.getenv</a></span><span class="op">(</span><span class="st">&quot;STRAVA_KEY&quot;</span><span class="op">)</span>,
     secret <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html">Sys.getenv</a></span><span class="op">(</span><span class="st">&quot;STRAVA_SECRET&quot;</span><span class="op">)</span><span class="op">)</span>
@@ -1690,7 +1690,7 @@ package" />
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class="va">define_strava_endpoint</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="op">{</span>
-  <span class="fu"><a href="https://httr.r-lib.org/reference/oauth_endpoint.html">oauth_endpoint</a></span><span class="op">(</span>
+  <span class="fu"><a href="https://rdrr.io/pkg/httr/man/oauth_endpoint.html">oauth_endpoint</a></span><span class="op">(</span>
     request <span class="op">=</span> <span class="cn">NULL</span>,
     authorize <span class="op">=</span> <span class="st">&quot;https://www.strava.com/oauth/authorize&quot;</span>,
     access <span class="op">=</span> <span class="st">&quot;https://www.strava.com/oauth/token&quot;</span><span class="op">)</span>
@@ -1723,7 +1723,7 @@ package" />
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class="va">define_strava_sig</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">endpoint</span>, <span class="va">app</span><span class="op">)</span> <span class="op">{</span>
-  <span class="fu"><a href="https://httr.r-lib.org/reference/oauth2.0_token.html">oauth2.0_token</a></span><span class="op">(</span>
+  <span class="fu"><a href="https://rdrr.io/pkg/httr/man/oauth2.0_token.html">oauth2.0_token</a></span><span class="op">(</span>
     <span class="va">endpoint</span>, <span class="va">app</span>,
     scope <span class="op">=</span> <span class="st">&quot;activity:read_all,activity:read,profile:read_all&quot;</span>,
     type <span class="op">=</span> <span class="cn">NULL</span>, use_oob <span class="op">=</span> <span class="cn">FALSE</span>, as_header <span class="op">=</span> <span class="cn">FALSE</span>,
@@ -1758,32 +1758,32 @@ package" />
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class="va">read_all_activities</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">sig</span><span class="op">)</span> <span class="op">{</span>
-  <span class="va">activities_url</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://httr.r-lib.org/reference/parse_url.html">parse_url</a></span><span class="op">(</span>
+  <span class="va">activities_url</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/httr/man/parse_url.html">parse_url</a></span><span class="op">(</span>
     <span class="st">&quot;https://www.strava.com/api/v3/athlete/activities&quot;</span><span class="op">)</span>
 
   <span class="va">act_vec</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html">vector</a></span><span class="op">(</span>mode <span class="op">=</span> <span class="st">&quot;list&quot;</span><span class="op">)</span>
-  <span class="va">df_act</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span>init <span class="op">=</span> <span class="st">&quot;init&quot;</span><span class="op">)</span>
+  <span class="va">df_act</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/tibble/man/tibble.html">tibble</a></span><span class="op">(</span>init <span class="op">=</span> <span class="st">&quot;init&quot;</span><span class="op">)</span>
   <span class="va">i</span> <span class="op">&lt;-</span> <span class="fl">1L</span>
 
   <span class="kw">while</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">df_act</span><span class="op">)</span> <span class="op">!=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span>
-    <span class="va">r</span> <span class="op">&lt;-</span> <span class="va">activities_url</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-      <span class="fu"><a href="https://httr.r-lib.org/reference/modify_url.html">modify_url</a></span><span class="op">(</span>
+    <span class="va">r</span> <span class="op">&lt;-</span> <span class="va">activities_url</span> <span class="op"><a href="https://rdrr.io/pkg/magrittr/man/pipe.html">%&gt;%</a></span>
+      <span class="fu"><a href="https://rdrr.io/pkg/httr/man/modify_url.html">modify_url</a></span><span class="op">(</span>
         query <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>
           access_token <span class="op">=</span> <span class="va">sig</span><span class="op">$</span><span class="va">credentials</span><span class="op">$</span><span class="va">access_token</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>,
-          page <span class="op">=</span> <span class="va">i</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-      <span class="fu"><a href="https://httr.r-lib.org/reference/GET.html">GET</a></span><span class="op">(</span><span class="op">)</span>
+          page <span class="op">=</span> <span class="va">i</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/pkg/magrittr/man/pipe.html">%&gt;%</a></span>
+      <span class="fu"><a href="https://rdrr.io/pkg/httr/man/GET.html">GET</a></span><span class="op">(</span><span class="op">)</span>
 
-    <span class="va">df_act</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://httr.r-lib.org/reference/content.html">content</a></span><span class="op">(</span><span class="va">r</span>, as <span class="op">=</span> <span class="st">&quot;text&quot;</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-      <span class="fu"><a href="https://rdrr.io/pkg/jsonlite/man/fromJSON.html">fromJSON</a></span><span class="op">(</span>flatten <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-      <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span><span class="op">(</span><span class="op">)</span>
+    <span class="va">df_act</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/httr/man/content.html">content</a></span><span class="op">(</span><span class="va">r</span>, as <span class="op">=</span> <span class="st">&quot;text&quot;</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/pkg/magrittr/man/pipe.html">%&gt;%</a></span>
+      <span class="fu"><a href="https://rdrr.io/pkg/jsonlite/man/fromJSON.html">fromJSON</a></span><span class="op">(</span>flatten <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/pkg/magrittr/man/pipe.html">%&gt;%</a></span>
+      <span class="fu"><a href="https://rdrr.io/pkg/tibble/man/as_tibble.html">as_tibble</a></span><span class="op">(</span><span class="op">)</span>
     <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">df_act</span><span class="op">)</span> <span class="op">!=</span> <span class="fl">0</span><span class="op">)</span>
       <span class="va">act_vec</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">df_act</span>
     <span class="va">i</span> <span class="op">&lt;-</span> <span class="va">i</span> <span class="op">+</span> <span class="fl">1L</span>
   <span class="op">}</span>
 
-  <span class="va">act_vec</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind.html">bind_rows</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>start_date <span class="op">=</span> <span class="fu"><a href="https://lubridate.tidyverse.org/reference/ymd_hms.html">ymd_hms</a></span><span class="op">(</span><span class="va">start_date</span><span class="op">)</span><span class="op">)</span>
+  <span class="va">act_vec</span> <span class="op"><a href="https://rdrr.io/pkg/magrittr/man/pipe.html">%&gt;%</a></span>
+    <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/bind.html">bind_rows</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/pkg/magrittr/man/pipe.html">%&gt;%</a></span>
+    <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/mutate.html">mutate</a></span><span class="op">(</span>start_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/lubridate/man/ymd_hms.html">ymd_hms</a></span><span class="op">(</span><span class="va">start_date</span><span class="op">)</span><span class="op">)</span>
 <span class="op">}</span>
 </code></pre>
 </div>
@@ -1835,9 +1835,9 @@ package" />
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class="va">pre_process_act</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">df_act_raw</span>, <span class="va">athlete_id</span><span class="op">)</span> <span class="op">{</span>
-  <span class="va">df_act_raw</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/across.html">across</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html">contains</a></span><span class="op">(</span><span class="st">&quot;id&quot;</span><span class="op">)</span>, <span class="va">as.character</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html">rename</a></span><span class="op">(</span>athlete_id <span class="op">=</span> <span class="va">`athlete.id`</span><span class="op">)</span>
+  <span class="va">df_act_raw</span> <span class="op"><a href="https://rdrr.io/pkg/magrittr/man/pipe.html">%&gt;%</a></span>
+    <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/mutate.html">mutate</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/across.html">across</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/tidyselect/man/starts_with.html">contains</a></span><span class="op">(</span><span class="st">&quot;id&quot;</span><span class="op">)</span>, <span class="va">as.character</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/pkg/magrittr/man/pipe.html">%&gt;%</a></span>
+    <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/rename.html">rename</a></span><span class="op">(</span>athlete_id <span class="op">=</span> <span class="va">`athlete.id`</span><span class="op">)</span>
 <span class="op">}</span>
 </code></pre>
 </div>
@@ -1889,24 +1889,24 @@ package" />
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class="va">read_activity_stream</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">id</span>, <span class="va">sig</span><span class="op">)</span> <span class="op">{</span>
-  <span class="va">act_url</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://httr.r-lib.org/reference/parse_url.html">parse_url</a></span><span class="op">(</span><span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_glue.html">str_glue</a></span><span class="op">(</span>
+  <span class="va">act_url</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/httr/man/parse_url.html">parse_url</a></span><span class="op">(</span><span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/stringr/man/str_glue.html">str_glue</a></span><span class="op">(</span>
     <span class="st">&quot;https://www.strava.com/api/v3/activities/{id}/streams&quot;</span><span class="op">)</span><span class="op">)</span>
   <span class="va">access_token</span> <span class="op">&lt;-</span> <span class="va">sig</span><span class="op">$</span><span class="va">credentials</span><span class="op">$</span><span class="va">access_token</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>
 
-  <span class="va">r</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://httr.r-lib.org/reference/modify_url.html">modify_url</a></span><span class="op">(</span>
+  <span class="va">r</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/httr/man/modify_url.html">modify_url</a></span><span class="op">(</span>
     <span class="va">act_url</span>,
     query <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>
       access_token <span class="op">=</span> <span class="va">access_token</span>,
-      keys <span class="op">=</span> <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_glue.html">str_glue</a></span><span class="op">(</span>
-        <span class="st">&quot;distance,time,latlng,altitude,velocity_smooth,heartrate,cadence,watts,
-        temp,moving,grade_smooth&quot;</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-    <span class="fu"><a href="https://httr.r-lib.org/reference/GET.html">GET</a></span><span class="op">(</span><span class="op">)</span>
+      keys <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/stringr/man/str_glue.html">str_glue</a></span><span class="op">(</span>
+        <span class="st">&quot;distance,time,latlng,altitude,velocity_smooth,heartrate,cadence,&quot;</span>,
+        <span class="st">&quot;watts,temp,moving,grade_smooth&quot;</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/pkg/magrittr/man/pipe.html">%&gt;%</a></span>
+    <span class="fu"><a href="https://rdrr.io/pkg/httr/man/GET.html">GET</a></span><span class="op">(</span><span class="op">)</span>
 
-  <span class="fu"><a href="https://httr.r-lib.org/reference/stop_for_status.html">stop_for_status</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span>
+  <span class="fu"><a href="https://rdrr.io/pkg/httr/man/stop_for_status.html">stop_for_status</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span>
 
-  <span class="fu"><a href="https://rdrr.io/pkg/jsonlite/man/fromJSON.html">fromJSON</a></span><span class="op">(</span><span class="fu"><a href="https://httr.r-lib.org/reference/content.html">content</a></span><span class="op">(</span><span class="va">r</span>, as <span class="op">=</span> <span class="st">&quot;text&quot;</span><span class="op">)</span>, flatten <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-    <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>id <span class="op">=</span> <span class="va">id</span><span class="op">)</span>
+  <span class="fu"><a href="https://rdrr.io/pkg/jsonlite/man/fromJSON.html">fromJSON</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/httr/man/content.html">content</a></span><span class="op">(</span><span class="va">r</span>, as <span class="op">=</span> <span class="st">&quot;text&quot;</span><span class="op">)</span>, flatten <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/pkg/magrittr/man/pipe.html">%&gt;%</a></span>
+    <span class="fu"><a href="https://rdrr.io/pkg/tibble/man/as_tibble.html">as_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/pkg/magrittr/man/pipe.html">%&gt;%</a></span>
+    <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/mutate.html">mutate</a></span><span class="op">(</span>id <span class="op">=</span> <span class="va">id</span><span class="op">)</span>
 <span class="op">}</span>
 </code></pre>
 </div>
@@ -1974,7 +1974,7 @@ package" />
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class="va">meas_wide</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">df_meas</span><span class="op">)</span> <span class="op">{</span>
-  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_wider.html">pivot_wider</a></span><span class="op">(</span><span class="va">df_meas</span>, names_from <span class="op">=</span> <span class="va">type</span>, values_from <span class="op">=</span> <span class="va">data</span><span class="op">)</span>
+  <span class="fu"><a href="https://rdrr.io/pkg/tidyr/man/pivot_wider.html">pivot_wider</a></span><span class="op">(</span><span class="va">df_meas</span>, names_from <span class="op">=</span> <span class="va">type</span>, values_from <span class="op">=</span> <span class="va">data</span><span class="op">)</span>
 <span class="op">}</span>
 </code></pre>
 </div>
@@ -2023,14 +2023,14 @@ package" />
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class="va">meas_pro</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">df_meas_wide</span><span class="op">)</span> <span class="op">{</span>
-  <span class="va">df_meas_wide</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>
+  <span class="va">df_meas_wide</span> <span class="op"><a href="https://rdrr.io/pkg/magrittr/man/pipe.html">%&gt;%</a></span>
+    <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/mutate.html">mutate</a></span><span class="op">(</span>
       lat <span class="op">=</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map_if.html">map_if</a></span><span class="op">(</span>
         .x <span class="op">=</span> <span class="va">latlng</span>, .p <span class="op">=</span> <span class="op">~</span> <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html">is.null</a></span><span class="op">(</span><span class="va">.x</span><span class="op">)</span>, .f <span class="op">=</span> <span class="op">~</span> <span class="va">.x</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span><span class="op">)</span>,
       lng <span class="op">=</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map_if.html">map_if</a></span><span class="op">(</span>
-        .x <span class="op">=</span> <span class="va">latlng</span>, .p <span class="op">=</span> <span class="op">~</span> <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html">is.null</a></span><span class="op">(</span><span class="va">.x</span><span class="op">)</span>, .f <span class="op">=</span> <span class="op">~</span> <span class="va">.x</span><span class="op">[</span>, <span class="fl">2</span><span class="op">]</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">latlng</span>, <span class="va">original_size</span>, <span class="va">resolution</span>, <span class="va">series_type</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-    <span class="fu"><a href="https://tidyr.tidyverse.org/reference/nest.html">unnest</a></span><span class="op">(</span><span class="fu">where</span><span class="op">(</span><span class="va">is_list</span><span class="op">)</span><span class="op">)</span>
+        .x <span class="op">=</span> <span class="va">latlng</span>, .p <span class="op">=</span> <span class="op">~</span> <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html">is.null</a></span><span class="op">(</span><span class="va">.x</span><span class="op">)</span>, .f <span class="op">=</span> <span class="op">~</span> <span class="va">.x</span><span class="op">[</span>, <span class="fl">2</span><span class="op">]</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/pkg/magrittr/man/pipe.html">%&gt;%</a></span>
+    <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/select.html">select</a></span><span class="op">(</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">latlng</span>, <span class="va">original_size</span>, <span class="va">resolution</span>, <span class="va">series_type</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/pkg/magrittr/man/pipe.html">%&gt;%</a></span>
+    <span class="fu"><a href="https://rdrr.io/pkg/tidyr/man/nest.html">unnest</a></span><span class="op">(</span><span class="fu">where</span><span class="op">(</span><span class="va">is_list</span><span class="op">)</span><span class="op">)</span>
 <span class="op">}</span>
 </code></pre>
 </div>
@@ -2079,8 +2079,8 @@ package" />
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class="va">vis_meas</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">df_meas_pro</span><span class="op">)</span> <span class="op">{</span>
-  <span class="va">df_meas_pro</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">lat</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
+  <span class="va">df_meas_pro</span> <span class="op"><a href="https://rdrr.io/pkg/magrittr/man/pipe.html">%&gt;%</a></span>
+    <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/filter.html">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">lat</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/pkg/magrittr/man/pipe.html">%&gt;%</a></span>
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">lng</span>, y <span class="op">=</span> <span class="va">lat</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_path</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html">facet_wrap</a></span><span class="op">(</span><span class="op">~</span> <span class="va">id</span>, scales <span class="op">=</span> <span class="st">&quot;free&quot;</span><span class="op">)</span> <span class="op">+</span>
