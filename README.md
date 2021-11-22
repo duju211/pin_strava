@@ -117,8 +117,8 @@ The manifest of the target plan looks like this:
 <td style="text-align: left;">thorough</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">gg_meas</td>
-<td style="text-align: left;">vis_meas(df_meas_pro)</td>
+<td style="text-align: left;">df_meas_rel</td>
+<td style="text-align: left;">meas_rel(df_act, df_meas_pro)</td>
 <td style="text-align: left;">NA</td>
 <td style="text-align: left;">thorough</td>
 </tr>
@@ -129,6 +129,12 @@ The manifest of the target plan looks like this:
 <td style="text-align: left;">thorough</td>
 </tr>
 <tr class="even">
+<td style="text-align: left;">gg_meas</td>
+<td style="text-align: left;">vis_meas(df_meas_rel)</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">thorough</td>
+</tr>
+<tr class="odd">
 <td style="text-align: left;">gg_meas_save</td>
 <td style="text-align: left;">save_gg_meas(gg_meas)</td>
 <td style="text-align: left;">NA</td>
@@ -589,7 +595,7 @@ as possible.
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">gg_meas</td>
-<td style="text-align: left;">vis_meas(df_meas_pro)</td>
+<td style="text-align: left;">vis_meas(df_meas_rel)</td>
 <td style="text-align: left;">NA</td>
 <td style="text-align: left;">thorough</td>
 </tr>
