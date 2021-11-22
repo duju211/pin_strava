@@ -22,7 +22,7 @@ read_all_activities <- function(sig) {
     i <- i + 1L
   }
 
-  df_activities <- act_vec %>%
+  act_vec %>%
     bind_rows() %>%
     mutate(start_date = ymd_hms(start_date))
 }

@@ -312,7 +312,7 @@ of the loop, if there are no more activities to read.
         i <- i + 1L
       }
 
-      df_activities <- act_vec %>%
+      act_vec %>%
         bind_rows() %>%
         mutate(start_date = ymd_hms(start_date))
     }
@@ -363,7 +363,7 @@ characters and improve the column names:
 </table>
 
     pre_process_act <- function(df_act_raw, athlete_id) {
-      df_act <- df_act_raw %>%
+      df_act_raw %>%
         mutate(across(contains("id"), as.character)) %>%
         rename(athlete_id = `athlete.id`)
     }
@@ -563,7 +563,7 @@ present) a measurement at this point in time.
 
     ## # A tibble: 2,185,807 x 12
     ##    id      moving velocity_smooth grade_smooth distance altitude heartrate  time
-    ##    <chr>   <lgl>            <dbl>        <dbl>    <dbl>    <dbl>     <dbl> <dbl>
+    ##    <chr>   <lgl>            <dbl>        <dbl>    <dbl>    <dbl>     <int> <int>
     ##  1 628943~ FALSE             0               0      0       539.       118     0
     ##  2 628943~ TRUE              0               0      3.3     539.       118     1
     ##  3 628943~ TRUE              0               0      9.9     539.       118     2
@@ -574,8 +574,8 @@ present) a measurement at this point in time.
     ##  8 628943~ TRUE              5.89            0     39.3     539.       118     7
     ##  9 628943~ TRUE              5.83            0     45.2     539.       119     8
     ## 10 628943~ TRUE              5.88            0     51.1     539.       119     9
-    ## # ... with 2,185,797 more rows, and 4 more variables: cadence <dbl>,
-    ## #   watts <dbl>, lat <dbl>, lng <dbl>
+    ## # ... with 2,185,797 more rows, and 4 more variables: cadence <int>,
+    ## #   watts <int>, lat <dbl>, lng <dbl>
 
 # Visualisation
 
