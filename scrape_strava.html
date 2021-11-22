@@ -334,6 +334,12 @@ conflict_prefer(&quot;filter&quot;, &quot;dplyr&quot;)</code></pre>
 </tbody>
 </table>
 <pre class="r"><code>define_strava_app &lt;- function() {
+  if (Sys.getenv(&quot;STRAVA_KEY&quot;) == &quot;&quot; | Sys.getenv(&quot;STRAVA_SECRET&quot;) == &quot;&quot;)
+    stop(str_glue(
+      &quot;Please set system variables &#39;STRAVA_KEY&#39; and &#39;STRAVA_SECRET&#39; before &quot;,
+      &quot;continuing. How you can create these variables is described here: &quot;,
+      &quot;https://developers.strava.com/docs/getting-started/&quot;))
+
   oauth_app(
     appname = &quot;r_api&quot;,
     key = Sys.getenv(&quot;STRAVA_KEY&quot;),

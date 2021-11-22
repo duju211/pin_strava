@@ -1643,6 +1643,12 @@ package" />
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class="va">define_strava_app</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="op">{</span>
+  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html">Sys.getenv</a></span><span class="op">(</span><span class="st">&quot;STRAVA_KEY&quot;</span><span class="op">)</span> <span class="op">==</span> <span class="st">&quot;&quot;</span> <span class="op">|</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html">Sys.getenv</a></span><span class="op">(</span><span class="st">&quot;STRAVA_SECRET&quot;</span><span class="op">)</span> <span class="op">==</span> <span class="st">&quot;&quot;</span><span class="op">)</span>
+    <span class="kw"><a href="https://rdrr.io/r/base/stop.html">stop</a></span><span class="op">(</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_glue.html">str_glue</a></span><span class="op">(</span>
+      <span class="st">&quot;Please set system variables &#39;STRAVA_KEY&#39; and &#39;STRAVA_SECRET&#39; before &quot;</span>,
+      <span class="st">&quot;continuing. How you can create these variables is described here: &quot;</span>,
+      <span class="st">&quot;https://developers.strava.com/docs/getting-started/&quot;</span><span class="op">)</span><span class="op">)</span>
+
   <span class="fu"><a href="https://httr.r-lib.org/reference/oauth_app.html">oauth_app</a></span><span class="op">(</span>
     appname <span class="op">=</span> <span class="st">&quot;r_api&quot;</span>,
     key <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html">Sys.getenv</a></span><span class="op">(</span><span class="st">&quot;STRAVA_KEY&quot;</span><span class="op">)</span>,
