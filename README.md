@@ -175,7 +175,9 @@ Create an OAuth Strava app:
         stop(str_glue(
           "Please set system variables 'STRAVA_KEY' and 'STRAVA_SECRET' before ",
           "continuing. How you can create these variables is described here: ",
-          "https://developers.strava.com/docs/getting-started/"))
+          "https://developers.strava.com/docs/getting-started/. ",
+          "You can set the system variables with the `usethis::edit_r_environ` ",
+          "function."))
 
       oauth_app(
         appname = "r_api",
@@ -356,9 +358,8 @@ characters and improve the column names:
 
     pre_process_act <- function(df_act_raw, athlete_id) {
       df_act <- df_act_raw %>%
-        mutate(
-          across(contains("id"), as.character),
-          `athlete.id` = athlete_id)
+        mutate(across(contains("id"), as.character)) %>%
+        rename(athlete_id = `athlete.id`)
     }
 
 Extract all ids of the activities:
@@ -556,7 +557,7 @@ present) a measurement at this point in time.
 
     ## # A tibble: 2,185,807 x 12
     ##    id      moving velocity_smooth grade_smooth distance altitude heartrate  time
-    ##    <chr>   <lgl>            <dbl>        <dbl>    <dbl>    <dbl>     <int> <int>
+    ##    <chr>   <lgl>            <dbl>        <dbl>    <dbl>    <dbl>     <dbl> <dbl>
     ##  1 628943~ FALSE             0               0      0       539.       118     0
     ##  2 628943~ TRUE              0               0      3.3     539.       118     1
     ##  3 628943~ TRUE              0               0      9.9     539.       118     2
@@ -567,8 +568,8 @@ present) a measurement at this point in time.
     ##  8 628943~ TRUE              5.89            0     39.3     539.       118     7
     ##  9 628943~ TRUE              5.83            0     45.2     539.       119     8
     ## 10 628943~ TRUE              5.88            0     51.1     539.       119     9
-    ## # ... with 2,185,797 more rows, and 4 more variables: cadence <int>,
-    ## #   watts <int>, lat <dbl>, lng <dbl>
+    ## # ... with 2,185,797 more rows, and 4 more variables: cadence <dbl>,
+    ## #   watts <dbl>, lat <dbl>, lng <dbl>
 
 # Visualisation
 
