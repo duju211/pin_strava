@@ -1,4 +1,4 @@
-read_all_activities <- function(sig) {
+read_all_activities <- function(sig, active_user_id) {
   activities_url <- parse_url(
     "https://www.strava.com/api/v3/athlete/activities")
 
@@ -24,5 +24,6 @@ read_all_activities <- function(sig) {
 
   act_vec %>%
     bind_rows() %>%
-    mutate(start_date = ymd_hms(start_date))
+    mutate(
+      start_date = ymd_hms(start_date), active_user_id = active_user_id)
 }

@@ -3,7 +3,6 @@ source("libraries.R")
 walk(dir_ls("R"), source)
 
 list(
-  tar_target(athlete_id, "26845822"),
   tar_target(act_col_types, list(
     moving = col_logical(), velocity_smooth = col_number(),
     grade_smooth = col_number(), distance = col_number(),
@@ -17,8 +16,11 @@ list(
     my_sig, define_strava_sig(my_endpoint, my_app),
     cue = tar_cue(mode = "always")),
   tar_target(df_active_user, active_user(my_sig)),
-  tar_target(df_act_raw, read_all_activities(my_sig)),
-  tar_target(df_act, pre_process_act(df_act_raw, athlete_id)),
+  tar_target(active_user_id, first(pull(df_active_user, id))),
+  tar_target(
+    df_act_raw, read_all_activities(my_sig, active_user_id),
+    pattern = map(active_user_id)),
+  tar_target(df_act, pre_process_act(df_act_raw)),
   tar_target(act_ids, pull(distinct(df_act, id))),
 
   # Dynamic branching
