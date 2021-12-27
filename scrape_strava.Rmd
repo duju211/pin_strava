@@ -130,9 +130,29 @@ The information in `my_sig` can now be used to access Strava data.
 Set the `cue_mode` of the target to ‘always’ so that the following API calls
 are always executed with an up-to-date authorization token.
 
-## Activities
+## Current authenticated user
 
-You are now authenticated and can directly access your Strava data.
+Get the currently authenticated user.
+The columns
+`r glue_collapse(tar_read(user_list_cols), sep = ", ", last = " and ")` are
+nested lists and need special attention.
+
+```{r, echo=FALSE}
+knitr::kable(df_manifest[df_manifest$name == "df_active_user", ])
+```
+
+```{r, code=read_lines("R/active_user.R"), eval=FALSE}
+```
+
+In the end there is a data frame with one row for the currently authenticated
+user:
+
+```{r, echo=FALSE}
+tar_read(df_active_user)
+```
+
+
+## Activities
 
 Load a data frame that gives an overview of all the activities from the data.
 Because the total number of activities is unknown, use a while loop.

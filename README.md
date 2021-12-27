@@ -21,6 +21,7 @@ You will need the following packages:
     library(httr)
     library(pins)
     library(httr)
+    library(glue)
     library(fs)
 
     conflict_prefer("filter", "dplyr")
@@ -59,102 +60,108 @@ The manifest of the target plan looks like this:
 </thead>
 <tbody>
 <tr class="odd">
+<td style="text-align: left;">user_list_cols</td>
+<td style="text-align: left;">c(“shoes”, “clubs”, “bikes”)</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">thorough</td>
+</tr>
+<tr class="even">
 <td style="text-align: left;">my_app</td>
 <td style="text-align: left;">define_strava_app()</td>
 <td style="text-align: left;">NA</td>
 <td style="text-align: left;">thorough</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">my_endpoint</td>
 <td style="text-align: left;">define_strava_endpoint()</td>
 <td style="text-align: left;">NA</td>
 <td style="text-align: left;">thorough</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">act_col_types</td>
 <td style="text-align: left;">list(moving = col_logical(), velocity_smooth = col_number(), grade_smooth = col_number(), distance = col_number(), altitude = col_number(), heartrate = col_integer(), time = col_integer(), lat = col_number(), lng = col_number(), cadence = col_integer(), watts = col_integer())</td>
 <td style="text-align: left;">NA</td>
 <td style="text-align: left;">thorough</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">my_sig</td>
 <td style="text-align: left;">define_strava_sig(my_endpoint, my_app)</td>
 <td style="text-align: left;">NA</td>
 <td style="text-align: left;">always</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">df_active_user</td>
-<td style="text-align: left;">active_user(my_sig)</td>
+<td style="text-align: left;">active_user(my_sig, user_list_cols)</td>
 <td style="text-align: left;">NA</td>
 <td style="text-align: left;">thorough</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">active_user_id</td>
 <td style="text-align: left;">first(pull(df_active_user, id))</td>
 <td style="text-align: left;">NA</td>
 <td style="text-align: left;">thorough</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">df_act_raw</td>
 <td style="text-align: left;">read_all_activities(my_sig, active_user_id)</td>
 <td style="text-align: left;">map(active_user_id)</td>
 <td style="text-align: left;">thorough</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">df_act</td>
 <td style="text-align: left;">pre_process_act(df_act_raw)</td>
 <td style="text-align: left;">NA</td>
 <td style="text-align: left;">thorough</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">act_ids</td>
 <td style="text-align: left;">pull(distinct(df_act, id))</td>
 <td style="text-align: left;">NA</td>
 <td style="text-align: left;">thorough</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">df_meas</td>
 <td style="text-align: left;">read_activity_stream(act_ids, my_sig)</td>
 <td style="text-align: left;">map(act_ids)</td>
 <td style="text-align: left;">never</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">df_meas_all</td>
 <td style="text-align: left;">bind_rows(df_meas)</td>
 <td style="text-align: left;">NA</td>
 <td style="text-align: left;">thorough</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">df_meas_wide</td>
 <td style="text-align: left;">meas_wide(df_meas_all)</td>
 <td style="text-align: left;">NA</td>
 <td style="text-align: left;">thorough</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">df_meas_pro</td>
 <td style="text-align: left;">meas_pro(df_meas_wide)</td>
 <td style="text-align: left;">NA</td>
 <td style="text-align: left;">thorough</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">gg_meas</td>
 <td style="text-align: left;">vis_meas(df_meas_pro)</td>
 <td style="text-align: left;">NA</td>
 <td style="text-align: left;">thorough</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">df_meas_rel</td>
 <td style="text-align: left;">meas_rel(df_act, df_meas_pro)</td>
 <td style="text-align: left;">NA</td>
 <td style="text-align: left;">thorough</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">df_meas_norm</td>
 <td style="text-align: left;">meas_norm(df_meas_pro)</td>
 <td style="text-align: left;">NA</td>
 <td style="text-align: left;">thorough</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">gg_meas_save</td>
 <td style="text-align: left;">save_gg_meas(gg_meas)</td>
 <td style="text-align: left;">NA</td>
@@ -292,9 +299,71 @@ The information in `my_sig` can now be used to access Strava data. Set
 the `cue_mode` of the target to ‘always’ so that the following API calls
 are always executed with an up-to-date authorization token.
 
-## Activities
+## Current authenticated user
 
-You are now authenticated and can directly access your Strava data.
+Get the currently authenticated user. The columns shoes, clubs and bikes
+are nested lists and need special attention.
+
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">name</th>
+<th style="text-align: left;">command</th>
+<th style="text-align: left;">pattern</th>
+<th style="text-align: left;">cue_mode</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">df_active_user</td>
+<td style="text-align: left;">active_user(my_sig, user_list_cols)</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">thorough</td>
+</tr>
+</tbody>
+</table>
+
+    active_user <- function(sig, user_list_cols) {
+      athlete_url <- parse_url("https://www.strava.com/api/v3/athlete")
+
+      r <- athlete_url %>%
+        modify_url(
+          query = list(
+            access_token = sig$credentials$access_token[[1]])) %>%
+        GET()
+
+      user_list <- content(r, as = "text") %>%
+        fromJSON()
+
+      df_user <- user_list[
+        map_lgl(user_list, ~ !is.null(.x))
+        & map_lgl(names(user_list), ~ !(.x %in% user_list_cols))] %>%
+        as_tibble()
+
+      list_list_cols <- user_list[names(user_list) %in% user_list_cols] %>%
+        map(as_tibble)
+
+      for (i in seq_along(list_list_cols)) {
+        df_user[[names(list_list_cols)[[i]]]] <- list(list_list_cols[[i]])
+      }
+
+      return(df_user)
+    }
+
+In the end there is a data frame with one row for the currently
+authenticated user:
+
+    ## # A tibble: 1 x 27
+    ##         id resource_state firstname lastname city   state  country sex   premium
+    ##      <int>          <int> <chr>     <chr>    <chr>  <chr>  <chr>   <chr> <lgl>  
+    ## 1 26845822              3 "Julian " During   Balin~ Baden~ Germany M     FALSE  
+    ## # ... with 18 more variables: summit <lgl>, created_at <chr>, updated_at <chr>,
+    ## #   badge_type_id <int>, weight <dbl>, profile_medium <chr>, profile <chr>,
+    ## #   blocked <lgl>, can_follow <lgl>, follower_count <int>, friend_count <int>,
+    ## #   mutual_friend_count <int>, athlete_type <int>, date_preference <chr>,
+    ## #   measurement_preference <chr>, clubs <list>, bikes <list>, shoes <list>
+
+## Activities
 
 Load a data frame that gives an overview of all the activities from the
 data. Because the total number of activities is unknown, use a while
