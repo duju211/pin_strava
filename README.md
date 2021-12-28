@@ -246,11 +246,11 @@ interpreted as list columns.
         & map_lgl(names(user_list), ~ !(.x %in% user_list_cols))] %>%
         as_tibble()
 
-      list_list_cols <- user_list[names(user_list) %in% user_list_cols] %>%
+      list_cols <- user_list[names(user_list) %in% user_list_cols] %>%
         map(as_tibble)
 
-      for (i in seq_along(list_list_cols)) {
-        df_user[[names(list_list_cols)[[i]]]] <- list(list_list_cols[[i]])
+      for (i in seq_along(list_cols)) {
+        df_user[[names(list_cols)[[i]]]] <- list(list_cols[[i]])
       }
 
       return(df_user)
@@ -260,14 +260,13 @@ In the end there is a data frame with one row for the currently
 authenticated user:
 
     ## # A tibble: 1 x 27
-    ##         id resource_state firstname lastname city   state  country sex   premium
-    ##      <int>          <int> <chr>     <chr>    <chr>  <chr>  <chr>   <chr> <lgl>  
-    ## 1 26845822              3 "Julian " During   Balin~ Baden~ Germany M     FALSE  
-    ## # ... with 18 more variables: summit <lgl>, created_at <chr>, updated_at <chr>,
-    ## #   badge_type_id <int>, weight <dbl>, profile_medium <chr>, profile <chr>,
-    ## #   blocked <lgl>, can_follow <lgl>, follower_count <int>, friend_count <int>,
-    ## #   mutual_friend_count <int>, athlete_type <int>, date_preference <chr>,
-    ## #   measurement_preference <chr>, clubs <list>, bikes <list>, shoes <list>
+    ##         id resource_state firstname lastname city     state   country sex   premium summit created_at  updated_at
+    ##      <int>          <int> <chr>     <chr>    <chr>    <chr>   <chr>   <chr> <lgl>   <lgl>  <chr>       <chr>     
+    ## 1 26845822              3 "Julian " During   Balingen Baden-~ Germany M     FALSE   FALSE  2017-12-25~ 2021-12-2~
+    ## # ... with 15 more variables: badge_type_id <int>, weight <dbl>, profile_medium <chr>, profile <chr>,
+    ## #   blocked <lgl>, can_follow <lgl>, follower_count <int>, friend_count <int>, mutual_friend_count <int>,
+    ## #   athlete_type <int>, date_preference <chr>, measurement_preference <chr>, clubs <list>, bikes <list>,
+    ## #   shoes <list>
 
 ## Activities
 
@@ -334,25 +333,25 @@ activities to read.
 The resulting data frame consists of one row per activity:
 
     ## # A tibble: 620 x 61
-    ##    resource_state name  distance moving_time elapsed_time total_elevation~ type 
-    ##             <int> <chr>    <dbl>       <int>        <int>            <dbl> <chr>
-    ##  1              2 "Mag~    7498.        3087         3094            108.  Run  
-    ##  2              2 "Chr~    5620.        2330         2398             45.1 Run  
-    ##  3              2 "Chr~    7601.        3251         3279            108.  Run  
-    ##  4              2 "Las~    6727         2879         2879            106.  Run  
-    ##  5              2 "Mit~   65485.       11124        11835            944.  Ride 
-    ##  6              2 "Fog~    7442.        3105         3351            108.  Run  
-    ##  7              2 "Fog~    7482.        3122         3131             79.3 Run  
-    ##  8              2 "Spa~   15512.       14448        16006            468   Walk 
-    ##  9              2 "Fes~   32422.        5508         5668            490   Ride 
-    ## 10              2 "Lau~    7348.        2853         2853              7.4 Run  
-    ## # ... with 610 more rows, and 54 more variables: workout_type <int>, id <dbl>,
-    ## #   external_id <chr>, upload_id <dbl>, start_date <dttm>,
-    ## #   start_date_local <chr>, timezone <chr>, utc_offset <dbl>,
-    ## #   start_latlng <list>, end_latlng <list>, location_city <lgl>,
-    ## #   location_state <lgl>, location_country <chr>, start_latitude <dbl>,
-    ## #   start_longitude <dbl>, achievement_count <int>, kudos_count <int>,
-    ## #   comment_count <int>, athlete_count <int>, photo_count <int>, ...
+    ##    resource_state name   distance moving_time elapsed_time total_elevation~ type  workout_type     id external_id
+    ##             <int> <chr>     <dbl>       <int>        <int>            <dbl> <chr>        <int>  <dbl> <chr>      
+    ##  1              2 "Magi~    7498.        3087         3094            108.  Run              0 6.43e9 garmin_pus~
+    ##  2              2 "Chri~    5620.        2330         2398             45.1 Run              0 6.43e9 garmin_pus~
+    ##  3              2 "Chri~    7601.        3251         3279            108.  Run              0 6.42e9 garmin_pus~
+    ##  4              2 "Last~    6727         2879         2879            106.  Run              0 6.42e9 garmin_pus~
+    ##  5              2 "Mitt~   65485.       11124        11835            944.  Ride            10 6.40e9 2021-12-19~
+    ##  6              2 "Fogg~    7442.        3105         3351            108.  Run              0 6.40e9 garmin_pus~
+    ##  7              2 "Fogg~    7482.        3122         3131             79.3 Run              0 6.38e9 garmin_pus~
+    ##  8              2 "Spaz~   15512.       14448        16006            468   Walk            NA 6.37e9 garmin_pus~
+    ##  9              2 "Fest~   32422.        5508         5668            490   Ride            10 6.36e9 2021-12-07~
+    ## 10              2 "Lauf~    7348.        2853         2853              7.4 Run              0 6.35e9 garmin_pus~
+    ## # ... with 610 more rows, and 51 more variables: upload_id <dbl>, start_date <dttm>, start_date_local <chr>,
+    ## #   timezone <chr>, utc_offset <dbl>, start_latlng <list>, end_latlng <list>, location_city <lgl>,
+    ## #   location_state <lgl>, location_country <chr>, start_latitude <dbl>, start_longitude <dbl>,
+    ## #   achievement_count <int>, kudos_count <int>, comment_count <int>, athlete_count <int>, photo_count <int>,
+    ## #   trainer <lgl>, commute <lgl>, manual <lgl>, private <lgl>, visibility <chr>, flagged <lgl>, gear_id <chr>,
+    ## #   from_accepted_tag <lgl>, upload_id_str <chr>, average_speed <dbl>, max_speed <dbl>, average_cadence <dbl>,
+    ## #   has_heartrate <lgl>, average_heartrate <dbl>, max_heartrate <dbl>, heartrate_opt_out <lgl>, ...
 
 Make sure that all ID columns have a character format and improve the
 column names.
@@ -481,18 +480,18 @@ Bind the single targets into one data frame:
 The data now is represented by one row per measurement series:
 
     ## # A tibble: 4,950 x 6
-    ##    type            data            series_type original_size resolution id      
-    ##    <chr>           <list>          <chr>               <int> <chr>      <chr>   
-    ##  1 moving          <lgl [371]>     distance              371 high       6432967~
-    ##  2 latlng          <dbl [371 x 2]> distance              371 high       6432967~
-    ##  3 velocity_smooth <dbl [371]>     distance              371 high       6432967~
-    ##  4 grade_smooth    <dbl [371]>     distance              371 high       6432967~
-    ##  5 cadence         <int [371]>     distance              371 high       6432967~
-    ##  6 distance        <dbl [371]>     distance              371 high       6432967~
-    ##  7 altitude        <dbl [371]>     distance              371 high       6432967~
-    ##  8 heartrate       <int [371]>     distance              371 high       6432967~
-    ##  9 time            <int [371]>     distance              371 high       6432967~
-    ## 10 moving          <lgl [298]>     distance              298 high       6428676~
+    ##    type            data            series_type original_size resolution id        
+    ##    <chr>           <list>          <chr>               <int> <chr>      <chr>     
+    ##  1 moving          <lgl [371]>     distance              371 high       6432967935
+    ##  2 latlng          <dbl [371 x 2]> distance              371 high       6432967935
+    ##  3 velocity_smooth <dbl [371]>     distance              371 high       6432967935
+    ##  4 grade_smooth    <dbl [371]>     distance              371 high       6432967935
+    ##  5 cadence         <int [371]>     distance              371 high       6432967935
+    ##  6 distance        <dbl [371]>     distance              371 high       6432967935
+    ##  7 altitude        <dbl [371]>     distance              371 high       6432967935
+    ##  8 heartrate       <int [371]>     distance              371 high       6432967935
+    ##  9 time            <int [371]>     distance              371 high       6432967935
+    ## 10 moving          <lgl [298]>     distance              298 high       6428676365
     ## # ... with 4,940 more rows
 
 Turn the data into a wide format:
@@ -523,21 +522,20 @@ Turn the data into a wide format:
 In this format, every activity is one row again:
 
     ## # A tibble: 620 x 15
-    ##    series_type original_size resolution id         moving latlng velocity_smooth
-    ##    <chr>               <int> <chr>      <chr>      <list> <list> <list>         
-    ##  1 distance              371 high       6432967935 <lgl ~ <dbl ~ <dbl [371]>    
-    ##  2 distance              298 high       6428676365 <lgl ~ <dbl ~ <dbl [298]>    
-    ##  3 distance              385 high       6421879706 <lgl ~ <dbl ~ <dbl [385]>    
-    ##  4 distance              338 high       6417412687 <lgl ~ <dbl ~ <dbl [338]>    
-    ##  5 distance            11112 high       6403300429 <lgl ~ <dbl ~ <dbl [11,112]> 
-    ##  6 distance              378 high       6397751426 <lgl ~ <dbl ~ <dbl [378]>    
-    ##  7 distance              373 high       6384464449 <lgl ~ <dbl ~ <dbl [373]>    
-    ##  8 distance             4988 high       6371131703 <lgl ~ <dbl ~ <dbl [4,988]>  
-    ##  9 distance             5504 high       6355067791 <lgl ~ <dbl ~ <dbl [5,504]>  
-    ## 10 distance              347 high       6345504872 <lgl ~ <dbl ~ <dbl [347]>    
-    ## # ... with 610 more rows, and 8 more variables: grade_smooth <list>,
-    ## #   cadence <list>, distance <list>, altitude <list>, heartrate <list>,
-    ## #   time <list>, temp <list>, watts <list>
+    ##    series_type original_size resolution id         moving  latlng   velocity_smooth grade_smooth cadence distance
+    ##    <chr>               <int> <chr>      <chr>      <list>  <list>   <list>          <list>       <list>  <list>  
+    ##  1 distance              371 high       6432967935 <lgl [~ <dbl [3~ <dbl [371]>     <dbl [371]>  <int [~ <dbl [3~
+    ##  2 distance              298 high       6428676365 <lgl [~ <dbl [2~ <dbl [298]>     <dbl [298]>  <int [~ <dbl [2~
+    ##  3 distance              385 high       6421879706 <lgl [~ <dbl [3~ <dbl [385]>     <dbl [385]>  <int [~ <dbl [3~
+    ##  4 distance              338 high       6417412687 <lgl [~ <dbl [3~ <dbl [338]>     <dbl [338]>  <int [~ <dbl [3~
+    ##  5 distance            11112 high       6403300429 <lgl [~ <dbl [1~ <dbl [11,112]>  <dbl [11,11~ <NULL>  <dbl [1~
+    ##  6 distance              378 high       6397751426 <lgl [~ <dbl [3~ <dbl [378]>     <dbl [378]>  <int [~ <dbl [3~
+    ##  7 distance              373 high       6384464449 <lgl [~ <dbl [3~ <dbl [373]>     <dbl [373]>  <int [~ <dbl [3~
+    ##  8 distance             4988 high       6371131703 <lgl [~ <dbl [4~ <dbl [4,988]>   <dbl [4,988~ <NULL>  <dbl [4~
+    ##  9 distance             5504 high       6355067791 <lgl [~ <dbl [5~ <dbl [5,504]>   <dbl [5,504~ <NULL>  <dbl [5~
+    ## 10 distance              347 high       6345504872 <lgl [~ <dbl [3~ <dbl [347]>     <dbl [347]>  <int [~ <dbl [3~
+    ## # ... with 610 more rows, and 5 more variables: altitude <list>, heartrate <list>, time <list>, temp <list>,
+    ## #   watts <list>
 
 Preprocess and unnest the data. The column `latlng` needs special
 attention, because it contains latitude and longitude information.
@@ -578,20 +576,19 @@ measurement at this point in time (if there was any activity at that
 moment).
 
     ## # A tibble: 2,210,650 x 13
-    ##    id    moving velocity_smooth grade_smooth cadence distance altitude heartrate
-    ##    <chr> <lgl>            <dbl>        <dbl>   <dbl>    <dbl>    <dbl>     <dbl>
-    ##  1 6432~ FALSE             0            -0.5      73      0       518.       112
-    ##  2 6432~ TRUE              2.45         -0.3      73     19.6     518.       115
-    ##  3 6432~ TRUE              2.58         -0.2      74     41.2     518.       117
-    ##  4 6432~ TRUE              2.56         -0.3      76     63.1     518.       118
-    ##  5 6432~ TRUE              2.49          0        76     81.1     518.       121
-    ##  6 6432~ TRUE              2.44         -0.1      78     92.4     518.       124
-    ##  7 6432~ TRUE              2.48          0.1      77    116.      518.       125
-    ##  8 6432~ TRUE              2.48          0.8      76    137.      518.       126
-    ##  9 6432~ TRUE              2.46          1.6      76    160       518.       126
-    ## 10 6432~ TRUE              2.59          2.3      76    181.      519        128
-    ## # ... with 2,210,640 more rows, and 5 more variables: time <dbl>, temp <int>,
-    ## #   watts <dbl>, lat <dbl>, lng <dbl>
+    ##    id       moving velocity_smooth grade_smooth cadence distance altitude heartrate  time  temp watts   lat   lng
+    ##    <chr>    <lgl>            <dbl>        <dbl>   <dbl>    <dbl>    <dbl>     <dbl> <dbl> <int> <dbl> <dbl> <dbl>
+    ##  1 6432967~ FALSE             0            -0.5      73      0       518.       112     0    NA    NA  48.3  8.85
+    ##  2 6432967~ TRUE              2.45         -0.3      73     19.6     518.       115     8    NA    NA  48.3  8.85
+    ##  3 6432967~ TRUE              2.58         -0.2      74     41.2     518.       117    16    NA    NA  48.3  8.85
+    ##  4 6432967~ TRUE              2.56         -0.3      76     63.1     518.       118    25    NA    NA  48.3  8.85
+    ##  5 6432967~ TRUE              2.49          0        76     81.1     518.       121    32    NA    NA  48.3  8.85
+    ##  6 6432967~ TRUE              2.44         -0.1      78     92.4     518.       124    37    NA    NA  48.3  8.85
+    ##  7 6432967~ TRUE              2.48          0.1      77    116.      518.       125    46    NA    NA  48.3  8.85
+    ##  8 6432967~ TRUE              2.48          0.8      76    137.      518.       126    55    NA    NA  48.3  8.85
+    ##  9 6432967~ TRUE              2.46          1.6      76    160       518.       126    64    NA    NA  48.3  8.85
+    ## 10 6432967~ TRUE              2.59          2.3      76    181.      519        128    72    NA    NA  48.3  8.85
+    ## # ... with 2,210,640 more rows
 
 # Visualisation
 
