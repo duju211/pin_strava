@@ -10,7 +10,7 @@
 
 
 
-<meta name="date" content="2021-12-27" />
+<meta name="date" content="2021-12-28" />
 
 <title>Strava Data</title>
 
@@ -178,7 +178,7 @@ pre code {
 
 <h1 class="title toc-ignore">Strava Data</h1>
 <h4 class="author">Julian During</h4>
-<h4 class="date">2021-12-27</h4>
+<h4 class="date">2021-12-28</h4>
 
 </div>
 
@@ -213,133 +213,6 @@ conflict_prefer(&quot;filter&quot;, &quot;dplyr&quot;)</code></pre>
 </ul>
 <div id="target-plan" class="section level2">
 <h2>Target Plan</h2>
-<p>The manifest of the target plan looks like this:</p>
-<table>
-<colgroup>
-<col width="4%" />
-<col width="87%" />
-<col width="5%" />
-<col width="2%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th align="left">name</th>
-<th align="left">command</th>
-<th align="left">pattern</th>
-<th align="left">cue_mode</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">user_list_cols</td>
-<td align="left">c(“shoes”, “clubs”, “bikes”)</td>
-<td align="left">NA</td>
-<td align="left">thorough</td>
-</tr>
-<tr class="even">
-<td align="left">my_app</td>
-<td align="left">define_strava_app()</td>
-<td align="left">NA</td>
-<td align="left">thorough</td>
-</tr>
-<tr class="odd">
-<td align="left">my_endpoint</td>
-<td align="left">define_strava_endpoint()</td>
-<td align="left">NA</td>
-<td align="left">thorough</td>
-</tr>
-<tr class="even">
-<td align="left">act_col_types</td>
-<td align="left">list(moving = col_logical(), velocity_smooth = col_number(), grade_smooth = col_number(), distance = col_number(), altitude = col_number(), heartrate = col_integer(), time = col_integer(), lat = col_number(), lng = col_number(), cadence = col_integer(), watts = col_integer())</td>
-<td align="left">NA</td>
-<td align="left">thorough</td>
-</tr>
-<tr class="odd">
-<td align="left">my_sig</td>
-<td align="left">define_strava_sig(my_endpoint, my_app)</td>
-<td align="left">NA</td>
-<td align="left">always</td>
-</tr>
-<tr class="even">
-<td align="left">df_active_user</td>
-<td align="left">active_user(my_sig, user_list_cols)</td>
-<td align="left">NA</td>
-<td align="left">thorough</td>
-</tr>
-<tr class="odd">
-<td align="left">active_user_id</td>
-<td align="left">first(pull(df_active_user, id))</td>
-<td align="left">NA</td>
-<td align="left">thorough</td>
-</tr>
-<tr class="even">
-<td align="left">df_act_raw</td>
-<td align="left">read_all_activities(my_sig, active_user_id)</td>
-<td align="left">map(active_user_id)</td>
-<td align="left">thorough</td>
-</tr>
-<tr class="odd">
-<td align="left">df_act</td>
-<td align="left">pre_process_act(df_act_raw)</td>
-<td align="left">NA</td>
-<td align="left">thorough</td>
-</tr>
-<tr class="even">
-<td align="left">act_ids</td>
-<td align="left">pull(distinct(df_act, id))</td>
-<td align="left">NA</td>
-<td align="left">thorough</td>
-</tr>
-<tr class="odd">
-<td align="left">df_meas</td>
-<td align="left">read_activity_stream(act_ids, my_sig)</td>
-<td align="left">map(act_ids)</td>
-<td align="left">never</td>
-</tr>
-<tr class="even">
-<td align="left">df_meas_all</td>
-<td align="left">bind_rows(df_meas)</td>
-<td align="left">NA</td>
-<td align="left">thorough</td>
-</tr>
-<tr class="odd">
-<td align="left">df_meas_wide</td>
-<td align="left">meas_wide(df_meas_all)</td>
-<td align="left">NA</td>
-<td align="left">thorough</td>
-</tr>
-<tr class="even">
-<td align="left">df_meas_pro</td>
-<td align="left">meas_pro(df_meas_wide)</td>
-<td align="left">NA</td>
-<td align="left">thorough</td>
-</tr>
-<tr class="odd">
-<td align="left">gg_meas</td>
-<td align="left">vis_meas(df_meas_pro)</td>
-<td align="left">NA</td>
-<td align="left">thorough</td>
-</tr>
-<tr class="even">
-<td align="left">df_meas_rel</td>
-<td align="left">meas_rel(df_act, df_meas_pro)</td>
-<td align="left">NA</td>
-<td align="left">thorough</td>
-</tr>
-<tr class="odd">
-<td align="left">df_meas_norm</td>
-<td align="left">meas_norm(df_meas_pro)</td>
-<td align="left">NA</td>
-<td align="left">thorough</td>
-</tr>
-<tr class="even">
-<td align="left">gg_meas_save</td>
-<td align="left">save_gg_meas(gg_meas)</td>
-<td align="left">NA</td>
-<td align="left">thorough</td>
-</tr>
-</tbody>
-</table>
 <p>We will go through the most important targets in detail.</p>
 </div>
 <div id="oauth-dance-from-r" class="section level2">
@@ -349,6 +222,9 @@ conflict_prefer(&quot;filter&quot;, &quot;dplyr&quot;)</code></pre>
 <h3>Create an OAuth Strava app</h3>
 <p>To get access to your Strava data from R, you must first create a Strava API. The steps are documented on the <a href="https://developers.strava.com/docs/getting-started/">Strava Developer site</a>. While creating the app, you’ll have to give it a name. In my case, I named it <code>r_api</code>.</p>
 <p>After you have created your personal API, you can find your Client ID and Client Secret variables in the <a href="https://www.strava.com/settings/api">Strava API settings</a>. Save the Client ID as STRAVA_KEY and the Client Secret as STRAVA_SECRET in your R environment.</p>
+<aside>
+You can edit your R environment by running <code>usethis::edit_r_environ()</code>, saving the keys, and then restarting R.
+</aside>
 <pre><code>STRAVA_KEY=&lt;Client ID&gt;
 STRAVA_SECRET=&lt;Client Secret&gt;</code></pre>
 <p>The function <code>define_strava_app</code> shown below creates the OAuth app:</p>
@@ -447,8 +323,33 @@ STRAVA_SECRET=&lt;Client Secret&gt;</code></pre>
 </div>
 <div id="current-authenticated-user" class="section level2">
 <h2>Current authenticated user</h2>
-<p>Get the currently authenticated user. The columns shoes, clubs and bikes are nested lists and need special attention.</p>
+<p>Get the id of the currently authenticated user:</p>
 <table>
+<thead>
+<tr class="header">
+<th align="left">name</th>
+<th align="left">command</th>
+<th align="left">pattern</th>
+<th align="left">cue_mode</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">active_user_id</td>
+<td align="left">my_sig[[“credentials”]][[“athlete”]][[“id”]]</td>
+<td align="left">NA</td>
+<td align="left">thorough</td>
+</tr>
+</tbody>
+</table>
+<p>Download information about the currently authenticated user. Map over the <code>active_user_id</code> to make sure, that no information is overwritten. When preprocessing the data, the columns shoes, clubs and bikes need special attention, because they can contain multiple entries and can be interpreted as list columns.</p>
+<table>
+<colgroup>
+<col width="18%" />
+<col width="45%" />
+<col width="25%" />
+<col width="11%" />
+</colgroup>
 <thead>
 <tr class="header">
 <th align="left">name</th>
@@ -461,7 +362,7 @@ STRAVA_SECRET=&lt;Client Secret&gt;</code></pre>
 <tr class="odd">
 <td align="left">df_active_user</td>
 <td align="left">active_user(my_sig, user_list_cols)</td>
-<td align="left">NA</td>
+<td align="left">map(active_user_id)</td>
 <td align="left">thorough</td>
 </tr>
 </tbody>

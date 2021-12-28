@@ -54,15 +54,6 @@ In order to reproduce the analysis, perform the following steps:
 
 ## Target Plan
 
-The manifest of the target plan looks like this:
-
-```{r, echo=FALSE}
-df_manifest %>%
-  filter(
-    str_detect(name, "^strava", negate = TRUE), name != "athlete_id") %>%
-  knitr::kable()
-```
-
 We will go through the most important targets in detail.
 
 ## OAuth Dance from R
@@ -82,6 +73,11 @@ Client Secret variables in the
 [Strava API settings](https://www.strava.com/settings/api).
 Save the Client ID as STRAVA_KEY and the Client Secret as STRAVA_SECRET
 in your R environment.
+
+<aside>
+You can edit your R environment by running `usethis::edit_r_environ()`,
+saving the keys, and then restarting R.
+</aside>
 
 ```
 STRAVA_KEY=<Client ID>
@@ -132,10 +128,18 @@ are always executed with an up-to-date authorization token.
 
 ## Current authenticated user
 
-Get the currently authenticated user.
-The columns
-`r glue_collapse(tar_read(user_list_cols), sep = ", ", last = " and ")` are
-nested lists and need special attention.
+Get the id of the currently authenticated user:
+
+```{r, echo=FALSE}
+knitr::kable(df_manifest[df_manifest$name == "active_user_id", ])
+```
+
+Download information about the currently authenticated user.
+Map over the `active_user_id` to make sure, that no information is overwritten.
+When preprocessing the data, the columns
+`r glue_collapse(tar_read(user_list_cols), sep = ", ", last = " and ")` need
+special attention, because they can contain multiple entries and can be
+interpreted as list columns.
 
 ```{r, echo=FALSE}
 knitr::kable(df_manifest[df_manifest$name == "df_active_user", ])
@@ -150,7 +154,6 @@ user:
 ```{r, echo=FALSE}
 tar_read(df_active_user)
 ```
-
 
 ## Activities
 

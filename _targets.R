@@ -16,8 +16,10 @@ list(
   tar_target(
     my_sig, define_strava_sig(my_endpoint, my_app),
     cue = tar_cue(mode = "always")),
-  tar_target(df_active_user, active_user(my_sig, user_list_cols)),
-  tar_target(active_user_id, first(pull(df_active_user, id))),
+  tar_target(active_user_id, my_sig[["credentials"]][["athlete"]][["id"]]),
+  tar_target(
+    df_active_user, active_user(my_sig, user_list_cols),
+    pattern = map(active_user_id)),
   tar_target(
     df_act_raw, read_all_activities(my_sig, active_user_id),
     pattern = map(active_user_id)),

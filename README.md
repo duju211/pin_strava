@@ -41,135 +41,6 @@ In order to reproduce the analysis, perform the following steps:
 
 ## Target Plan
 
-The manifest of the target plan looks like this:
-
-<table>
-<colgroup>
-<col style="width: 4%" />
-<col style="width: 87%" />
-<col style="width: 5%" />
-<col style="width: 2%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">name</th>
-<th style="text-align: left;">command</th>
-<th style="text-align: left;">pattern</th>
-<th style="text-align: left;">cue_mode</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">user_list_cols</td>
-<td style="text-align: left;">c(“shoes”, “clubs”, “bikes”)</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: left;">thorough</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">my_app</td>
-<td style="text-align: left;">define_strava_app()</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: left;">thorough</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">my_endpoint</td>
-<td style="text-align: left;">define_strava_endpoint()</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: left;">thorough</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">act_col_types</td>
-<td style="text-align: left;">list(moving = col_logical(), velocity_smooth = col_number(), grade_smooth = col_number(), distance = col_number(), altitude = col_number(), heartrate = col_integer(), time = col_integer(), lat = col_number(), lng = col_number(), cadence = col_integer(), watts = col_integer())</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: left;">thorough</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">my_sig</td>
-<td style="text-align: left;">define_strava_sig(my_endpoint, my_app)</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: left;">always</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">df_active_user</td>
-<td style="text-align: left;">active_user(my_sig, user_list_cols)</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: left;">thorough</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">active_user_id</td>
-<td style="text-align: left;">first(pull(df_active_user, id))</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: left;">thorough</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">df_act_raw</td>
-<td style="text-align: left;">read_all_activities(my_sig, active_user_id)</td>
-<td style="text-align: left;">map(active_user_id)</td>
-<td style="text-align: left;">thorough</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">df_act</td>
-<td style="text-align: left;">pre_process_act(df_act_raw)</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: left;">thorough</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">act_ids</td>
-<td style="text-align: left;">pull(distinct(df_act, id))</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: left;">thorough</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">df_meas</td>
-<td style="text-align: left;">read_activity_stream(act_ids, my_sig)</td>
-<td style="text-align: left;">map(act_ids)</td>
-<td style="text-align: left;">never</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">df_meas_all</td>
-<td style="text-align: left;">bind_rows(df_meas)</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: left;">thorough</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">df_meas_wide</td>
-<td style="text-align: left;">meas_wide(df_meas_all)</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: left;">thorough</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">df_meas_pro</td>
-<td style="text-align: left;">meas_pro(df_meas_wide)</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: left;">thorough</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">gg_meas</td>
-<td style="text-align: left;">vis_meas(df_meas_pro)</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: left;">thorough</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">df_meas_rel</td>
-<td style="text-align: left;">meas_rel(df_act, df_meas_pro)</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: left;">thorough</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">df_meas_norm</td>
-<td style="text-align: left;">meas_norm(df_meas_pro)</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: left;">thorough</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">gg_meas_save</td>
-<td style="text-align: left;">save_gg_meas(gg_meas)</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: left;">thorough</td>
-</tr>
-</tbody>
-</table>
-
 We will go through the most important targets in detail.
 
 ## OAuth Dance from R
@@ -189,6 +60,11 @@ and Client Secret variables in the [Strava API
 settings](https://www.strava.com/settings/api). Save the Client ID as
 STRAVA\_KEY and the Client Secret as STRAVA\_SECRET in your R
 environment.
+
+<aside>
+You can edit your R environment by running `usethis::edit_r_environ()`,
+saving the keys, and then restarting R.
+</aside>
 
     STRAVA_KEY=<Client ID>
     STRAVA_SECRET=<Client Secret>
@@ -301,8 +177,7 @@ are always executed with an up-to-date authorization token.
 
 ## Current authenticated user
 
-Get the currently authenticated user. The columns shoes, clubs and bikes
-are nested lists and need special attention.
+Get the id of the currently authenticated user:
 
 <table>
 <thead>
@@ -315,9 +190,40 @@ are nested lists and need special attention.
 </thead>
 <tbody>
 <tr class="odd">
+<td style="text-align: left;">active_user_id</td>
+<td style="text-align: left;">my_sig[[“credentials”]][[“athlete”]][[“id”]]</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">thorough</td>
+</tr>
+</tbody>
+</table>
+
+Download information about the currently authenticated user. Map over
+the `active_user_id` to make sure, that no information is overwritten.
+When preprocessing the data, the columns shoes, clubs and bikes need
+special attention, because they can contain multiple entries and can be
+interpreted as list columns.
+
+<table>
+<colgroup>
+<col style="width: 18%" />
+<col style="width: 45%" />
+<col style="width: 25%" />
+<col style="width: 11%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">name</th>
+<th style="text-align: left;">command</th>
+<th style="text-align: left;">pattern</th>
+<th style="text-align: left;">cue_mode</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
 <td style="text-align: left;">df_active_user</td>
 <td style="text-align: left;">active_user(my_sig, user_list_cols)</td>
-<td style="text-align: left;">NA</td>
+<td style="text-align: left;">map(active_user_id)</td>
 <td style="text-align: left;">thorough</td>
 </tr>
 </tbody>
