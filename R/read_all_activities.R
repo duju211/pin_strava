@@ -14,6 +14,8 @@ read_all_activities <- function(sig, active_user_id) {
           page = i)) %>%
       GET()
 
+    stop_for_status(r)
+
     df_act <- content(r, as = "text") %>%
       fromJSON(flatten = TRUE) %>%
       as_tibble()

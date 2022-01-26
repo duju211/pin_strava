@@ -23,28 +23,29 @@ list(
   tar_target(
     df_act_raw, read_all_activities(my_sig, active_user_id),
     pattern = map(active_user_id)),
-  tar_target(df_act, pre_process_act(df_act_raw)),
-  tar_target(act_ids, pull(distinct(df_act, id))),
+  tar_target(
+    df_act, pre_process_act(df_act_raw), pattern = map(active_user_id)),
+  tar_target(act_ids, pull(df_act, id)),
+  tar_target(start_dates, pull(df_act, start_date)),
+  tar_target(
+    meas_board, board_folder("meas", versioned = FALSE),
+    cue = tar_cue("always")),
 
   # Dynamic branching
   tar_target(
-    df_meas, read_activity_stream(act_ids, my_sig), pattern = map(act_ids),
-    cue = tar_cue(mode = "never")),
+    df_meas, read_activity_stream(act_ids, start_dates, my_sig, meas_board),
+    pattern = map(act_ids, start_dates),
+    cue = tar_cue(mode = "never"), format = "file")
 
-  tar_target(df_meas_all, bind_rows(df_meas)),
-  tar_target(df_meas_wide, meas_wide(df_meas_all)),
-  tar_target(df_meas_pro, meas_pro(df_meas_wide)),
-  tar_target(df_meas_norm, meas_norm(df_meas_pro)),
-  tar_target(df_meas_rel, meas_rel(df_act, df_meas_pro)),
-  tar_target(gg_meas, vis_meas(df_meas_pro)),
-  tar_target(gg_meas_save, save_gg_meas(gg_meas), format = "file"),
-
-  tar_render(strava_report, "scrape_strava.Rmd"),
-  tar_render(
-    strava_post, "scrape_strava.Rmd",
-    output_format = distill::distill_article(),
-    output_file = "scrape_strava_post.html"),
-  tar_render(
-    strava_readme, "scrape_strava.Rmd", output_format = "md_document",
-    output_file = "README.md")
+  # tar_target(gg_meas, vis_meas(df_meas), pattern = map(active_user_id)),
+  # tar_target(gg_meas_save, save_gg_meas(gg_meas), format = "file"),
+  #
+  # tar_render(strava_report, "scrape_strava.Rmd"),
+  # tar_render(
+  #   strava_post, "scrape_strava.Rmd",
+  #   output_format = distill::distill_article(),
+  #   output_file = "scrape_strava_post.html"),
+  # tar_render(
+  #   strava_readme, "scrape_strava.Rmd", output_format = "md_document",
+  #   output_file = "README.md")
 )
