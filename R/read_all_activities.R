@@ -1,4 +1,4 @@
-read_all_activities <- function(sig, active_user_id) {
+read_all_activities <- function(access_token, active_user_id) {
   activities_url <- parse_url(
     "https://www.strava.com/api/v3/athlete/activities")
 
@@ -10,7 +10,7 @@ read_all_activities <- function(sig, active_user_id) {
     r <- activities_url %>%
       modify_url(
         query = list(
-          access_token = sig$credentials$access_token[[1]],
+          access_token = access_token,
           page = i)) %>%
       GET()
 
@@ -27,5 +27,6 @@ read_all_activities <- function(sig, active_user_id) {
   act_vec %>%
     bind_rows() %>%
     mutate(
-      start_date = ymd_hms(start_date), active_user_id = active_user_id)
+      start_date = ymd_hms(start_date),
+      active_user_id = active_user_id)
 }

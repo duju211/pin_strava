@@ -1,10 +1,9 @@
-active_user <- function(sig, user_list_cols) {
+active_user <- function(access_token, user_list_cols, active_user_id, meas_board) {
   athlete_url <- parse_url("https://www.strava.com/api/v3/athlete")
 
   r <- athlete_url %>%
     modify_url(
-      query = list(
-        access_token = sig$credentials$access_token[[1]])) %>%
+      query = list(access_token = access_token)) %>%
     GET()
 
   user_list <- content(r, as = "text") %>%
@@ -21,6 +20,5 @@ active_user <- function(sig, user_list_cols) {
   for (i in seq_along(list_cols)) {
     df_user[[names(list_cols)[[i]]]] <- list(list_cols[[i]])
   }
-
-  return(df_user)
+  df_user
 }

@@ -1,7 +1,6 @@
-read_activity_stream <- function(id, start_date, sig, meas_board) {
+read_activity_stream <- function(id, active_user_id, access_token) {
   act_url <- parse_url(stringr::str_glue(
     "https://www.strava.com/api/v3/activities/{id}/streams"))
-  access_token <- sig$credentials$access_token[[1]]
 
   r <- modify_url(
     act_url,
@@ -31,10 +30,7 @@ read_activity_stream <- function(id, start_date, sig, meas_board) {
     df_stream <- df_stream_raw
   }
 
-  df_stream_pro <- df_stream %>%
+  df_stream %>%
     unnest(where(is_list)) %>%
-    mutate(time = start_date + dseconds(time))
-
-  pin_write(meas_board, df_stream_pro, id, type = "arrow")
-  pin_download(meas_board, id)
+    mutate(id = id)
 }
