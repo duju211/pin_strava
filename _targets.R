@@ -15,9 +15,9 @@ list(
 
   tar_target(my_app, define_strava_app()),
   tar_target(my_endpoint, define_strava_endpoint()),
-  tar_target(
+  tar_age(
     my_sig, define_strava_sig(my_endpoint, my_app),
-    cue = tar_cue(mode = "always")),
+    age = as.difftime(6, units = "hours")),
   tar_target(active_user_id, my_sig[["credentials"]][["athlete"]][["id"]]),
   tar_target(access_token, my_sig[["credentials"]][["access_token"]]),
   tar_target(
