@@ -1,14 +1,15 @@
-I am a vivid runner and cyclist. Since a couple of years, I’m recording
-almost all my activities with some kind of GPS device.
+I am an avid runner and cyclist. For the past couple of years, I have
+recorded almost all my activities on some kind of GPS device.
 
 I record my runs with a Garmin device and my bike rides with a Wahoo
-device. Both accounts get synchronized with my Strava account. I figured
-that it would be nice to directly access my data from my Strava account.
+device, and I synchronize both accounts on Strava. I figured that it
+would be nice to directly access my data from my Strava account.
 
-In the following text, I will describe the progress to get the data into
-R.
+In the following text, I will describe the progress to get Strava data
+into R, process the data, and then create a visualization of activity
+routes.
 
-In this analysis, the following packages are used:
+You will need the following packages:
 
     library(tarchetypes)
     library(conflicted)
@@ -17,9 +18,11 @@ In this analysis, the following packages are used:
     library(jsonlite)
     library(targets)
     library(httpuv)
+    library(arrow)
     library(httr)
     library(pins)
     library(httr)
+    library(glue)
     library(fs)
 
     conflict_prefer("filter", "dplyr")
@@ -27,154 +30,47 @@ In this analysis, the following packages are used:
 # Data
 
 The whole data pipeline is implemented with the help of the `targets`
-package. [Here](https://docs.ropensci.org/targets/) you can learn more
-about the package and its functionalities.
+package. You can learn more about the package and its functionalities
+[here](https://docs.ropensci.org/targets/).
+
+In order to reproduce the analysis, perform the following steps:
+
+-   Clone the repository: <https://github.com/duju211/pin_strava>
+-   Install the packages listed in the `libraries.R` file
+-   Run the target pipeline by executing `targets::tar_make()` command
+-   Follow the instructions printed in the console
 
 ## Target Plan
 
-The manifest of the target plan looks like this:
-
-<table>
-<colgroup>
-<col style="width: 4%" />
-<col style="width: 89%" />
-<col style="width: 3%" />
-<col style="width: 2%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">name</th>
-<th style="text-align: left;">command</th>
-<th style="text-align: left;">pattern</th>
-<th style="text-align: left;">cue_mode</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">my_app</td>
-<td style="text-align: left;">define_strava_app()</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: left;">thorough</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">my_endpoint</td>
-<td style="text-align: left;">define_strava_endpoint()</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: left;">thorough</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">act_col_types</td>
-<td style="text-align: left;">list(moving = col_logical(), velocity_smooth = col_number(), grade_smooth = col_number(), distance = col_number(), altitude = col_number(), heartrate = col_integer(), time = col_integer(), lat = col_number(), lng = col_number(), cadence = col_integer(), watts = col_integer())</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: left;">thorough</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">my_sig</td>
-<td style="text-align: left;">define_strava_sig(my_endpoint, my_app)</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: left;">always</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">df_act_raw</td>
-<td style="text-align: left;">read_all_activities(my_sig)</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: left;">thorough</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">df_act</td>
-<td style="text-align: left;">pre_process_act(df_act_raw, athlete_id)</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: left;">thorough</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">act_ids</td>
-<td style="text-align: left;">pull(distinct(df_act, id))</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: left;">thorough</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">df_meas</td>
-<td style="text-align: left;">read_activity_stream(act_ids, my_sig)</td>
-<td style="text-align: left;">map(act_ids)</td>
-<td style="text-align: left;">never</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">df_meas_all</td>
-<td style="text-align: left;">bind_rows(df_meas)</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: left;">thorough</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">df_meas_wide</td>
-<td style="text-align: left;">meas_wide(df_meas_all)</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: left;">thorough</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">df_meas_pro</td>
-<td style="text-align: left;">meas_pro(df_meas_wide)</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: left;">thorough</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">gg_meas</td>
-<td style="text-align: left;">vis_meas(df_meas_pro)</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: left;">thorough</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">df_meas_rel</td>
-<td style="text-align: left;">meas_rel(df_act, df_meas_pro)</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: left;">thorough</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">df_meas_norm</td>
-<td style="text-align: left;">meas_norm(df_meas_pro)</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: left;">thorough</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">gg_meas_save</td>
-<td style="text-align: left;">save_gg_meas(gg_meas)</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: left;">thorough</td>
-</tr>
-</tbody>
-</table>
-
-The most important targets of the plan are described in detail in the
-following subsections.
+We will go through the most important targets in detail.
 
 ## OAuth Dance from R
 
-To get access to your Strava data from R, you have to create a Strava
-api. How to do this is documented
-[here](https://developers.strava.com/docs/getting-started/).
+The Strava API requires an ‘OAuth dance’, described below.
 
-The Strava api requires a so called OAuth dance. How this can be done
-from within R is described in the following section.
+### Create an OAuth Strava app
 
-Create an OAuth Strava app:
+To get access to your Strava data from R, you must first create a Strava
+API. The steps are documented on the [Strava Developer
+site](https://developers.strava.com/docs/getting-started/). While
+creating the app, you’ll have to give it a name. In my case, I named it
+`r_api`.
 
-<table>
-<thead>
-<tr class="header">
-<th style="text-align: left;">name</th>
-<th style="text-align: left;">command</th>
-<th style="text-align: left;">pattern</th>
-<th style="text-align: left;">cue_mode</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">my_app</td>
-<td style="text-align: left;">define_strava_app()</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: left;">thorough</td>
-</tr>
-</tbody>
-</table>
+After you have created your personal API, you can find your Client ID
+and Client Secret variables in the [Strava API
+settings](https://www.strava.com/settings/api). Save the Client ID as
+STRAVA\_KEY and the Client Secret as STRAVA\_SECRET in your R
+environment.
+
+<aside>
+You can edit your R environment by running `usethis::edit_r_environ()`,
+saving the keys, and then restarting R.
+</aside>
+
+    STRAVA_KEY=<Client ID>
+    STRAVA_SECRET=<Client Secret>
+
+The function `define_strava_app` shown below creates the OAuth app:
 
     define_strava_app <- function() {
       if (Sys.getenv("STRAVA_KEY") == "" | Sys.getenv("STRAVA_SECRET") == "")
@@ -191,31 +87,13 @@ Create an OAuth Strava app:
         secret = Sys.getenv("STRAVA_SECRET"))
     }
 
-You can find your `STRAVA_KEY` and `STRAVA_SECRET` variables under the
-Strava api settings after you have created your own personal api. The
-name of api is determined during creation. In my case I named it
-`r_api`.
+### Define an endpoint
 
-Define an endpoint:
+Define an endpoint called `my_endpoint` using the function
+`define_strava_endpoint`.
 
-<table>
-<thead>
-<tr class="header">
-<th style="text-align: left;">name</th>
-<th style="text-align: left;">command</th>
-<th style="text-align: left;">pattern</th>
-<th style="text-align: left;">cue_mode</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">my_endpoint</td>
-<td style="text-align: left;">define_strava_endpoint()</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: left;">thorough</td>
-</tr>
-</tbody>
-</table>
+The `authorize` parameter describes the authorization url and the
+`access` argument exchanges the authenticated token.
 
     define_strava_endpoint <- function() {
       oauth_endpoint(
@@ -224,30 +102,10 @@ Define an endpoint:
         access = "https://www.strava.com/oauth/token")
     }
 
-The `authorize` parameter describes the authorization url. And the
-`access` argument is used to exchange the authenticated token.
+### The final authentication step
 
-The final authentication step. Before the user can execute the following
-steps, he has to authenticate the api in the web browser.
-
-<table>
-<thead>
-<tr class="header">
-<th style="text-align: left;">name</th>
-<th style="text-align: left;">command</th>
-<th style="text-align: left;">pattern</th>
-<th style="text-align: left;">cue_mode</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">my_sig</td>
-<td style="text-align: left;">define_strava_sig(my_endpoint, my_app)</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: left;">always</td>
-</tr>
-</tbody>
-</table>
+Before you can execute the following steps, you have to authenticate the
+API in the web browser.
 
     define_strava_sig <- function(endpoint, app) {
       oauth2.0_token(
@@ -258,51 +116,78 @@ steps, he has to authenticate the api in the web browser.
     }
 
 The information in `my_sig` can now be used to access Strava data. Set
-the `cue_mode` of the target to ‘always’, so that the user has to
-authenticate and the following api calls are all executed with an up to
-date authorization token.
+the `cue_mode` of the target to ‘always’ so that the following API calls
+are always executed with an up-to-date authorization token.
+
+## Current authenticated user
+
+Download information about the currently authenticated user. When
+preprocessing the data, the columns shoes, clubs and bikes need special
+attention, because they can contain multiple entries and can be
+interpreted as list columns.
+
+    active_user <- function(access_token, user_list_cols, meas_board) {
+      athlete_url <- parse_url("https://www.strava.com/api/v3/athlete")
+
+      r <- athlete_url %>%
+        modify_url(
+          query = list(access_token = access_token)) %>%
+        GET()
+
+      user_list <- content(r, as = "text") %>%
+        fromJSON()
+
+      df_user <- user_list[
+        map_lgl(user_list, ~ !is.null(.x))
+        & map_lgl(names(user_list), ~ !(.x %in% user_list_cols))] %>%
+        as_tibble()
+
+      list_cols <- user_list[names(user_list) %in% user_list_cols] %>%
+        map(as_tibble)
+
+      for (i in seq_along(list_cols)) {
+        df_user[[names(list_cols)[[i]]]] <- list(list_cols[[i]])
+      }
+      df_user
+    }
+
+In the end there is a data frame with one row for the currently
+authenticated user:
+
+    ## # A tibble: 1 x 27
+    ##         id resource_state firstname lastname city    state country sex   premium
+    ##      <int>          <int> <chr>     <chr>    <chr>   <chr> <chr>   <chr> <lgl>  
+    ## 1 26845822              3 "Julian " During   Baling~ Bade~ Germany M     TRUE   
+    ## # ... with 18 more variables: summit <lgl>, created_at <chr>, updated_at <chr>,
+    ## #   badge_type_id <int>, weight <dbl>, profile_medium <chr>, profile <chr>,
+    ## #   blocked <lgl>, can_follow <lgl>, follower_count <int>, friend_count <int>,
+    ## #   mutual_friend_count <int>, athlete_type <int>, date_preference <chr>,
+    ## #   measurement_preference <chr>, clubs <list>, bikes <list>, shoes <list>
 
 ## Activities
 
-We are now authenticated and can directly access Strava data. At first
-load an overview table of all available activities. Because the total
-number of activities is unknown, use a while loop. Break the execution
-of the loop, if there are no more activities to read.
+Load a data frame that gives an overview of all the activities from the
+data. Because the total number of activities is unknown, use a while
+loop. It will break the execution of the loop if there are no more
+activities to read.
 
-<table>
-<thead>
-<tr class="header">
-<th style="text-align: left;">name</th>
-<th style="text-align: left;">command</th>
-<th style="text-align: left;">pattern</th>
-<th style="text-align: left;">cue_mode</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">df_act_raw</td>
-<td style="text-align: left;">read_all_activities(my_sig)</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: left;">thorough</td>
-</tr>
-</tbody>
-</table>
-
-    read_all_activities <- function(sig) {
+    read_all_activities <- function(access_token, active_user_id) {
       activities_url <- parse_url(
         "https://www.strava.com/api/v3/athlete/activities")
 
       act_vec <- vector(mode = "list")
-      df_act <- tibble::tibble(init = "init")
+      df_act <- tibble(init = "init")
       i <- 1L
 
       while (nrow(df_act) != 0) {
         r <- activities_url %>%
           modify_url(
             query = list(
-              access_token = sig$credentials$access_token[[1]],
+              access_token = access_token,
               page = i)) %>%
           GET()
+
+        stop_for_status(r)
 
         df_act <- content(r, as = "text") %>%
           fromJSON(flatten = TRUE) %>%
@@ -314,113 +199,70 @@ of the loop, if there are no more activities to read.
 
       act_vec %>%
         bind_rows() %>%
-        mutate(start_date = ymd_hms(start_date))
+        mutate(
+          start_date = ymd_hms(start_date),
+          active_user_id = active_user_id)
     }
 
 The resulting data frame consists of one row per activity:
 
-    ## # A tibble: 618 x 60
+    ## # A tibble: 648 x 62
     ##    resource_state name  distance moving_time elapsed_time total_elevation~ type 
     ##             <int> <chr>    <dbl>       <int>        <int>            <dbl> <chr>
-    ##  1              2 "Chr~    7601.        3251         3279            108.  Run  
-    ##  2              2 "Las~    6727         2879         2879            106.  Run  
-    ##  3              2 "Mit~   65485.       11124        11835            944.  Ride 
-    ##  4              2 "Fog~    7442.        3105         3351            108.  Run  
-    ##  5              2 "Fog~    7482.        3122         3131             79.3 Run  
-    ##  6              2 "Spa~   15512.       14448        16006            468   Walk 
-    ##  7              2 "Fes~   32422.        5508         5668            490   Ride 
-    ##  8              2 "Lau~    7348.        2853         2853              7.4 Run  
-    ##  9              2 "Adv~    6830.        2994         3101             43.2 Run  
-    ## 10              2 "Sch~    6679.        2934         2941             38.8 Run  
-    ## # ... with 608 more rows, and 53 more variables: workout_type <int>, id <dbl>,
-    ## #   external_id <chr>, upload_id <dbl>, start_date <dttm>,
-    ## #   start_date_local <chr>, timezone <chr>, utc_offset <dbl>,
-    ## #   start_latlng <list>, end_latlng <list>, location_city <lgl>,
-    ## #   location_state <lgl>, location_country <chr>, start_latitude <dbl>,
-    ## #   start_longitude <dbl>, achievement_count <int>, kudos_count <int>,
-    ## #   comment_count <int>, athlete_count <int>, photo_count <int>, ...
+    ##  1              2 "Tes~    3010         3600         3600              4   Ride 
+    ##  2              2 "Tes~       0           61           61              0   Yoga 
+    ##  3              2 "Tie~    8055.        3208         3269            171.  Run  
+    ##  4              2 "Sun~    7543.        3107         3141             99.9 Run  
+    ##  5              2 "Han~    9275.        3715         3871            102.  Run  
+    ##  6              2 "\U0~    7742.        3115         3161            102.  Run  
+    ##  7              2 "222~    7748.        3203         3273            106.  Run  
+    ##  8              2 "Sto~    6771.        2845         2915            106.  Run  
+    ##  9              2 "Uni~   44468         6730         7321            536.  Ride 
+    ## 10              2 "Feb~    6701.        2839         2850             76.4 Run  
+    ## # ... with 638 more rows, and 55 more variables: workout_type <int>, id <dbl>,
+    ## #   start_date <dttm>, start_date_local <chr>, timezone <chr>,
+    ## #   utc_offset <dbl>, location_city <lgl>, location_state <lgl>,
+    ## #   location_country <chr>, achievement_count <int>, kudos_count <int>,
+    ## #   comment_count <int>, athlete_count <int>, photo_count <int>, trainer <lgl>,
+    ## #   commute <lgl>, manual <lgl>, private <lgl>, visibility <chr>,
+    ## #   flagged <lgl>, gear_id <chr>, start_latlng <list>, end_latlng <list>, ...
 
-Preprocess activities. Make sure that all id columns are represented as
-characters and improve the column names:
+Make sure that all ID columns have a character format and improve the
+column names.
 
-<table>
-<thead>
-<tr class="header">
-<th style="text-align: left;">name</th>
-<th style="text-align: left;">command</th>
-<th style="text-align: left;">pattern</th>
-<th style="text-align: left;">cue_mode</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">df_act</td>
-<td style="text-align: left;">pre_process_act(df_act_raw, athlete_id)</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: left;">thorough</td>
-</tr>
-</tbody>
-</table>
-
-    pre_process_act <- function(df_act_raw, athlete_id) {
+    pre_process_act <- function(df_act_raw, active_user_id, meas_board) {
       df_act_raw %>%
         mutate(across(contains("id"), as.character)) %>%
         rename(athlete_id = `athlete.id`)
     }
 
-Extract all ids of the activities:
+Extract ids of all activities. Exclude activities which were recorded
+manually, because they don’t include additional data:
 
-<table>
-<thead>
-<tr class="header">
-<th style="text-align: left;">name</th>
-<th style="text-align: left;">command</th>
-<th style="text-align: left;">pattern</th>
-<th style="text-align: left;">cue_mode</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">act_ids</td>
-<td style="text-align: left;">pull(distinct(df_act, id))</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: left;">thorough</td>
-</tr>
-</tbody>
-</table>
+    rel_act_ids <- function(df_act) {
+      df_act %>%
+        filter(!manual) %>%
+        pull(id)
+    }
 
 ## Measurements
 
-Read the ‘stream’ data from Strava. A ‘stream’ is a nested list (json
-format) with all available measurements of the corresponding activity.
+A ‘stream’ is a nested list (JSON format) with all available
+measurements of the corresponding activity.
 
-To get all available variables and turn the result into a data frame,
-define a helper function. This function takes an id of an activity and
-an authentication token, which we have created earlier.
+To get the available variables and turn the result into a data frame,
+define a helper function `read_activity_stream`. This function takes an
+ID of an activity and an authentication token, which you created
+earlier.
 
-<table>
-<thead>
-<tr class="header">
-<th style="text-align: left;">name</th>
-<th style="text-align: left;">command</th>
-<th style="text-align: left;">pattern</th>
-<th style="text-align: left;">cue_mode</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">df_meas</td>
-<td style="text-align: left;">read_activity_stream(act_ids, my_sig)</td>
-<td style="text-align: left;">map(act_ids)</td>
-<td style="text-align: left;">never</td>
-</tr>
-</tbody>
-</table>
+Preprocess and unnest the data in this function. The column `latlng`
+needs special attention, because it contains latitude and longitude
+information. Separate the two measurements before unnesting all list
+columns.
 
-    read_activity_stream <- function(id, sig) {
+    read_activity_stream <- function(id, active_user_id, access_token) {
       act_url <- parse_url(stringr::str_glue(
         "https://www.strava.com/api/v3/activities/{id}/streams"))
-      access_token <- sig$credentials$access_token[[1]]
 
       r <- modify_url(
         act_url,
@@ -433,178 +275,91 @@ an authentication token, which we have created earlier.
 
       stop_for_status(r)
 
-      fromJSON(content(r, as = "text"), flatten = TRUE) %>%
+      df_stream_raw <- fromJSON(content(r, as = "text"), flatten = TRUE) %>%
         as_tibble() %>%
+        mutate(id = id) %>%
+        pivot_wider(names_from = type, values_from = data)
+
+      if ("latlng" %in% colnames(df_stream_raw)) {
+        df_stream <- df_stream_raw %>%
+          mutate(
+            lat = map(
+              .x = latlng, .f = ~ .x[, 1]),
+            lng = map(
+              .x = latlng, .f = ~ .x[, 2])) %>%
+          select(-latlng)
+      } else {
+        df_stream <- df_stream_raw
+      }
+
+      df_stream %>%
+        unnest(where(is_list)) %>%
         mutate(id = id)
     }
 
-The target is defined with dynamic branching which maps over all
-activity ids. Define the cue mode as `never` to make sure, that every
-target runs exactly once.
+Do this for every id. Pin the resulting data frames to the local
+`strava_data_26845822` board as an file of `type` ‘arrow’. By doing so
+we can later effectively query the data.
 
-Bind the single targets into one data frame:
+<aside>
+The name of the board is determined by the currently logged in user and
+will have a different name, if you run the pipeline.
+</aside>
 
-<table>
-<thead>
-<tr class="header">
-<th style="text-align: left;">name</th>
-<th style="text-align: left;">command</th>
-<th style="text-align: left;">pattern</th>
-<th style="text-align: left;">cue_mode</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">df_meas_all</td>
-<td style="text-align: left;">bind_rows(df_meas)</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: left;">thorough</td>
-</tr>
-</tbody>
-</table>
-
-The data now is represented by one row per measurement series:
-
-    ## # A tibble: 4,932 x 6
-    ##    type            data            series_type original_size resolution id      
-    ##    <chr>           <list>          <chr>               <int> <chr>      <chr>   
-    ##  1 moving          <lgl [385]>     distance              385 high       6421879~
-    ##  2 latlng          <dbl [385 x 2]> distance              385 high       6421879~
-    ##  3 velocity_smooth <dbl [385]>     distance              385 high       6421879~
-    ##  4 grade_smooth    <dbl [385]>     distance              385 high       6421879~
-    ##  5 cadence         <int [385]>     distance              385 high       6421879~
-    ##  6 distance        <dbl [385]>     distance              385 high       6421879~
-    ##  7 altitude        <dbl [385]>     distance              385 high       6421879~
-    ##  8 heartrate       <int [385]>     distance              385 high       6421879~
-    ##  9 time            <int [385]>     distance              385 high       6421879~
-    ## 10 moving          <lgl [338]>     distance              338 high       6417412~
-    ## # ... with 4,922 more rows
-
-Turn the data into a wide format:
-
-<table>
-<thead>
-<tr class="header">
-<th style="text-align: left;">name</th>
-<th style="text-align: left;">command</th>
-<th style="text-align: left;">pattern</th>
-<th style="text-align: left;">cue_mode</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">df_meas_wide</td>
-<td style="text-align: left;">meas_wide(df_meas_all)</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: left;">thorough</td>
-</tr>
-</tbody>
-</table>
-
-    meas_wide <- function(df_meas) {
-      pivot_wider(df_meas, names_from = type, values_from = data)
+    pin_meas <- function(act_id, active_user_id, access_token, meas_board) {
+      pin_name <- paste0("df_", act_id, "_", active_user_id)
+      meas <- read_activity_stream(act_id, active_user_id, access_token)
+      pin_write(meas_board, meas, pin_name, type = "arrow")
     }
-
-In this format every activity is one row again:
-
-    ## # A tibble: 618 x 15
-    ##    series_type original_size resolution id         moving latlng velocity_smooth
-    ##    <chr>               <int> <chr>      <chr>      <list> <list> <list>         
-    ##  1 distance              385 high       6421879706 <lgl ~ <dbl ~ <dbl [385]>    
-    ##  2 distance              338 high       6417412687 <lgl ~ <dbl ~ <dbl [338]>    
-    ##  3 distance            11112 high       6403300429 <lgl ~ <dbl ~ <dbl [11,112]> 
-    ##  4 distance              378 high       6397751426 <lgl ~ <dbl ~ <dbl [378]>    
-    ##  5 distance              373 high       6384464449 <lgl ~ <dbl ~ <dbl [373]>    
-    ##  6 distance             4988 high       6371131703 <lgl ~ <dbl ~ <dbl [4,988]>  
-    ##  7 distance             5504 high       6355067791 <lgl ~ <dbl ~ <dbl [5,504]>  
-    ##  8 distance              347 high       6345504872 <lgl ~ <dbl ~ <dbl [347]>    
-    ##  9 distance              394 high       6332901406 <lgl ~ <dbl ~ <dbl [394]>    
-    ## 10 distance              355 high       6308638713 <lgl ~ <dbl ~ <dbl [355]>    
-    ## # ... with 608 more rows, and 8 more variables: grade_smooth <list>,
-    ## #   cadence <list>, distance <list>, altitude <list>, heartrate <list>,
-    ## #   time <list>, temp <list>, watts <list>
-
-Preprocess and unnest the data. The column `latlng` needs special
-attention, because it contains latitude and longitude information.
-Separate the two measurements before unnesting all list columns.
-
-<table>
-<thead>
-<tr class="header">
-<th style="text-align: left;">name</th>
-<th style="text-align: left;">command</th>
-<th style="text-align: left;">pattern</th>
-<th style="text-align: left;">cue_mode</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">df_meas_pro</td>
-<td style="text-align: left;">meas_pro(df_meas_wide)</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: left;">thorough</td>
-</tr>
-</tbody>
-</table>
-
-    meas_pro <- function(df_meas_wide) {
-      df_meas_wide %>%
-        mutate(
-          lat = map_if(
-            .x = latlng, .p = ~ !is.null(.x), .f = ~ .x[, 1]),
-          lng = map_if(
-            .x = latlng, .p = ~ !is.null(.x), .f = ~ .x[, 2])) %>%
-        select(-c(latlng, original_size, resolution, series_type)) %>%
-        unnest(where(is_list))
-    }
-
-After this step every row is one point in time and every column is (if
-present) a measurement at this point in time.
-
-    ## # A tibble: 2,209,981 x 13
-    ##    id    moving velocity_smooth grade_smooth cadence distance altitude heartrate
-    ##    <chr> <lgl>            <dbl>        <dbl>   <int>    <dbl>    <dbl>     <int>
-    ##  1 6421~ FALSE             0            -1.3      76      0       519.       109
-    ##  2 6421~ TRUE              2.16         -1        73     10.8     519        112
-    ##  3 6421~ TRUE              2.4          -0.8      75     31.2     519.       112
-    ##  4 6421~ TRUE              2.54         -0.8      75     51.5     519.       113
-    ##  5 6421~ TRUE              2.45         -0.5      75     72.9     518.       114
-    ##  6 6421~ TRUE              2.44         -0.4      76     90.5     518.       117
-    ##  7 6421~ TRUE              2.62         -0.3      76    107.      518.       120
-    ##  8 6421~ TRUE              2.56         -0.1      78    129.      518.       121
-    ##  9 6421~ TRUE              2.48         -0.1      79    149       518.       120
-    ## 10 6421~ TRUE              2.62         -0.1      77    171.      518.       122
-    ## # ... with 2,209,971 more rows, and 5 more variables: time <int>, temp <int>,
-    ## #   watts <int>, lat <dbl>, lng <dbl>
 
 # Visualisation
 
 Visualize the final data by displaying the geospatial information in the
-data. Every facet is one activity. Keep the rest of the plot as minimal
-as possible.
+data. Join all the activities into one data frame. To do this, get the
+paths to all the measurement files:
 
-<table>
-<thead>
-<tr class="header">
-<th style="text-align: left;">name</th>
-<th style="text-align: left;">command</th>
-<th style="text-align: left;">pattern</th>
-<th style="text-align: left;">cue_mode</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">gg_meas</td>
-<td style="text-align: left;">vis_meas(df_meas_pro)</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: left;">thorough</td>
-</tr>
-</tbody>
-</table>
+    meas_paths <- function(board_name) {
+      dir_ls(
+        board_name, type = "file", regexp = "df_\\d.*\\.arrow$", recurse = TRUE)
+    }
+
+Insert them all into a duckdb and select relevant columns:
+
+    meas_all <- function(paths_meas) {
+      act_col_types <- schema(
+        moving = boolean(), velocity_smooth = double(),
+        grade_smooth = double(), distance = double(),
+        altitude = double(), heartrate = int32(), time = int32(),
+        lat = double(), lng = double(), cadence = int32(),
+        watts = int32(), id = string())
+
+      open_dataset(paths_meas, format = "arrow", schema = act_col_types) %>%
+        to_duckdb() %>%
+        select(id, lat, lng) %>%
+        filter(!is.na(lat) & !is.na(lng)) %>%
+        collect()
+    }
+
+    ## # A tibble: 2,252,282 x 3
+    ##    id           lat   lng
+    ##    <chr>      <dbl> <dbl>
+    ##  1 1327205128  48.2  9.02
+    ##  2 1327205128  48.2  9.02
+    ##  3 1327205128  48.2  9.02
+    ##  4 1327205128  48.2  9.02
+    ##  5 1327205128  48.2  9.02
+    ##  6 1327205128  48.2  9.02
+    ##  7 1327205128  48.2  9.02
+    ##  8 1327205128  48.2  9.02
+    ##  9 1327205128  48.2  9.02
+    ## 10 1327205128  48.2  9.02
+    ## # ... with 2,252,272 more rows
+
+In the final plot every facet is one activity. Keep the rest of the plot
+as minimal as possible.
 
     vis_meas <- function(df_meas_pro) {
       df_meas_pro %>%
-        filter(!is.na(lat)) %>%
         ggplot(aes(x = lng, y = lat)) +
         geom_path() +
         facet_wrap(~ id, scales = "free") +
@@ -625,3 +380,9 @@ as possible.
     }
 
 <img src="gg_meas.png" width="2100" />
+
+And there it is: All your Strava data in a few tidy data frames and a
+nice-looking plot. Future updates to the data shouldn’t take too long,
+because only measurements from new activities will be downloaded. With
+all your Strava data up to date, there are a lot of appealing
+possibilities for further data analyses of your fitness data.
