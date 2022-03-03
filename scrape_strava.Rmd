@@ -45,7 +45,8 @@ You can learn more about the package and its functionalities
 
 In order to reproduce the analysis, perform the following steps:
 
-* Clone the repository: [https://github.com/duju211/pin_strava](https://github.com/duju211/pin_strava)
+* Clone the repository:
+[https://github.com/duju211/pin_strava](https://github.com/duju211/pin_strava)
 * Install the packages listed in the `libraries.R` file
 * Run the target pipeline by executing `targets::tar_make()` command
 * Follow the instructions printed in the console

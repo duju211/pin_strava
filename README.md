@@ -21,7 +21,6 @@ You will need the following packages:
     library(arrow)
     library(httr)
     library(pins)
-    library(httr)
     library(glue)
     library(fs)
 
