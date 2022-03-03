@@ -11,13 +11,11 @@ routes.
 
 You will need the following packages:
 
-    library(Microsoft365R)
     library(tarchetypes)
     library(conflicted)
     library(tidyverse)
     library(lubridate)
     library(jsonlite)
-    library(feather)
     library(targets)
     library(httpuv)
     library(arrow)
@@ -28,7 +26,6 @@ You will need the following packages:
     library(fs)
 
     conflict_prefer("filter", "dplyr")
-    conflict_prefer("read_feather", "feather")
 
 # Data
 
@@ -75,25 +72,6 @@ saving the keys, and then restarting R.
 
 The function `define_strava_app` shown below creates the OAuth app:
 
-<table>
-<thead>
-<tr class="header">
-<th style="text-align: left;">name</th>
-<th style="text-align: left;">command</th>
-<th style="text-align: left;">pattern</th>
-<th style="text-align: left;">cue_mode</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">my_app</td>
-<td style="text-align: left;">define_strava_app()</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: left;">thorough</td>
-</tr>
-</tbody>
-</table>
-
     define_strava_app <- function() {
       if (Sys.getenv("STRAVA_KEY") == "" | Sys.getenv("STRAVA_SECRET") == "")
         stop(str_glue(
@@ -117,25 +95,6 @@ Define an endpoint called `my_endpoint` using the function
 The `authorize` parameter describes the authorization url and the
 `access` argument exchanges the authenticated token.
 
-<table>
-<thead>
-<tr class="header">
-<th style="text-align: left;">name</th>
-<th style="text-align: left;">command</th>
-<th style="text-align: left;">pattern</th>
-<th style="text-align: left;">cue_mode</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">my_endpoint</td>
-<td style="text-align: left;">define_strava_endpoint()</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: left;">thorough</td>
-</tr>
-</tbody>
-</table>
-
     define_strava_endpoint <- function() {
       oauth_endpoint(
         request = NULL,
@@ -147,25 +106,6 @@ The `authorize` parameter describes the authorization url and the
 
 Before you can execute the following steps, you have to authenticate the
 API in the web browser.
-
-<table>
-<thead>
-<tr class="header">
-<th style="text-align: left;">name</th>
-<th style="text-align: left;">command</th>
-<th style="text-align: left;">pattern</th>
-<th style="text-align: left;">cue_mode</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">my_sig</td>
-<td style="text-align: left;">define_strava_sig(my_endpoint, my_app)</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: left;">always</td>
-</tr>
-</tbody>
-</table>
 
     define_strava_sig <- function(endpoint, app) {
       oauth2.0_token(
@@ -181,59 +121,12 @@ are always executed with an up-to-date authorization token.
 
 ## Current authenticated user
 
-Get the id of the currently authenticated user:
-
-<table>
-<thead>
-<tr class="header">
-<th style="text-align: left;">name</th>
-<th style="text-align: left;">command</th>
-<th style="text-align: left;">pattern</th>
-<th style="text-align: left;">cue_mode</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">active_user_id</td>
-<td style="text-align: left;">my_sig[[“credentials”]][[“athlete”]][[“id”]]</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: left;">thorough</td>
-</tr>
-</tbody>
-</table>
-
-Download information about the currently authenticated user. Map over
-the `active_user_id` to make sure, that no information is overwritten.
-When preprocessing the data, the columns shoes, clubs and bikes need
-special attention, because they can contain multiple entries and can be
+Download information about the currently authenticated user. When
+preprocessing the data, the columns shoes, clubs and bikes need special
+attention, because they can contain multiple entries and can be
 interpreted as list columns.
 
-<table>
-<colgroup>
-<col style="width: 13%" />
-<col style="width: 70%" />
-<col style="width: 7%" />
-<col style="width: 8%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">name</th>
-<th style="text-align: left;">command</th>
-<th style="text-align: left;">pattern</th>
-<th style="text-align: left;">cue_mode</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">df_active_user</td>
-<td style="text-align: left;">active_user(access_token, user_list_cols, active_user_id, meas_board)</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: left;">thorough</td>
-</tr>
-</tbody>
-</table>
-
-    active_user <- function(access_token, user_list_cols, active_user_id, meas_board) {
+    active_user <- function(access_token, user_list_cols, meas_board) {
       athlete_url <- parse_url("https://www.strava.com/api/v3/athlete")
 
       r <- athlete_url %>%
@@ -278,31 +171,12 @@ data. Because the total number of activities is unknown, use a while
 loop. It will break the execution of the loop if there are no more
 activities to read.
 
-<table>
-<thead>
-<tr class="header">
-<th style="text-align: left;">name</th>
-<th style="text-align: left;">command</th>
-<th style="text-align: left;">pattern</th>
-<th style="text-align: left;">cue_mode</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">df_act_raw</td>
-<td style="text-align: left;">read_all_activities(access_token, active_user_id)</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: left;">thorough</td>
-</tr>
-</tbody>
-</table>
-
     read_all_activities <- function(access_token, active_user_id) {
       activities_url <- parse_url(
         "https://www.strava.com/api/v3/athlete/activities")
 
       act_vec <- vector(mode = "list")
-      df_act <- tibble::tibble(init = "init")
+      df_act <- tibble(init = "init")
       i <- 1L
 
       while (nrow(df_act) != 0) {
@@ -332,20 +206,20 @@ activities to read.
 
 The resulting data frame consists of one row per activity:
 
-    ## # A tibble: 641 x 62
+    ## # A tibble: 648 x 62
     ##    resource_state name  distance moving_time elapsed_time total_elevation~ type 
     ##             <int> <chr>    <dbl>       <int>        <int>            <dbl> <chr>
-    ##  1              2 "Sto~    6771.        2845         2915            106.  Run  
-    ##  2              2 "Uni~   44468         6730         7321            536.  Ride 
-    ##  3              2 "Feb~    6701.        2839         2850             76.4 Run  
-    ##  4              2 "Fee~   32493.        4890         4997            467   Ride 
-    ##  5              2 "Nig~    6736.        2678         2678             76.2 Run  
-    ##  6              2 "Feb~    7815.        3136         3148             31.4 Run  
-    ##  7              2 "End~    6658.        2734         2778            103.  Run  
-    ##  8              2 "8K"     7548.        3083         3103            108.  Run  
-    ##  9              2 "10K"   10399.        4177         4254              9.5 Run  
-    ## 10              2 "Sno~   38529.        5220         6150            420.  Ride 
-    ## # ... with 631 more rows, and 55 more variables: workout_type <int>, id <dbl>,
+    ##  1              2 "Tes~    3010         3600         3600              4   Ride 
+    ##  2              2 "Tes~       0           61           61              0   Yoga 
+    ##  3              2 "Tie~    8055.        3208         3269            171.  Run  
+    ##  4              2 "Sun~    7543.        3107         3141             99.9 Run  
+    ##  5              2 "Han~    9275.        3715         3871            102.  Run  
+    ##  6              2 "\U0~    7742.        3115         3161            102.  Run  
+    ##  7              2 "222~    7748.        3203         3273            106.  Run  
+    ##  8              2 "Sto~    6771.        2845         2915            106.  Run  
+    ##  9              2 "Uni~   44468         6730         7321            536.  Ride 
+    ## 10              2 "Feb~    6701.        2839         2850             76.4 Run  
+    ## # ... with 638 more rows, and 55 more variables: workout_type <int>, id <dbl>,
     ## #   start_date <dttm>, start_date_local <chr>, timezone <chr>,
     ## #   utc_offset <dbl>, location_city <lgl>, location_state <lgl>,
     ## #   location_country <chr>, achievement_count <int>, kudos_count <int>,
@@ -356,51 +230,20 @@ The resulting data frame consists of one row per activity:
 Make sure that all ID columns have a character format and improve the
 column names.
 
-<table>
-<thead>
-<tr class="header">
-<th style="text-align: left;">name</th>
-<th style="text-align: left;">command</th>
-<th style="text-align: left;">pattern</th>
-<th style="text-align: left;">cue_mode</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">df_act</td>
-<td style="text-align: left;">pre_process_act(df_act_raw, active_user_id, meas_board)</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: left;">thorough</td>
-</tr>
-</tbody>
-</table>
-
     pre_process_act <- function(df_act_raw, active_user_id, meas_board) {
       df_act_raw %>%
         mutate(across(contains("id"), as.character)) %>%
         rename(athlete_id = `athlete.id`)
     }
 
-Use `dplyr::pull()` to extract all activity IDs
+Extract ids of all activities. Exclude activities which were recorded
+manually, because they don’t include additional data:
 
-<table>
-<thead>
-<tr class="header">
-<th style="text-align: left;">name</th>
-<th style="text-align: left;">command</th>
-<th style="text-align: left;">pattern</th>
-<th style="text-align: left;">cue_mode</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">act_ids</td>
-<td style="text-align: left;">pull(df_act, id)</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: left;">thorough</td>
-</tr>
-</tbody>
-</table>
+    rel_act_ids <- function(df_act) {
+      df_act %>%
+        filter(!manual) %>%
+        pull(id)
+    }
 
 ## Measurements
 
@@ -412,22 +255,10 @@ define a helper function `read_activity_stream`. This function takes an
 ID of an activity and an authentication token, which you created
 earlier.
 
-The target is defined with dynamic branching which maps over all
-activity IDs. Define the `cue_mode` as ‘never’ to make sure that every
-target runs exactly once.
-
-<table>
-<thead>
-<tr class="header">
-<th style="text-align: left;">name</th>
-<th style="text-align: left;">command</th>
-<th style="text-align: left;">pattern</th>
-<th style="text-align: left;">cue_mode</th>
-</tr>
-</thead>
-<tbody>
-</tbody>
-</table>
+Preprocess and unnest the data in this function. The column `latlng`
+needs special attention, because it contains latitude and longitude
+information. Separate the two measurements before unnesting all list
+columns.
 
     read_activity_stream <- function(id, active_user_id, access_token) {
       act_url <- parse_url(stringr::str_glue(
@@ -466,42 +297,69 @@ target runs exactly once.
         mutate(id = id)
     }
 
-Preprocess and unnest the data. The column `latlng` needs special
-attention, because it contains latitude and longitude information.
-Separate the two measurements before unnesting all list columns.
+Do this for every id. Pin the resulting data frames to the local
+`strava_data_26845822` board as an file of `type` ‘arrow’. By doing so
+we can later effectively query the data.
 
-After this step, every row is one point in time and every column is a
-measurement at this point in time (if there was any activity at that
-moment).
+<aside>
+The name of the board is determined by the currently logged in user and
+will have a different name, if you run the pipeline.
+</aside>
+
+    pin_meas <- function(act_id, active_user_id, access_token, meas_board) {
+      pin_name <- paste0("df_", act_id, "_", active_user_id)
+      meas <- read_activity_stream(act_id, active_user_id, access_token)
+      pin_write(meas_board, meas, pin_name, type = "arrow")
+    }
 
 # Visualisation
 
 Visualize the final data by displaying the geospatial information in the
-data. Every facet is one activity. Keep the rest of the plot as minimal
-as possible.
+data. Join all the activities into one data frame. To do this, get the
+paths to all the measurement files:
 
-<table>
-<thead>
-<tr class="header">
-<th style="text-align: left;">name</th>
-<th style="text-align: left;">command</th>
-<th style="text-align: left;">pattern</th>
-<th style="text-align: left;">cue_mode</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">gg_meas</td>
-<td style="text-align: left;">vis_meas(df_all_meas)</td>
-<td style="text-align: left;">NA</td>
-<td style="text-align: left;">thorough</td>
-</tr>
-</tbody>
-</table>
+    meas_paths <- function(board_name) {
+      dir_ls(
+        board_name, type = "file", regexp = "df_\\d.*\\.arrow$", recurse = TRUE)
+    }
+
+Insert them all into a duckdb and select relevant columns:
+
+    meas_all <- function(paths_meas) {
+      act_col_types <- schema(
+        moving = boolean(), velocity_smooth = double(),
+        grade_smooth = double(), distance = double(),
+        altitude = double(), heartrate = int32(), time = int32(),
+        lat = double(), lng = double(), cadence = int32(),
+        watts = int32(), id = string())
+
+      open_dataset(paths_meas, format = "arrow", schema = act_col_types) %>%
+        to_duckdb() %>%
+        select(id, lat, lng) %>%
+        filter(!is.na(lat) & !is.na(lng)) %>%
+        collect()
+    }
+
+    ## # A tibble: 2,252,282 x 3
+    ##    id           lat   lng
+    ##    <chr>      <dbl> <dbl>
+    ##  1 1327205128  48.2  9.02
+    ##  2 1327205128  48.2  9.02
+    ##  3 1327205128  48.2  9.02
+    ##  4 1327205128  48.2  9.02
+    ##  5 1327205128  48.2  9.02
+    ##  6 1327205128  48.2  9.02
+    ##  7 1327205128  48.2  9.02
+    ##  8 1327205128  48.2  9.02
+    ##  9 1327205128  48.2  9.02
+    ## 10 1327205128  48.2  9.02
+    ## # ... with 2,252,272 more rows
+
+In the final plot every facet is one activity. Keep the rest of the plot
+as minimal as possible.
 
     vis_meas <- function(df_meas_pro) {
       df_meas_pro %>%
-        filter(!is.na(lat)) %>%
         ggplot(aes(x = lng, y = lat)) +
         geom_path() +
         facet_wrap(~ id, scales = "free") +

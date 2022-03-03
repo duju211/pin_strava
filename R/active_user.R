@@ -1,4 +1,4 @@
-active_user <- function(access_token, user_list_cols, active_user_id, meas_board) {
+active_user <- function(access_token, user_list_cols, meas_board) {
   athlete_url <- parse_url("https://www.strava.com/api/v3/athlete")
 
   r <- athlete_url %>%

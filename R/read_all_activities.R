@@ -3,7 +3,7 @@ read_all_activities <- function(access_token, active_user_id) {
     "https://www.strava.com/api/v3/athlete/activities")
 
   act_vec <- vector(mode = "list")
-  df_act <- tibble::tibble(init = "init")
+  df_act <- tibble(init = "init")
   i <- 1L
 
   while (nrow(df_act) != 0) {

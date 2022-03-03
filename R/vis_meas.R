@@ -1,6 +1,5 @@
 vis_meas <- function(df_meas_pro) {
   df_meas_pro %>%
-    filter(!is.na(lat)) %>%
     ggplot(aes(x = lng, y = lat)) +
     geom_path() +
     facet_wrap(~ id, scales = "free") +

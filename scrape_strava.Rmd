@@ -30,8 +30,6 @@ process the data, and then create a visualization of activity routes.
 source("libraries.R")
 
 Sys.setenv("RSTUDIO_VERSION" = '1.4.1725')
-df_manifest <- tar_manifest(
-  fields = c("name", "command", "pattern", "cue_mode"))
 ```
 
 You will need the following packages:
@@ -86,10 +84,6 @@ STRAVA_SECRET=<Client Secret>
 
 The function `define_strava_app` shown below creates the OAuth app:
 
-```{r, echo=FALSE}
-knitr::kable(df_manifest[df_manifest$name == "my_app", ])
-```
-
 ```{r, code=read_lines("R/define_strava_app.R"), eval=FALSE}
 ```
 
@@ -101,10 +95,6 @@ Define an endpoint called `my_endpoint` using the function
 The `authorize` parameter describes the authorization url and the `access`
 argument exchanges the authenticated token.
 
-```{r, echo=FALSE}
-knitr::kable(df_manifest[df_manifest$name == "my_endpoint", ])
-```
-
 ```{r, code=read_lines("R/define_strava_endpoint.R"), eval=FALSE}
 ```
 
@@ -112,12 +102,6 @@ knitr::kable(df_manifest[df_manifest$name == "my_endpoint", ])
 
 Before you can execute the following steps,
 you have to authenticate the API in the web browser.
-
-```{r, echo=FALSE}
-df_manifest[df_manifest$name == "my_sig", ] %>%
-  mutate(cue_mode = "always") %>%
-  knitr::kable()
-```
 
 ```{r, code=read_lines("R/define_strava_sig.R"), eval=FALSE}
 ```
@@ -128,22 +112,11 @@ are always executed with an up-to-date authorization token.
 
 ## Current authenticated user
 
-Get the id of the currently authenticated user:
-
-```{r, echo=FALSE}
-knitr::kable(df_manifest[df_manifest$name == "active_user_id", ])
-```
-
 Download information about the currently authenticated user.
-Map over the `active_user_id` to make sure, that no information is overwritten.
 When preprocessing the data, the columns
 `r glue_collapse(tar_read(user_list_cols), sep = ", ", last = " and ")` need
 special attention, because they can contain multiple entries and can be
 interpreted as list columns.
-
-```{r, echo=FALSE}
-knitr::kable(df_manifest[df_manifest$name == "df_active_user", ])
-```
 
 ```{r, code=read_lines("R/active_user.R"), eval=FALSE}
 ```
@@ -161,10 +134,6 @@ Load a data frame that gives an overview of all the activities from the data.
 Because the total number of activities is unknown, use a while loop.
 It will break the execution of the loop if there are no more activities to read.
 
-```{r, echo=FALSE}
-knitr::kable(df_manifest[df_manifest$name == "df_act_raw", ])
-```
-
 ```{r, code=read_lines("R/read_all_activities.R"), eval=FALSE}
 ```
 
@@ -177,17 +146,13 @@ tar_read(df_act_raw)
 Make sure that all ID columns have a character format and improve the column
 names.
 
-```{r, echo=FALSE}
-knitr::kable(df_manifest[df_manifest$name == "df_act", ])
-```
-
 ```{r, code=read_lines("R/pre_process_act.R"), eval=FALSE}
 ```
 
-Use `dplyr::pull()` to extract all activity IDs
+Extract ids of all activities. Exclude activities which were recorded manually,
+because they don't include additional data:
 
-```{r, echo=FALSE}
-knitr::kable(df_manifest[df_manifest$name == "act_ids", ])
+```{r, file="R/rel_act_ids.R"}
 ```
 
 ## Measurements
@@ -200,34 +165,46 @@ define a helper function `read_activity_stream`.
 This function takes an ID of an activity and an authentication token,
 which you created earlier.
 
-```{r, code=read_lines("R/read_activity_stream.R"), eval=FALSE}
-```
-
-Pin the resulting data frame to the local `t tar_read(meas_board)` board.
-Define the `cue_mode` as 'never' to make sure that every target runs exactly
-once.
-
-
-
-```{r, file="R/pin_meas.R"}
-```
-
-Preprocess and unnest the data.
+Preprocess and unnest the data in this function.
 The column `latlng` needs special attention,
 because it contains latitude and longitude information.
 Separate the two measurements before unnesting all list columns.
 
-After this step, every row is one point in time and every column is a
-measurement at this point in time (if there was any activity at that moment).
+```{r, code=read_lines("R/read_activity_stream.R"), eval=FALSE}
+```
+
+Do this for every id.
+Pin the resulting data frames to the local ``r tar_read(board_name)`` board as
+an file of `type` 'arrow'. By doing so we can later effectively query the data.
+
+<aside>
+The name of the board is determined by the currently logged in user and will
+have a different name, if you run the pipeline.
+</aside>
+
+```{r, file="R/pin_meas.R"}
+```
 
 # Visualisation
 
 Visualize the final data by displaying the geospatial information in the data.
-Every facet is one activity. Keep the rest of the plot as minimal as possible.
+Join all the activities into one data frame. To do this, get the paths to all
+the measurement files:
+
+```{r, file="R/meas_paths.R"}
+```
+
+Insert them all into a duckdb and select relevant columns:
+
+```{r meas_all, file="R/meas_all.R"}
+```
 
 ```{r, echo=FALSE}
-knitr::kable(df_manifest[df_manifest$name == "gg_meas", ])
+tar_read(df_meas_all)
 ```
+
+In the final plot every facet is one activity.
+Keep the rest of the plot as minimal as possible.
 
 ```{r, code=read_lines("R/vis_meas.R"), eval=FALSE}
 ```
