@@ -1,4 +1,4 @@
-poi <- function(df_act, paths_meas, target_file,
+poi <- function(df_act, paths_meas, target_file, act_type,
                 lng_min, lng_max, lat_min, lat_max) {
   act_col_types <- schema(
     moving = boolean(), velocity_smooth = double(),
@@ -13,12 +13,8 @@ poi <- function(df_act, paths_meas, target_file,
 
   df_strava_poi <- strava_db |>
     filter(
-      id %in% local(df_act$id[df_act$type == "Ride"]),
+      id %in% local(df_act$id[df_act$type == act_type]),
       lng >= lng_min, lng <= lng_max, lat >= lat_min, lat <= lat_max) |>
     select(-heartrate) |>
     collect()
-
-  write_rds(df_strava_poi, target_file)
-
-  return(target_file)
 }
