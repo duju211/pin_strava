@@ -1,4 +1,5 @@
-lochen <- function(df_act, paths_meas, lng_min, lng_max, lat_min, lat_max) {
+poi <- function(df_act, paths_meas, target_file,
+                lng_min, lng_max, lat_min, lat_max) {
   act_col_types <- schema(
     moving = boolean(), velocity_smooth = double(),
     grade_smooth = double(), distance = double(),
@@ -10,23 +11,14 @@ lochen <- function(df_act, paths_meas, lng_min, lng_max, lat_min, lat_max) {
     paths_meas, format = "arrow", schema = act_col_types) |>
     to_duckdb()
 
-  strava_lochen <- strava_db |>
+  df_strava_poi <- strava_db |>
     filter(
       id %in% local(df_act$id[df_act$type == "Ride"]),
       lng >= lng_min, lng <= lng_max, lat >= lat_min, lat <= lat_max) |>
     select(-heartrate) |>
-    group_by(id) |>
-    mutate(time = time - min(time)) |>
-    ungroup()
-
-  strava_lochen_wrong_direction <- strava_lochen |>
-    group_by(id) |>
-    filter(time == min(time)) |>
-    mutate(
-      wrong_direction = lat < lat_max - ((lat_max - lat_min) / 2)) |>
-    filter(wrong_direction)
-
-  strava_lochen |>
-    anti_join(strava_lochen_wrong_direction, by = "id") |>
     collect()
+
+  write_rds(df_strava_poi, target_file)
+
+  return(target_file)
 }
