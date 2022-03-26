@@ -13,8 +13,8 @@ poi <- function(df_act, paths_meas, target_file, act_type,
 
   df_strava_poi <- strava_db |>
     filter(
-      id %in% local(df_act$id[df_act$type == act_type]),
       lng >= lng_min, lng <= lng_max, lat >= lat_min, lat <= lat_max) |>
     select(-heartrate) |>
-    collect()
+    collect() |>
+    left_join(select(df_act, id, type, start_date), by = "id")
 }
