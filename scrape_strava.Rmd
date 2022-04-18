@@ -174,17 +174,13 @@ Separate the two measurements before unnesting all list columns.
 ```{r, code=read_lines("R/read_activity_stream.R"), eval=FALSE}
 ```
 
-Do this for every id.
-Pin the resulting data frames to the local ``r tar_read(board_name)`` board as
-an file of `type` 'arrow'. By doing so we can later effectively query the data.
+Do this for every id and save the resulting data frames as `feather` file.
+By doing so we can later effectively query the data.
 
 <aside>
 The name of the board is determined by the currently logged in user and will
 have a different name, if you run the pipeline.
 </aside>
-
-```{r, file="R/pin_meas.R"}
-```
 
 # Visualisation
 

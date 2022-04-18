@@ -3,3 +3,4 @@
 .RData
 .Ruserdata
 _targets/
+strava_data_*

@@ -7,7 +7,6 @@ library(targets)
 library(httpuv)
 library(arrow)
 library(httr)
-library(pins)
 library(glue)
 library(fs)
 
