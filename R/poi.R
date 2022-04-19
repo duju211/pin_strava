@@ -1,4 +1,4 @@
-poi <- function(df_act, paths_meas, target_file, act_type,
+poi <- function(df_act, paths_meas,
                 lng_min, lng_max, lat_min, lat_max) {
   act_col_types <- schema(
     moving = boolean(), velocity_smooth = double(),
@@ -11,7 +11,7 @@ poi <- function(df_act, paths_meas, target_file, act_type,
     paths_meas, format = "arrow", schema = act_col_types) |>
     to_duckdb()
 
-  df_strava_poi <- strava_db |>
+  strava_db |>
     filter(
       lng >= lng_min, lng <= lng_max, lat >= lat_min, lat <= lat_max) |>
     select(-heartrate) |>

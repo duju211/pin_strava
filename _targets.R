@@ -4,6 +4,20 @@ walk(dir_ls("R"), source)
 
 dir_create("data")
 
+df_poi <- tribble(
+  ~target_name, ~target_file, ~act_type, ~lng_min, ~lng_max, ~lat_min, ~lat_max,
+  "lochen", "data/lochen.rds", "Ride", 8.843454, 8.859889, 48.21787, 48.23242)
+
+mapped_poi <- tar_map(
+  df_poi, names = "target_name",
+  tar_target(df_poi_raw, poi(df_act, meas, lng_min, lng_max, lat_min, lat_max)),
+  tar_target(
+    poi_file, command = {
+      write_rds(df_poi_raw, target_file);
+      return(target_file)
+  }, format = "file")
+)
+
 list(
   tar_target(user_list_cols, c("shoes", "clubs", "bikes")),
   tar_target(access_token, read_access_token(), cue = tar_cue("always")),
@@ -18,18 +32,6 @@ list(
   tar_target(
     df_act, pre_process_act(df_act_raw, active_user_id, meas_board)),
   tar_target(act_ids, rel_act_ids(df_act)),
-  tar_target(
-    df_lochen,
-    poi(
-      df_act, meas, "lochen.rds", "Ride",
-      8.843454, 8.859889, 48.21787, 48.23242)),
-  tar_target(
-    rds_lochen,
-    command = {
-      out_path <- "lochen.rds";
-      write_rds(df_lochen, out_path);
-      return(out_path)},
-    format = "file"),
 
   tar_target(
     meas, command = {
@@ -44,6 +46,7 @@ list(
       write_feather(df_act, act_path);
       act_path
     }, format = "file"),
+  mapped_poi,
   tar_target(df_meas_all, meas_all(meas)),
   tar_target(gg_meas, vis_meas(df_meas_all)),
   tar_target(png_meas, save_gg_meas(gg_meas)),
