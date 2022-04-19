@@ -3,10 +3,11 @@ source("libraries.R")
 walk(dir_ls("R"), source)
 
 dir_create("data")
+dir_create("poi")
 
 df_poi <- tribble(
   ~target_name, ~target_file, ~act_type, ~lng_min, ~lng_max, ~lat_min, ~lat_max,
-  "lochen", "data/lochen.rds", "Ride", 8.843454, 8.859889, 48.21787, 48.23242)
+  "lochen", "poi/lochen.rds", "Ride", 8.843454, 8.859889, 48.21787, 48.23242)
 
 mapped_poi <- tar_map(
   df_poi, names = "target_name",

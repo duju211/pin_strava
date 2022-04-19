@@ -374,7 +374,7 @@ as minimal as possible.
           strip.text = element_blank())
     }
 
-<img src="gg_meas.png" width="2100" />
+<img src="data/gg_meas.png" width="2100" />
 
 And there it is: All your Strava data in a few tidy data frames and a
 nice-looking plot. Future updates to the data shouldn’t take too long,
