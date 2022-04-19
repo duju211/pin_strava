@@ -20,6 +20,7 @@ You will need the following packages:
     library(httpuv)
     library(duckdb)
     library(arrow)
+    library(pins)
     library(httr)
     library(glue)
     library(fs)
@@ -205,34 +206,36 @@ activities to read.
 
 The resulting data frame consists of one row per activity:
 
-    ## # A tibble: 661 × 59
+    ## # A tibble: 662 × 59
     ##    resource_state name  distance moving_time elapsed_time total_elevation… type 
     ##             <int> <chr>    <dbl>       <int>        <int>            <dbl> <chr>
-    ##  1              2 "Eas…    4226.        3117         3872             18.8 Hike 
-    ##  2              2 "Ope…    6792.        2643         2643            106.  Run  
-    ##  3              2 "Sno…    7833.        2971         2971            111.  Run  
-    ##  4              2 "Sod…    7607.        2766         2766             99.2 Run  
-    ##  5              2 "Sun…    8682.        3480         3495            113.  Run  
-    ##  6              2 "Sod…   42832.        7031        12807            675   Ride 
-    ##  7              2 "Sod…    7522.        2903         2908             99.4 Run  
-    ##  8              2 "Fah…       0          914          914              0   Ride 
-    ##  9              2 "FSV…    6623.        2617         2726             59.3 Run  
-    ## 10              2 "Mar…    9341.        3845         3871            109.  Run  
-    ## # … with 651 more rows, and 52 more variables: id <dbl>, start_date <dttm>,
-    ## #   start_date_local <chr>, timezone <chr>, utc_offset <dbl>,
-    ## #   location_city <lgl>, location_state <lgl>, location_country <chr>,
-    ## #   achievement_count <int>, kudos_count <int>, comment_count <int>,
-    ## #   athlete_count <int>, photo_count <int>, trainer <lgl>, commute <lgl>,
-    ## #   manual <lgl>, private <lgl>, visibility <chr>, flagged <lgl>,
-    ## #   gear_id <chr>, start_latlng <list>, end_latlng <list>, …
+    ##  1              2 "Fah…    6049.        1128         6270             89   Ride 
+    ##  2              2 "Eas…    4226.        3117         3872             18.8 Hike 
+    ##  3              2 "Ope…    6792.        2643         2643            106.  Run  
+    ##  4              2 "Sno…    7833.        2971         2971            111.  Run  
+    ##  5              2 "Sod…    7607.        2766         2766             99.2 Run  
+    ##  6              2 "Sun…    8682.        3480         3495            113.  Run  
+    ##  7              2 "Sod…   42832.        7031        12807            675   Ride 
+    ##  8              2 "Sod…    7522.        2903         2908             99.4 Run  
+    ##  9              2 "Fah…       0          914          914              0   Ride 
+    ## 10              2 "FSV…    6623.        2617         2726             59.3 Run  
+    ## # … with 652 more rows, and 52 more variables: workout_type <int>, id <dbl>,
+    ## #   start_date <dttm>, start_date_local <chr>, timezone <chr>,
+    ## #   utc_offset <dbl>, location_city <lgl>, location_state <lgl>,
+    ## #   location_country <chr>, achievement_count <int>, kudos_count <int>,
+    ## #   comment_count <int>, athlete_count <int>, photo_count <int>, trainer <lgl>,
+    ## #   commute <lgl>, manual <lgl>, private <lgl>, visibility <chr>,
+    ## #   flagged <lgl>, gear_id <chr>, start_latlng <list>, end_latlng <list>, …
 
 Make sure that all ID columns have a character format and improve the
 column names.
 
     pre_process_act <- function(df_act_raw, active_user_id, meas_board) {
-      df_act_raw %>%
-        mutate(across(contains("id"), as.character)) %>%
-        rename(athlete_id = `athlete.id`)
+      df_act_raw |>
+        rename(athlete_id = `athlete.id`) |>
+        mutate(
+          across(contains("id"), as.character),
+          id_name = str_glue("{id}_{athlete_id}"))
     }
 
 Extract ids of all activities. Exclude activities which were recorded
@@ -332,20 +335,20 @@ Insert them all into a duckdb and select relevant columns:
         collect()
     }
 
-    ## # A tibble: 2,281,866 × 3
+    ## # A tibble: 2,283,005 × 3
     ##    id           lat   lng
     ##    <chr>      <dbl> <dbl>
-    ##  1 6997027972  47.8  9.03
-    ##  2 6997027972  47.8  9.03
-    ##  3 6997027972  47.8  9.03
-    ##  4 6997027972  47.8  9.03
-    ##  5 6997027972  47.8  9.03
-    ##  6 6997027972  47.8  9.03
-    ##  7 6997027972  47.8  9.03
-    ##  8 6997027972  47.8  9.03
-    ##  9 6997027972  47.8  9.03
-    ## 10 6997027972  47.8  9.03
-    ## # … with 2,281,856 more rows
+    ##  1 7002079014  48.3  8.85
+    ##  2 7002079014  48.3  8.85
+    ##  3 7002079014  48.3  8.85
+    ##  4 7002079014  48.3  8.85
+    ##  5 7002079014  48.3  8.85
+    ##  6 7002079014  48.3  8.85
+    ##  7 7002079014  48.3  8.85
+    ##  8 7002079014  48.3  8.85
+    ##  9 7002079014  48.3  8.85
+    ## 10 7002079014  48.3  8.85
+    ## # … with 2,282,995 more rows
 
 In the final plot every facet is one activity. Keep the rest of the plot
 as minimal as possible.

@@ -2,9 +2,11 @@ source("libraries.R")
 
 walk(dir_ls("R"), source)
 
+dir_create("data")
+
 list(
   tar_target(user_list_cols, c("shoes", "clubs", "bikes")),
-  tar_target(access_token, Sys.getenv("STRAVA_TOKEN"), cue = tar_cue("always")),
+  tar_target(access_token, read_access_token(), cue = tar_cue("always")),
 
   tar_target(active_user_id, df_active_user[["id"]]),
   tar_target(
@@ -31,10 +33,17 @@ list(
 
   tar_target(
     meas, command = {
+      meas_path <- str_glue("data/meas_{act_ids}_{active_user_id}");
       df_meas <- read_activity_stream(act_ids, active_user_id, access_token);
-      write_feather(df_meas, tar_path());
-      tar_path()
+      write_feather(df_meas, meas_path);
+      meas_path
     }, pattern = map(act_ids), format = "file"),
+  tar_target(
+    act, command = {
+      act_path <- paste0("data/act_", active_user_id);
+      write_feather(df_act, act_path);
+      act_path
+    }, format = "file"),
   tar_target(df_meas_all, meas_all(meas)),
   tar_target(gg_meas, vis_meas(df_meas_all)),
   tar_target(png_meas, save_gg_meas(gg_meas)),
