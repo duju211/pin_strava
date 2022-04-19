@@ -6,6 +6,7 @@ my_app <- define_strava_app()
 my_endpoint <- define_strava_endpoint()
 my_sig <- define_strava_sig(my_endpoint, my_app)
 
-access_token <- my_sig[["credentials"]][["access_token"]]
+po <- Microsoft365R::get_personal_onedrive()
+po_board <- board_ms365(po, path = "strava_board", versioned = FALSE)
 
-Sys.setenv(STRAVA_TOKEN = access_token)
+pin_write(po_board, my_sig, "strava_sig")
