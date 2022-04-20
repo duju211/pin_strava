@@ -40,7 +40,7 @@ list(
       df_meas <- read_activity_stream(act_ids, active_user_id, access_token);
       write_feather(df_meas, meas_path);
       meas_path
-    }, pattern = map(act_ids), format = "file"),
+    }, pattern = map(act_ids), format = "file", cue = tar_cue("never")),
   tar_target(
     act, command = {
       act_path <- paste0("data/act_", active_user_id);
