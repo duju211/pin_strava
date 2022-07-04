@@ -11,6 +11,7 @@ routes.
 
 You will need the following packages:
 
+    library(Microsoft365R)
     library(tarchetypes)
     library(conflicted)
     library(tidyverse)
@@ -18,9 +19,10 @@ You will need the following packages:
     library(jsonlite)
     library(targets)
     library(httpuv)
+    library(duckdb)
     library(arrow)
-    library(httr)
     library(pins)
+    library(httr)
     library(glue)
     library(fs)
 
@@ -153,11 +155,11 @@ interpreted as list columns.
 In the end there is a data frame with one row for the currently
 authenticated user:
 
-    ## # A tibble: 1 x 27
+    ## # A tibble: 1 × 27
     ##         id resource_state firstname lastname city    state country sex   premium
     ##      <int>          <int> <chr>     <chr>    <chr>   <chr> <chr>   <chr> <lgl>  
-    ## 1 26845822              3 "Julian " During   Baling~ Bade~ Germany M     TRUE   
-    ## # ... with 18 more variables: summit <lgl>, created_at <chr>, updated_at <chr>,
+    ## 1 26845822              3 "Julian " During   Baling… Bade… Germany M     FALSE  
+    ## # … with 18 more variables: summit <lgl>, created_at <chr>, updated_at <chr>,
     ## #   badge_type_id <int>, weight <dbl>, profile_medium <chr>, profile <chr>,
     ## #   blocked <lgl>, can_follow <lgl>, follower_count <int>, friend_count <int>,
     ## #   mutual_friend_count <int>, athlete_type <int>, date_preference <chr>,
@@ -205,34 +207,36 @@ activities to read.
 
 The resulting data frame consists of one row per activity:
 
-    ## # A tibble: 648 x 62
-    ##    resource_state name  distance moving_time elapsed_time total_elevation~ type 
+    ## # A tibble: 692 × 60
+    ##    resource_state name  distance moving_time elapsed_time total_elevation… type 
     ##             <int> <chr>    <dbl>       <int>        <int>            <dbl> <chr>
-    ##  1              2 "Tes~    3010         3600         3600              4   Ride 
-    ##  2              2 "Tes~       0           61           61              0   Yoga 
-    ##  3              2 "Tie~    8055.        3208         3269            171.  Run  
-    ##  4              2 "Sun~    7543.        3107         3141             99.9 Run  
-    ##  5              2 "Han~    9275.        3715         3871            102.  Run  
-    ##  6              2 "\U0~    7742.        3115         3161            102.  Run  
-    ##  7              2 "222~    7748.        3203         3273            106.  Run  
-    ##  8              2 "Sto~    6771.        2845         2915            106.  Run  
-    ##  9              2 "Uni~   44468         6730         7321            536.  Ride 
-    ## 10              2 "Feb~    6701.        2839         2850             76.4 Run  
-    ## # ... with 638 more rows, and 55 more variables: workout_type <int>, id <dbl>,
-    ## #   start_date <dttm>, start_date_local <chr>, timezone <chr>,
-    ## #   utc_offset <dbl>, location_city <lgl>, location_state <lgl>,
-    ## #   location_country <chr>, achievement_count <int>, kudos_count <int>,
-    ## #   comment_count <int>, athlete_count <int>, photo_count <int>, trainer <lgl>,
-    ## #   commute <lgl>, manual <lgl>, private <lgl>, visibility <chr>,
-    ## #   flagged <lgl>, gear_id <chr>, start_latlng <list>, end_latlng <list>, ...
+    ##  1              2 "Pla…   32375.        5042         5242             408  Ride 
+    ##  2              2 "Pla…   34140.        5898         5898             606  Ride 
+    ##  3              2 "Slo…    6970.        3247         3255             109. Run  
+    ##  4              2 "Rai…    6762.        2699         2819             105. Run  
+    ##  5              2 "Lon…   32930.        5295         5669             500  Ride 
+    ##  6              2 "Tex…   13453.        4291        11609             404  Ride 
+    ##  7              2 "Mit…    5798.        1263         1674               6  Ride 
+    ##  8              2 "Kai…   31786         6304         8390              21  Ride 
+    ##  9              2 "Fah…     114.          32           94               0  Ride 
+    ## 10              2 "Kai…   21379.        4095        12869              53  Ride 
+    ## # … with 682 more rows, and 53 more variables: sport_type <chr>,
+    ## #   workout_type <int>, id <dbl>, start_date <dttm>, start_date_local <chr>,
+    ## #   timezone <chr>, utc_offset <dbl>, location_city <lgl>,
+    ## #   location_state <lgl>, location_country <chr>, achievement_count <int>,
+    ## #   kudos_count <int>, comment_count <int>, athlete_count <int>,
+    ## #   photo_count <int>, trainer <lgl>, commute <lgl>, manual <lgl>,
+    ## #   private <lgl>, visibility <chr>, flagged <lgl>, gear_id <chr>, …
 
 Make sure that all ID columns have a character format and improve the
 column names.
 
     pre_process_act <- function(df_act_raw, active_user_id, meas_board) {
-      df_act_raw %>%
-        mutate(across(contains("id"), as.character)) %>%
-        rename(athlete_id = `athlete.id`)
+      df_act_raw |>
+        rename(athlete_id = `athlete.id`) |>
+        mutate(
+          across(contains("id"), as.character),
+          id_name = str_glue("{id}_{athlete_id}"))
     }
 
 Extract ids of all activities. Exclude activities which were recorded
@@ -296,20 +300,13 @@ columns.
         mutate(id = id)
     }
 
-Do this for every id. Pin the resulting data frames to the local
-`strava_data_26845822` board as an file of `type` ‘arrow’. By doing so
-we can later effectively query the data.
+Do this for every id and save the resulting data frames as `feather`
+file. By doing so we can later effectively query the data.
 
 <aside>
 The name of the board is determined by the currently logged in user and
 will have a different name, if you run the pipeline.
 </aside>
-
-    pin_meas <- function(act_id, active_user_id, access_token, meas_board) {
-      pin_name <- paste0("df_", act_id, "_", active_user_id)
-      meas <- read_activity_stream(act_id, active_user_id, access_token)
-      pin_write(meas_board, meas, pin_name, type = "arrow")
-    }
 
 # Visualisation
 
@@ -339,20 +336,20 @@ Insert them all into a duckdb and select relevant columns:
         collect()
     }
 
-    ## # A tibble: 2,252,282 x 3
+    ## # A tibble: 2,362,920 × 3
     ##    id           lat   lng
     ##    <chr>      <dbl> <dbl>
-    ##  1 1327205128  48.2  9.02
-    ##  2 1327205128  48.2  9.02
-    ##  3 1327205128  48.2  9.02
-    ##  4 1327205128  48.2  9.02
-    ##  5 1327205128  48.2  9.02
-    ##  6 1327205128  48.2  9.02
-    ##  7 1327205128  48.2  9.02
-    ##  8 1327205128  48.2  9.02
-    ##  9 1327205128  48.2  9.02
-    ## 10 1327205128  48.2  9.02
-    ## # ... with 2,252,272 more rows
+    ##  1 7410411816  48.3  8.85
+    ##  2 7410411816  48.3  8.85
+    ##  3 7410411816  48.3  8.85
+    ##  4 7410411816  48.3  8.85
+    ##  5 7410411816  48.3  8.85
+    ##  6 7410411816  48.3  8.85
+    ##  7 7410411816  48.3  8.85
+    ##  8 7410411816  48.3  8.85
+    ##  9 7410411816  48.3  8.85
+    ## 10 7410411816  48.3  8.85
+    ## # … with 2,362,910 more rows
 
 In the final plot every facet is one activity. Keep the rest of the plot
 as minimal as possible.
@@ -378,7 +375,7 @@ as minimal as possible.
           strip.text = element_blank())
     }
 
-<img src="gg_meas.png" width="2100" />
+<img src="data/gg_meas.png" width="2100" />
 
 And there it is: All your Strava data in a few tidy data frames and a
 nice-looking plot. Future updates to the data shouldn’t take too long,

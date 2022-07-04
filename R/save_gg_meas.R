@@ -1,5 +1,5 @@
 save_gg_meas <- function(gg_meas) {
-  ggsave("gg_meas.png", gg_meas)
+  ggsave("data/gg_meas.png", gg_meas)
 
-  return("gg_meas.png")
+  return("data/gg_meas.png")
 }

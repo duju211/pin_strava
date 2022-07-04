@@ -2,39 +2,58 @@ source("libraries.R")
 
 walk(dir_ls("R"), source)
 
+dir_create("data")
+dir_create("poi")
+
+df_poi <- tribble(
+  ~target_name, ~target_file, ~act_type, ~lng_min, ~lng_max, ~lat_min, ~lat_max,
+  "lochen", "poi/lochen.rds", "Ride", 8.843454, 8.859889, 48.21787, 48.23242)
+
+mapped_poi <- tar_map(
+  df_poi, names = "target_name",
+  tar_target(df_poi_raw, poi(df_act, meas, lng_min, lng_max, lat_min, lat_max)),
+  tar_target(
+    poi_file, command = {
+      write_rds(df_poi_raw, target_file);
+      return(target_file)
+  }, format = "file")
+)
+
 list(
   tar_target(user_list_cols, c("shoes", "clubs", "bikes")),
-  tar_target(
-    board_name, paste0(
-      "strava_data_", my_sig[["credentials"]][["athlete"]][["id"]])),
-  tar_target(meas_board, board_folder(board_name, versioned = FALSE)),
+  tar_target(access_token, read_access_token(), cue = tar_cue("always")),
+  tar_target(meas_path, dir_create("meas")),
+  tar_target(act_path, dir_create("act")),
+  tar_target(user_path, dir_create("user")),
+  tar_target(poi_path, dir_create("poi")),
 
-  tar_target(my_app, define_strava_app()),
-  tar_target(my_endpoint, define_strava_endpoint()),
-  tar_age(
-    my_sig, define_strava_sig(my_endpoint, my_app),
-    age = as.difftime(6, units = "hours")),
-  tar_target(active_user_id, my_sig[["credentials"]][["athlete"]][["id"]]),
-  tar_target(access_token, my_sig[["credentials"]][["access_token"]]),
+  tar_target(active_user_id, df_active_user[["id"]]),
   tar_target(
     df_active_user, active_user(access_token, user_list_cols, meas_board),
     cue = tar_cue("always")),
-  tar_target(
-    pin_user, pin_write(meas_board, df_active_user, "df_user", type = "rds")),
   tar_target(
     df_act_raw, read_all_activities(access_token, active_user_id),
     cue = tar_cue("always")),
   tar_target(
     df_act, pre_process_act(df_act_raw, active_user_id, meas_board)),
-  tar_target(pin_act, pin_write(meas_board, df_act, "df_act", type = "rds")),
   tar_target(act_ids, rel_act_ids(df_act)),
 
   tar_target(
-    meas_pinned_local,
-    pin_meas(act_ids, active_user_id, access_token, meas_board),
-    pattern = map(act_ids), cue = tar_cue("never")),
-  tar_files(paths_meas, command={meas_pinned_local;meas_paths(board_name)}),
-  tar_target(df_meas_all, meas_all(paths_meas)),
+    meas, command = {
+      file_path <- paste0(meas_path, "/meas_", act_ids, "_", active_user_id);
+      df_meas <- read_activity_stream(act_ids, active_user_id, access_token);
+      write_feather(df_meas, file_path);
+      file_path
+    }, pattern = map(act_ids), cue = tar_cue("never")),
+  tar_target(meas_files, command = {meas_path; dir_ls(meas_path)}),
+  tar_target(
+    act, command = {
+      act_path <- paste0("data/act_", active_user_id);
+      write_feather(df_act, act_path);
+      act_path
+    }, format = "file"),
+  mapped_poi,
+  tar_target(df_meas_all, meas_all(meas)),
   tar_target(gg_meas, vis_meas(df_meas_all)),
   tar_target(png_meas, save_gg_meas(gg_meas)),
 
