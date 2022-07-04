@@ -206,7 +206,7 @@ Keep the rest of the plot as minimal as possible.
 ```{r, code=read_lines("R/vis_meas.R"), eval=FALSE}
 ```
 
-```{r gg_strava, echo=FALSE}
+```{r gg_strava, echo=FALSE, fig.height=11, fig.width=11}
 tar_read(gg_meas)
 ```
 
