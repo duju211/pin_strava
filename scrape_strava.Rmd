@@ -207,7 +207,7 @@ Keep the rest of the plot as minimal as possible.
 ```
 
 ```{r gg_strava, echo=FALSE}
-knitr::include_graphics(tar_read(png_meas))
+tar_read(gg_meas)
 ```
 
 And there it is:
