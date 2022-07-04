@@ -11,6 +11,7 @@ routes.
 
 You will need the following packages:
 
+    library(Microsoft365R)
     library(tarchetypes)
     library(conflicted)
     library(tidyverse)
@@ -206,26 +207,26 @@ activities to read.
 
 The resulting data frame consists of one row per activity:
 
-    ## # A tibble: 664 × 59
+    ## # A tibble: 692 × 60
     ##    resource_state name  distance moving_time elapsed_time total_elevation… type 
     ##             <int> <chr>    <dbl>       <int>        <int>            <dbl> <chr>
-    ##  1              2 "Rad…    3117          425          432              8.4 Ride 
-    ##  2              2 "Abe…    2036          421         1498              6   Ride 
-    ##  3              2 "Fah…    6049.        1128         6270             89   Ride 
-    ##  4              2 "Eas…    4226.        3117         3872             18.8 Hike 
-    ##  5              2 "Ope…    6792.        2643         2643            106.  Run  
-    ##  6              2 "Sno…    7833.        2971         2971            111.  Run  
-    ##  7              2 "Sod…    7607.        2766         2766             99.2 Run  
-    ##  8              2 "Sun…    8682.        3480         3495            113.  Run  
-    ##  9              2 "Sod…   42832.        7031        12807            675   Ride 
-    ## 10              2 "Sod…    7522.        2903         2908             99.4 Run  
-    ## # … with 654 more rows, and 52 more variables: workout_type <int>, id <dbl>,
-    ## #   start_date <dttm>, start_date_local <chr>, timezone <chr>,
-    ## #   utc_offset <dbl>, location_city <lgl>, location_state <lgl>,
-    ## #   location_country <chr>, achievement_count <int>, kudos_count <int>,
-    ## #   comment_count <int>, athlete_count <int>, photo_count <int>, trainer <lgl>,
-    ## #   commute <lgl>, manual <lgl>, private <lgl>, visibility <chr>,
-    ## #   flagged <lgl>, gear_id <chr>, start_latlng <list>, end_latlng <list>, …
+    ##  1              2 "Pla…   32375.        5042         5242             408  Ride 
+    ##  2              2 "Pla…   34140.        5898         5898             606  Ride 
+    ##  3              2 "Slo…    6970.        3247         3255             109. Run  
+    ##  4              2 "Rai…    6762.        2699         2819             105. Run  
+    ##  5              2 "Lon…   32930.        5295         5669             500  Ride 
+    ##  6              2 "Tex…   13453.        4291        11609             404  Ride 
+    ##  7              2 "Mit…    5798.        1263         1674               6  Ride 
+    ##  8              2 "Kai…   31786         6304         8390              21  Ride 
+    ##  9              2 "Fah…     114.          32           94               0  Ride 
+    ## 10              2 "Kai…   21379.        4095        12869              53  Ride 
+    ## # … with 682 more rows, and 53 more variables: sport_type <chr>,
+    ## #   workout_type <int>, id <dbl>, start_date <dttm>, start_date_local <chr>,
+    ## #   timezone <chr>, utc_offset <dbl>, location_city <lgl>,
+    ## #   location_state <lgl>, location_country <chr>, achievement_count <int>,
+    ## #   kudos_count <int>, comment_count <int>, athlete_count <int>,
+    ## #   photo_count <int>, trainer <lgl>, commute <lgl>, manual <lgl>,
+    ## #   private <lgl>, visibility <chr>, flagged <lgl>, gear_id <chr>, …
 
 Make sure that all ID columns have a character format and improve the
 column names.
@@ -335,20 +336,20 @@ Insert them all into a duckdb and select relevant columns:
         collect()
     }
 
-    ## # A tibble: 2,283,865 × 3
+    ## # A tibble: 2,362,920 × 3
     ##    id           lat   lng
     ##    <chr>      <dbl> <dbl>
-    ##  1 7013375697  48.3  8.87
-    ##  2 7013375697  48.3  8.87
-    ##  3 7013375697  48.3  8.87
-    ##  4 7013375697  48.3  8.87
-    ##  5 7013375697  48.3  8.87
-    ##  6 7013375697  48.3  8.87
-    ##  7 7013375697  48.3  8.87
-    ##  8 7013375697  48.3  8.87
-    ##  9 7013375697  48.3  8.87
-    ## 10 7013375697  48.3  8.87
-    ## # … with 2,283,855 more rows
+    ##  1 7410411816  48.3  8.85
+    ##  2 7410411816  48.3  8.85
+    ##  3 7410411816  48.3  8.85
+    ##  4 7410411816  48.3  8.85
+    ##  5 7410411816  48.3  8.85
+    ##  6 7410411816  48.3  8.85
+    ##  7 7410411816  48.3  8.85
+    ##  8 7410411816  48.3  8.85
+    ##  9 7410411816  48.3  8.85
+    ## 10 7410411816  48.3  8.85
+    ## # … with 2,362,910 more rows
 
 In the final plot every facet is one activity. Keep the rest of the plot
 as minimal as possible.
