@@ -21,7 +21,12 @@ mapped_poi <- tar_map(
 
 list(
   tar_target(user_list_cols, c("shoes", "clubs", "bikes")),
-  tar_target(access_token, read_access_token(), cue = tar_cue("always")),
+  tar_target(my_app, define_strava_app()),
+  tar_target(my_endpoint, define_strava_endpoint()),
+  tar_age(
+    my_sig, define_strava_sig(my_endpoint, my_app),
+    age = as.difftime(6, units = "hours")),
+  tar_target(access_token, my_sig[["credentials"]][["access_token"]]),
   tar_target(meas_path, dir_create("meas")),
   tar_target(act_path, dir_create("act")),
   tar_target(user_path, dir_create("user")),
