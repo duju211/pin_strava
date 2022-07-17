@@ -2,5 +2,5 @@ source("libraries.R")
 
 walk(dir_ls("R"), source)
 
-token <- oauth_token()
+token <- strava_oauth_token()
 token[["access_token"]]
