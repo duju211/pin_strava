@@ -2,40 +2,36 @@ source("libraries.R")
 
 walk(dir_ls("R"), source)
 
-dir_create("data")
-dir_create("poi")
-
 df_poi <- tribble(
-  ~target_name, ~target_file, ~act_type, ~lng_min, ~lng_max, ~lat_min, ~lat_max,
-  "lochen", "poi/lochen.rds", "Ride", 8.843454, 8.859889, 48.21787, 48.23242)
+  ~target_name, ~act_type, ~lng_min, ~lng_max, ~lat_min, ~lat_max,
+  "lochen", "Ride", 8.843454, 8.859889, 48.21787, 48.23242)
 
 mapped_poi <- tar_map(
   df_poi, names = "target_name",
-  tar_target(df_poi_raw, poi(df_act, meas, lng_min, lng_max, lat_min, lat_max)),
   tar_target(
     poi_file, command = {
-      write_rds(df_poi_raw, target_file);
-      return(target_file)
+      poi_file <- file_create(poi_path, target_name);
+      df_poi_raw <- poi(df_act, meas, lng_min, lng_max, lat_min, lat_max);
+      write_rds(df_poi_raw, poi_file);
+      return(poi_file)
   }, format = "file")
 )
 
 list(
   tar_target(user_list_cols, c("shoes", "clubs", "bikes")),
-  tar_target(my_app, define_strava_app()),
-  tar_target(my_endpoint, define_strava_endpoint()),
   tar_age(
-    my_sig, define_strava_sig(my_endpoint, my_app),
+    access_token, rstudioapi::askForSecret("Strava Access Token"),
     age = as.difftime(6, units = "hours")),
-  tar_target(access_token, my_sig[["credentials"]][["access_token"]]),
-  tar_target(meas_path, dir_create("meas")),
-  tar_target(act_path, dir_create("act")),
-  tar_target(user_path, dir_create("user")),
-  tar_target(poi_path, dir_create("poi")),
 
-  tar_target(active_user_id, df_active_user[["id"]]),
   tar_target(
-    df_active_user, active_user(access_token, user_list_cols, meas_board),
-    cue = tar_cue("always")),
+    json_active_user, active_user_json(access_token), cue = tar_cue("always")),
+  tar_target(df_active_user, active_user(json_active_user, user_list_cols)),
+  tar_target(active_user_id, df_active_user[["id"]]),
+  tar_target(active_user_path, dir_create(active_user_id)),
+  tar_target(meas_path, dir_create(active_user_path, "meas")),
+  tar_target(act_path, dir_create(active_user_path, "act")),
+  tar_target(user_path, dir_create(active_user_path, "user")),
+  tar_target(poi_path, dir_create(active_user_path, "poi")),
   tar_target(
     df_act_raw, read_all_activities(access_token, active_user_id),
     cue = tar_cue("always")),
@@ -45,22 +41,16 @@ list(
 
   tar_target(
     meas, command = {
-      file_path <- paste0(meas_path, "/meas_", act_ids, "_", active_user_id);
-      df_meas <- read_activity_stream(act_ids, active_user_id, access_token);
-      write_feather(df_meas, file_path);
-      file_path
-    }, pattern = map(act_ids), cue = tar_cue("never")),
-  tar_target(meas_files, command = {meas_path; dir_ls(meas_path)}),
-  tar_target(
-    act, command = {
-      act_path <- paste0("data/act_", active_user_id);
-      write_feather(df_act, act_path);
-      act_path
-    }, format = "file"),
+      stream_path <- file_create(meas_path, act_ids);
+      df_stream <- read_activity_stream(act_ids, access_token);
+      write_parquet(df_stream, stream_path);
+      return(stream_path)
+    },
+    pattern = map(act_ids), cue = tar_cue("never"), format = "file"),
   mapped_poi,
   tar_target(df_meas_all, meas_all(meas)),
   tar_target(gg_meas, vis_meas(df_meas_all)),
-  tar_target(png_meas, save_gg_meas(gg_meas)),
+  tar_target(png_meas, save_gg_meas(gg_meas, active_user_path)),
 
   tar_render(strava_report, "scrape_strava.Rmd"),
   tar_render(

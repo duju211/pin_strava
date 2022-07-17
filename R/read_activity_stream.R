@@ -1,20 +1,19 @@
-read_activity_stream <- function(id, active_user_id, access_token) {
-  act_url <- parse_url(stringr::str_glue(
-    "https://www.strava.com/api/v3/activities/{id}/streams"))
+read_activity_stream <- function(id, access_token) {
+  req <- request("https://www.strava.com/api/v3/activities") |>
+    req_auth_bearer_token(token = access_token) |>
+    req_url_query(keys = str_glue(
+      "distance,time,latlng,altitude,velocity_smooth,heartrate,cadence,",
+      "watts,temp,moving,grade_smooth")) |>
+    req_url_path_append(id) |>
+    req_url_path_append("streams")
 
-  r <- modify_url(
-    act_url,
-    query = list(
-      access_token = access_token,
-      keys = str_glue(
-        "distance,time,latlng,altitude,velocity_smooth,heartrate,cadence,",
-        "watts,temp,moving,grade_smooth"))) %>%
-    GET()
+  resp <- req_perform(req)
 
-  stop_for_status(r)
+  resp_check_status(resp)
 
-  df_stream_raw <- fromJSON(content(r, as = "text"), flatten = TRUE) %>%
-    as_tibble() %>%
+  df_stream_raw <- resp |>
+    resp_body_json(simplifyVector = TRUE) |>
+    as_tibble() |>
     mutate(id = id) %>%
     pivot_wider(names_from = type, values_from = data)
 

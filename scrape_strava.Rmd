@@ -83,29 +83,6 @@ STRAVA_KEY=<Client ID>
 STRAVA_SECRET=<Client Secret>
 ```
 
-The function `define_strava_app` shown below creates the OAuth app:
-
-```{r, code=read_lines("R/define_strava_app.R"), eval=FALSE}
-```
-
-### Define an endpoint
-
-Define an endpoint called `my_endpoint` using the function
-`define_strava_endpoint`.
-
-The `authorize` parameter describes the authorization url and the `access`
-argument exchanges the authenticated token.
-
-```{r, code=read_lines("R/define_strava_endpoint.R"), eval=FALSE}
-```
-
-### The final authentication step
-
-Before you can execute the following steps,
-you have to authenticate the API in the web browser.
-
-```{r, code=read_lines("R/define_strava_sig.R"), eval=FALSE}
-```
 
 The information in `my_sig` can now be used to access Strava data.
 Set the `cue_mode` of the target to ‘always’ so that the following API calls

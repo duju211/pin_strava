@@ -11,7 +11,6 @@ routes.
 
 You will need the following packages:
 
-    library(Microsoft365R)
     library(tarchetypes)
     library(conflicted)
     library(tidyverse)
@@ -20,9 +19,9 @@ You will need the following packages:
     library(targets)
     library(httpuv)
     library(duckdb)
+    library(httr2)
     library(arrow)
     library(pins)
-    library(httr)
     library(glue)
     library(fs)
 
@@ -71,51 +70,6 @@ saving the keys, and then restarting R.
     STRAVA_KEY=<Client ID>
     STRAVA_SECRET=<Client Secret>
 
-The function `define_strava_app` shown below creates the OAuth app:
-
-    define_strava_app <- function() {
-      if (Sys.getenv("STRAVA_KEY") == "" | Sys.getenv("STRAVA_SECRET") == "")
-        stop(str_glue(
-          "Please set system variables 'STRAVA_KEY' and 'STRAVA_SECRET' before ",
-          "continuing. How you can create these variables is described here: ",
-          "https://developers.strava.com/docs/getting-started/. ",
-          "You can set the system variables with the `usethis::edit_r_environ` ",
-          "function."))
-
-      oauth_app(
-        appname = "r_api",
-        key = Sys.getenv("STRAVA_KEY"),
-        secret = Sys.getenv("STRAVA_SECRET"))
-    }
-
-### Define an endpoint
-
-Define an endpoint called `my_endpoint` using the function
-`define_strava_endpoint`.
-
-The `authorize` parameter describes the authorization url and the
-`access` argument exchanges the authenticated token.
-
-    define_strava_endpoint <- function() {
-      oauth_endpoint(
-        request = NULL,
-        authorize = "https://www.strava.com/oauth/authorize",
-        access = "https://www.strava.com/oauth/token")
-    }
-
-### The final authentication step
-
-Before you can execute the following steps, you have to authenticate the
-API in the web browser.
-
-    define_strava_sig <- function(endpoint, app) {
-      oauth2.0_token(
-        endpoint, app,
-        scope = "activity:read_all,activity:read,profile:read_all",
-        type = NULL, use_oob = FALSE, as_header = FALSE,
-        use_basic_auth = FALSE, cache = FALSE)
-    }
-
 The information in `my_sig` can now be used to access Strava data. Set
 the `cue_mode` of the target to ‘always’ so that the following API calls
 are always executed with an up-to-date authorization token.
@@ -127,43 +81,25 @@ preprocessing the data, the columns shoes, clubs and bikes need special
 attention, because they can contain multiple entries and can be
 interpreted as list columns.
 
-    active_user <- function(access_token, user_list_cols, meas_board) {
-      athlete_url <- parse_url("https://www.strava.com/api/v3/athlete")
-
-      r <- athlete_url %>%
-        modify_url(
-          query = list(access_token = access_token)) %>%
-        GET()
-
-      user_list <- content(r, as = "text") %>%
-        fromJSON()
-
-      df_user <- user_list[
-        map_lgl(user_list, ~ !is.null(.x))
-        & map_lgl(names(user_list), ~ !(.x %in% user_list_cols))] %>%
+    active_user <- function(json_active_user, user_list_cols) {
+      json_active_user[
+        map_lgl(json_active_user, negate(is.null))
+        & map_lgl(names(json_active_user), ~ !.x %in% user_list_cols)] |>
         as_tibble()
-
-      list_cols <- user_list[names(user_list) %in% user_list_cols] %>%
-        map(as_tibble)
-
-      for (i in seq_along(list_cols)) {
-        df_user[[names(list_cols)[[i]]]] <- list(list_cols[[i]])
-      }
-      df_user
     }
 
 In the end there is a data frame with one row for the currently
 authenticated user:
 
-    ## # A tibble: 1 x 27
+    ## # A tibble: 1 x 24
     ##         id resource_state firstname lastname city    state country sex   premium
     ##      <int>          <int> <chr>     <chr>    <chr>   <chr> <chr>   <chr> <lgl>  
     ## 1 26845822              3 "Julian " During   Baling~ Bade~ Germany M     FALSE  
-    ## # ... with 18 more variables: summit <lgl>, created_at <chr>, updated_at <chr>,
+    ## # ... with 15 more variables: summit <lgl>, created_at <chr>, updated_at <chr>,
     ## #   badge_type_id <int>, weight <dbl>, profile_medium <chr>, profile <chr>,
     ## #   blocked <lgl>, can_follow <lgl>, follower_count <int>, friend_count <int>,
     ## #   mutual_friend_count <int>, athlete_type <int>, date_preference <chr>,
-    ## #   measurement_preference <chr>, clubs <list>, bikes <list>, shoes <list>
+    ## #   measurement_preference <chr>
 
 ## Activities
 
@@ -173,33 +109,30 @@ loop. It will break the execution of the loop if there are no more
 activities to read.
 
     read_all_activities <- function(access_token, active_user_id) {
-      activities_url <- parse_url(
-        "https://www.strava.com/api/v3/athlete/activities")
-
       act_vec <- vector(mode = "list")
       df_act <- tibble(init = "init")
       i <- 1L
 
       while (nrow(df_act) != 0) {
-        r <- activities_url %>%
-          modify_url(
-            query = list(
-              access_token = access_token,
-              page = i)) %>%
-          GET()
+        req <- request("https://www.strava.com/api/v3/athlete/activities") |>
+          req_auth_bearer_token(token = access_token) |>
+          req_url_query(page = i)
 
-        stop_for_status(r)
+        resp <- req_perform(req)
 
-        df_act <- content(r, as = "text") %>%
-          fromJSON(flatten = TRUE) %>%
+        resp_check_status(resp)
+
+        df_act <- resp |>
+          resp_body_json(simplifyVector = TRUE) |>
           as_tibble()
+
         if (nrow(df_act) != 0)
           act_vec[[i]] <- df_act
         i <- i + 1L
       }
 
-      act_vec %>%
-        bind_rows() %>%
+      act_vec |>
+        bind_rows() |>
         mutate(
           start_date = ymd_hms(start_date),
           active_user_id = active_user_id)
@@ -207,36 +140,33 @@ activities to read.
 
 The resulting data frame consists of one row per activity:
 
-    ## # A tibble: 695 x 60
-    ##    resource_state name  distance moving_time elapsed_time total_elevation~ type 
-    ##             <int> <chr>    <dbl>       <int>        <int>            <dbl> <chr>
-    ##  1              2 "Bal~   22693.        4740         8341             544  Ride 
-    ##  2              2 "Sup~   49032.       10076        24068            1090  Ride 
-    ##  3              2 "Vol~    8503.        1408        15990             104  Ride 
-    ##  4              2 "Pla~   32375.        5042         5242             408  Ride 
-    ##  5              2 "Pla~   34140.        5898         5898             606  Ride 
-    ##  6              2 "Slo~    6970.        3247         3255             109. Run  
-    ##  7              2 "Rai~    6762.        2699         2819             105. Run  
-    ##  8              2 "Lon~   32930.        5295         5669             500  Ride 
-    ##  9              2 "Tex~   13453.        4291        11609             404  Ride 
-    ## 10              2 "Mit~    5798.        1263         1674               6  Ride 
-    ## # ... with 685 more rows, and 53 more variables: sport_type <chr>,
+    ## # A tibble: 697 x 57
+    ##    resource_state athlete$id name              distance moving_time elapsed_time
+    ##             <int>      <int> <chr>                <dbl>       <int>        <int>
+    ##  1              2   26845822 "TSG SSV"           56324.        9668        23624
+    ##  2              2   26845822 "Volleyball \U00~    4246.         775          795
+    ##  3              2   26845822 "Ballon d‘Alsace"   22693.        4740         8341
+    ##  4              2   26845822 "Super Planche d~   49032.       10076        24068
+    ##  5              2   26845822 "Volleyball \U00~    8503.        1408        15990
+    ##  6              2   26845822 "Planche Prep 2"    32375.        5042         5242
+    ##  7              2   26845822 "Planche Prepara~   34140.        5898         5898
+    ##  8              2   26845822 "Slow Run"           6970.        3247         3255
+    ##  9              2   26845822 "Rainy Run"          6762.        2699         2819
+    ## 10              2   26845822 "Longest Day Rid~   32930.        5295         5669
+    ## # ... with 687 more rows, and 52 more variables: athlete$resource_state <int>,
+    ## #   total_elevation_gain <dbl>, type <chr>, sport_type <chr>,
     ## #   workout_type <int>, id <dbl>, start_date <dttm>, start_date_local <chr>,
     ## #   timezone <chr>, utc_offset <dbl>, location_city <lgl>,
     ## #   location_state <lgl>, location_country <chr>, achievement_count <int>,
     ## #   kudos_count <int>, comment_count <int>, athlete_count <int>,
-    ## #   photo_count <int>, trainer <lgl>, commute <lgl>, manual <lgl>,
-    ## #   private <lgl>, visibility <chr>, flagged <lgl>, gear_id <chr>, ...
+    ## #   photo_count <int>, map <df[,3]>, trainer <lgl>, commute <lgl>, ...
 
 Make sure that all ID columns have a character format and improve the
 column names.
 
     pre_process_act <- function(df_act_raw, active_user_id, meas_board) {
       df_act_raw |>
-        rename(athlete_id = `athlete.id`) |>
-        mutate(
-          across(contains("id"), as.character),
-          id_name = str_glue("{id}_{athlete_id}"))
+        mutate(across(contains("id"), as.character))
     }
 
 Extract ids of all activities. Exclude activities which were recorded
@@ -263,23 +193,22 @@ needs special attention, because it contains latitude and longitude
 information. Separate the two measurements before unnesting all list
 columns.
 
-    read_activity_stream <- function(id, active_user_id, access_token) {
-      act_url <- parse_url(stringr::str_glue(
-        "https://www.strava.com/api/v3/activities/{id}/streams"))
+    read_activity_stream <- function(id, access_token) {
+      req <- request("https://www.strava.com/api/v3/activities") |>
+        req_auth_bearer_token(token = access_token) |>
+        req_url_query(keys = str_glue(
+          "distance,time,latlng,altitude,velocity_smooth,heartrate,cadence,",
+          "watts,temp,moving,grade_smooth")) |>
+        req_url_path_append(id) |>
+        req_url_path_append("streams")
 
-      r <- modify_url(
-        act_url,
-        query = list(
-          access_token = access_token,
-          keys = str_glue(
-            "distance,time,latlng,altitude,velocity_smooth,heartrate,cadence,",
-            "watts,temp,moving,grade_smooth"))) %>%
-        GET()
+      resp <- req_perform(req)
 
-      stop_for_status(r)
+      resp_check_status(resp)
 
-      df_stream_raw <- fromJSON(content(r, as = "text"), flatten = TRUE) %>%
-        as_tibble() %>%
+      df_stream_raw <- resp |>
+        resp_body_json(simplifyVector = TRUE) |>
+        as_tibble() |>
         mutate(id = id) %>%
         pivot_wider(names_from = type, values_from = data)
 
@@ -329,27 +258,27 @@ Insert them all into a duckdb and select relevant columns:
         lat = double(), lng = double(), cadence = int32(),
         watts = int32(), id = string())
 
-      open_dataset(paths_meas, format = "arrow", schema = act_col_types) %>%
+      open_dataset(paths_meas, format = "parquet", schema = act_col_types) %>%
         to_duckdb() %>%
         select(id, lat, lng) %>%
         filter(!is.na(lat) & !is.na(lng)) %>%
         collect()
     }
 
-    ## # A tibble: 2,379,259 x 3
+    ## # A tibble: 2,389,723 x 3
     ##    id           lat   lng
     ##    <chr>      <dbl> <dbl>
-    ##  1 7460670182  47.8  6.83
-    ##  2 7460670182  47.8  6.83
-    ##  3 7460670182  47.8  6.83
-    ##  4 7460670182  47.8  6.83
-    ##  5 7460670182  47.8  6.83
-    ##  6 7460670182  47.8  6.83
-    ##  7 7460670182  47.8  6.83
-    ##  8 7460670182  47.8  6.83
-    ##  9 7460670182  47.8  6.83
-    ## 10 7460670182  47.8  6.83
-    ## # ... with 2,379,249 more rows
+    ##  1 7479384962  48.3  8.85
+    ##  2 7479384962  48.3  8.85
+    ##  3 7479384962  48.3  8.85
+    ##  4 7479384962  48.3  8.85
+    ##  5 7479384962  48.3  8.85
+    ##  6 7479384962  48.3  8.85
+    ##  7 7479384962  48.3  8.85
+    ##  8 7479384962  48.3  8.85
+    ##  9 7479384962  48.3  8.85
+    ## 10 7479384962  48.3  8.85
+    ## # ... with 2,389,713 more rows
 
 In the final plot every facet is one activity. Keep the rest of the plot
 as minimal as possible.
