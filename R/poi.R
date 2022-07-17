@@ -8,7 +8,7 @@ poi <- function(df_act, paths_meas,
     watts = int32(), id = string())
 
   strava_db <- open_dataset(
-    paths_meas, format = "arrow", schema = act_col_types) |>
+    paths_meas, format = "parquet", schema = act_col_types) |>
     to_duckdb()
 
   strava_db |>
