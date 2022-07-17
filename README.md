@@ -91,11 +91,11 @@ interpreted as list columns.
 In the end there is a data frame with one row for the currently
 authenticated user:
 
-    ## # A tibble: 1 x 24
+    ## # A tibble: 1 × 24
     ##         id resource_state firstname lastname city    state country sex   premium
     ##      <int>          <int> <chr>     <chr>    <chr>   <chr> <chr>   <chr> <lgl>  
-    ## 1 26845822              3 "Julian " During   Baling~ Bade~ Germany M     FALSE  
-    ## # ... with 15 more variables: summit <lgl>, created_at <chr>, updated_at <chr>,
+    ## 1 26845822              3 "Julian " During   Baling… Bade… Germany M     FALSE  
+    ## # … with 15 more variables: summit <lgl>, created_at <chr>, updated_at <chr>,
     ## #   badge_type_id <int>, weight <dbl>, profile_medium <chr>, profile <chr>,
     ## #   blocked <lgl>, can_follow <lgl>, follower_count <int>, friend_count <int>,
     ## #   mutual_friend_count <int>, athlete_type <int>, date_preference <chr>,
@@ -140,26 +140,26 @@ activities to read.
 
 The resulting data frame consists of one row per activity:
 
-    ## # A tibble: 697 x 57
+    ## # A tibble: 697 × 57
     ##    resource_state athlete$id name              distance moving_time elapsed_time
     ##             <int>      <int> <chr>                <dbl>       <int>        <int>
     ##  1              2   26845822 "TSG SSV"           56324.        9668        23624
-    ##  2              2   26845822 "Volleyball \U00~    4246.         775          795
+    ##  2              2   26845822 "Volleyball 🏐 "     4246.         775          795
     ##  3              2   26845822 "Ballon d‘Alsace"   22693.        4740         8341
-    ##  4              2   26845822 "Super Planche d~   49032.       10076        24068
-    ##  5              2   26845822 "Volleyball \U00~    8503.        1408        15990
+    ##  4              2   26845822 "Super Planche d…   49032.       10076        24068
+    ##  5              2   26845822 "Volleyball 🏐 "     8503.        1408        15990
     ##  6              2   26845822 "Planche Prep 2"    32375.        5042         5242
-    ##  7              2   26845822 "Planche Prepara~   34140.        5898         5898
+    ##  7              2   26845822 "Planche Prepara…   34140.        5898         5898
     ##  8              2   26845822 "Slow Run"           6970.        3247         3255
     ##  9              2   26845822 "Rainy Run"          6762.        2699         2819
-    ## 10              2   26845822 "Longest Day Rid~   32930.        5295         5669
-    ## # ... with 687 more rows, and 52 more variables: athlete$resource_state <int>,
+    ## 10              2   26845822 "Longest Day Rid…   32930.        5295         5669
+    ## # … with 687 more rows, and 52 more variables: athlete$resource_state <int>,
     ## #   total_elevation_gain <dbl>, type <chr>, sport_type <chr>,
     ## #   workout_type <int>, id <dbl>, start_date <dttm>, start_date_local <chr>,
     ## #   timezone <chr>, utc_offset <dbl>, location_city <lgl>,
     ## #   location_state <lgl>, location_country <chr>, achievement_count <int>,
     ## #   kudos_count <int>, comment_count <int>, athlete_count <int>,
-    ## #   photo_count <int>, map <df[,3]>, trainer <lgl>, commute <lgl>, ...
+    ## #   photo_count <int>, map <df[,3]>, trainer <lgl>, commute <lgl>, …
 
 Make sure that all ID columns have a character format and improve the
 column names.
@@ -265,7 +265,7 @@ Insert them all into a duckdb and select relevant columns:
         collect()
     }
 
-    ## # A tibble: 2,389,723 x 3
+    ## # A tibble: 2,389,723 × 3
     ##    id           lat   lng
     ##    <chr>      <dbl> <dbl>
     ##  1 7479384962  48.3  8.85
@@ -278,7 +278,7 @@ Insert them all into a duckdb and select relevant columns:
     ##  8 7479384962  48.3  8.85
     ##  9 7479384962  48.3  8.85
     ## 10 7479384962  48.3  8.85
-    ## # ... with 2,389,713 more rows
+    ## # … with 2,389,713 more rows
 
 In the final plot every facet is one activity. Keep the rest of the plot
 as minimal as possible.
