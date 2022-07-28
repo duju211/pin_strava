@@ -1,5 +1,6 @@
 poi <- function(df_act, paths_meas,
-                lng_min, lng_max, lat_min, lat_max) {
+                start_left_bottom, start_right_top,
+                end_left_bottom, end_right_top) {
   act_col_types <- schema(
     moving = boolean(), velocity_smooth = double(),
     grade_smooth = double(), distance = double(),
