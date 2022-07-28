@@ -4,14 +4,17 @@ walk(dir_ls("R"), source)
 
 df_poi <- tribble(
   ~target_name, ~act_type, ~lng_min, ~lng_max, ~lat_min, ~lat_max,
-  "lochen", "Ride", 8.843454, 8.859889, 48.21787, 48.23242)
+  ~start_act, ~end_act,
+  "lochen", "Ride", 8.843454, 8.859889, 48.21787, 48.23242, "top", "bottom",
+  "planche_des_belles_filles", "Ride", 6.754727, 6.782742, 47.768916, 47.780304, "left", "bottom")
 
 mapped_poi <- tar_map(
   df_poi, names = "target_name",
   tar_target(
     poi_file, command = {
       poi_file <- file_create(poi_path, target_name);
-      df_poi_raw <- poi(df_act, meas, lng_min, lng_max, lat_min, lat_max);
+      df_poi_raw <- poi(
+        df_act, meas, act_type, lng_min, lng_max, lat_min, lat_max, start_act, end_act);
       write_rds(df_poi_raw, poi_file);
       return(poi_file)
   }, format = "file")

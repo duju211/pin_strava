@@ -91,15 +91,16 @@ interpreted as list columns.
 In the end there is a data frame with one row for the currently
 authenticated user:
 
-    ## # A tibble: 1 × 24
+    ## # A tibble: 1 × 26
     ##         id resource_state firstname lastname city    state country sex   premium
     ##      <int>          <int> <chr>     <chr>    <chr>   <chr> <chr>   <chr> <lgl>  
     ## 1 26845822              3 "Julian " During   Baling… Bade… Germany M     FALSE  
-    ## # … with 15 more variables: summit <lgl>, created_at <chr>, updated_at <chr>,
+    ## # … with 17 more variables: summit <lgl>, created_at <chr>, updated_at <chr>,
     ## #   badge_type_id <int>, weight <dbl>, profile_medium <chr>, profile <chr>,
     ## #   blocked <lgl>, can_follow <lgl>, follower_count <int>, friend_count <int>,
     ## #   mutual_friend_count <int>, athlete_type <int>, date_preference <chr>,
-    ## #   measurement_preference <chr>
+    ## #   measurement_preference <chr>, is_winback_via_upload <lgl>,
+    ## #   is_winback_via_view <lgl>
 
 ## Activities
 
@@ -140,20 +141,20 @@ activities to read.
 
 The resulting data frame consists of one row per activity:
 
-    ## # A tibble: 698 × 57
+    ## # A tibble: 701 × 57
     ##    resource_state athlete$id name              distance moving_time elapsed_time
     ##             <int>      <int> <chr>                <dbl>       <int>        <int>
-    ##  1              2   26845822 "Abendradfahrt"      6041.        1147         4513
-    ##  2              2   26845822 "TSG SSV"           56324.        9668        23624
-    ##  3              2   26845822 "Volleyball 🏐 "     4246.         775          795
-    ##  4              2   26845822 "Ballon d‘Alsace"   22693.        4740         8341
-    ##  5              2   26845822 "Super Planche d…   49032.       10076        24068
-    ##  6              2   26845822 "Volleyball 🏐 "     8503.        1408        15990
-    ##  7              2   26845822 "Planche Prep 2"    32375.        5042         5242
-    ##  8              2   26845822 "Planche Prepara…   34140.        5898         5898
-    ##  9              2   26845822 "Slow Run"           6970.        3247         3255
-    ## 10              2   26845822 "Rainy Run"          6762.        2699         2819
-    ## # … with 688 more rows, and 52 more variables: athlete$resource_state <int>,
+    ##  1              2   26845822 "Volleyball 🏐 "    10199         1953        76946
+    ##  2              2   26845822 "Cycling Club"      18284.        3860         5146
+    ##  3              2   26845822 "Volleyball 🏐 "    10475.        2141        15766
+    ##  4              2   26845822 "Abendradfahrt"      6041.        1147         4513
+    ##  5              2   26845822 "TSG SSV"           56324.        9668        23624
+    ##  6              2   26845822 "Volleyball 🏐 "     4246.         775          795
+    ##  7              2   26845822 "Ballon d‘Alsace"   22693.        4740         8341
+    ##  8              2   26845822 "Super Planche d…   49032.       10076        24068
+    ##  9              2   26845822 "Volleyball 🏐 "     8503.        1408        15990
+    ## 10              2   26845822 "Planche Prep 2"    32375.        5042         5242
+    ## # … with 691 more rows, and 52 more variables: athlete$resource_state <int>,
     ## #   total_elevation_gain <dbl>, type <chr>, sport_type <chr>,
     ## #   workout_type <int>, id <dbl>, start_date <dttm>, start_date_local <chr>,
     ## #   timezone <chr>, utc_offset <dbl>, location_city <lgl>,
@@ -265,20 +266,20 @@ Insert them all into a duckdb and select relevant columns:
         collect()
     }
 
-    ## # A tibble: 2,390,858 × 3
+    ## # A tibble: 2,396,364 × 3
     ##    id           lat   lng
     ##    <chr>      <dbl> <dbl>
-    ##  1 7485422416  48.3  8.85
-    ##  2 7485422416  48.3  8.85
-    ##  3 7485422416  48.3  8.85
-    ##  4 7485422416  48.3  8.85
-    ##  5 7485422416  48.3  8.85
-    ##  6 7485422416  48.3  8.85
-    ##  7 7485422416  48.3  8.85
-    ##  8 7485422416  48.3  8.85
-    ##  9 7485422416  48.3  8.85
-    ## 10 7485422416  48.3  8.85
-    ## # … with 2,390,848 more rows
+    ##  1 7536987223  48.3  8.85
+    ##  2 7536987223  48.3  8.85
+    ##  3 7536987223  48.3  8.85
+    ##  4 7536987223  48.3  8.85
+    ##  5 7536987223  48.3  8.85
+    ##  6 7536987223  48.3  8.85
+    ##  7 7536987223  48.3  8.85
+    ##  8 7536987223  48.3  8.85
+    ##  9 7536987223  48.3  8.85
+    ## 10 7536987223  48.3  8.85
+    ## # … with 2,396,354 more rows
 
 In the final plot every facet is one activity. Keep the rest of the plot
 as minimal as possible.
