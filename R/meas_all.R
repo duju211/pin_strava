@@ -6,9 +6,9 @@ meas_all <- function(paths_meas) {
     lat = double(), lng = double(), cadence = int32(),
     watts = int32(), id = string())
 
-  open_dataset(paths_meas, format = "parquet", schema = act_col_types) %>%
-    to_duckdb() %>%
-    select(id, lat, lng) %>%
-    filter(!is.na(lat) & !is.na(lng)) %>%
+  open_dataset(paths_meas, format = "parquet", schema = act_col_types) |>
+    to_duckdb() |>
+    select(id, lat, lng, altitude, time) |>
+    filter(!is.na(lat) & !is.na(lng)) |>
     collect()
 }

@@ -11,5 +11,6 @@ library(arrow)
 library(pins)
 library(glue)
 library(fs)
+library(sf)
 
 conflict_prefer("filter", "dplyr")

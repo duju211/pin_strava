@@ -24,6 +24,7 @@ You will need the following packages:
     library(pins)
     library(glue)
     library(fs)
+    library(sf)
 
     conflict_prefer("filter", "dplyr")
 
@@ -91,15 +92,16 @@ interpreted as list columns.
 In the end there is a data frame with one row for the currently
 authenticated user:
 
-    ## # A tibble: 1 × 24
+    ## # A tibble: 1 × 26
     ##         id resource_state firstname lastname city    state country sex   premium
     ##      <int>          <int> <chr>     <chr>    <chr>   <chr> <chr>   <chr> <lgl>  
     ## 1 26845822              3 "Julian " During   Baling… Bade… Germany M     FALSE  
-    ## # … with 15 more variables: summit <lgl>, created_at <chr>, updated_at <chr>,
+    ## # … with 17 more variables: summit <lgl>, created_at <chr>, updated_at <chr>,
     ## #   badge_type_id <int>, weight <dbl>, profile_medium <chr>, profile <chr>,
     ## #   blocked <lgl>, can_follow <lgl>, follower_count <int>, friend_count <int>,
     ## #   mutual_friend_count <int>, athlete_type <int>, date_preference <chr>,
-    ## #   measurement_preference <chr>
+    ## #   measurement_preference <chr>, is_winback_via_upload <lgl>,
+    ## #   is_winback_via_view <lgl>
 
 ## Activities
 
@@ -140,20 +142,20 @@ activities to read.
 
 The resulting data frame consists of one row per activity:
 
-    ## # A tibble: 698 × 57
+    ## # A tibble: 717 × 57
     ##    resource_state athlete$id name              distance moving_time elapsed_time
     ##             <int>      <int> <chr>                <dbl>       <int>        <int>
-    ##  1              2   26845822 "Abendradfahrt"      6041.        1147         4513
-    ##  2              2   26845822 "TSG SSV"           56324.        9668        23624
-    ##  3              2   26845822 "Volleyball 🏐 "     4246.         775          795
-    ##  4              2   26845822 "Ballon d‘Alsace"   22693.        4740         8341
-    ##  5              2   26845822 "Super Planche d…   49032.       10076        24068
-    ##  6              2   26845822 "Volleyball 🏐 "     8503.        1408        15990
-    ##  7              2   26845822 "Planche Prep 2"    32375.        5042         5242
-    ##  8              2   26845822 "Planche Prepara…   34140.        5898         5898
-    ##  9              2   26845822 "Slow Run"           6970.        3247         3255
-    ## 10              2   26845822 "Rainy Run"          6762.        2699         2819
-    ## # … with 688 more rows, and 52 more variables: athlete$resource_state <int>,
+    ##  1              2   26845822 "Unity Day"        38398.         6422         7011
+    ##  2              2   26845822 "🐂-Climb "        18170.         3352         3368
+    ##  3              2   26845822 "Short Danube "    28833          4770         5057
+    ##  4              2   26845822 "First Autumn 🍂…  50326.         7207         8447
+    ##  5              2   26845822 "Tan Side-Walls …  21518          3255         3485
+    ##  6              2   26845822 "Fahrt am Morgen"   5631           902          924
+    ##  7              2   26845822 "Bolt V2 🤩"       49068          7189         7488
+    ##  8              2   26845822 "Nachtradfahrt"        1.6           1            1
+    ##  9              2   26845822 "Fahrt am Nachmi…  38539.         8801        10331
+    ## 10              2   26845822 "Mittagsradfahrt"  40442.         9381        18789
+    ## # … with 707 more rows, and 52 more variables: athlete$resource_state <int>,
     ## #   total_elevation_gain <dbl>, type <chr>, sport_type <chr>,
     ## #   workout_type <int>, id <dbl>, start_date <dttm>, start_date_local <chr>,
     ## #   timezone <chr>, utc_offset <dbl>, location_city <lgl>,
@@ -258,27 +260,27 @@ Insert them all into a duckdb and select relevant columns:
         lat = double(), lng = double(), cadence = int32(),
         watts = int32(), id = string())
 
-      open_dataset(paths_meas, format = "parquet", schema = act_col_types) %>%
-        to_duckdb() %>%
-        select(id, lat, lng) %>%
-        filter(!is.na(lat) & !is.na(lng)) %>%
+      open_dataset(paths_meas, format = "parquet", schema = act_col_types) |>
+        to_duckdb() |>
+        select(id, lat, lng, altitude, time) |>
+        filter(!is.na(lat) & !is.na(lng)) |>
         collect()
     }
 
-    ## # A tibble: 2,390,858 × 3
-    ##    id           lat   lng
-    ##    <chr>      <dbl> <dbl>
-    ##  1 7485422416  48.3  8.85
-    ##  2 7485422416  48.3  8.85
-    ##  3 7485422416  48.3  8.85
-    ##  4 7485422416  48.3  8.85
-    ##  5 7485422416  48.3  8.85
-    ##  6 7485422416  48.3  8.85
-    ##  7 7485422416  48.3  8.85
-    ##  8 7485422416  48.3  8.85
-    ##  9 7485422416  48.3  8.85
-    ## 10 7485422416  48.3  8.85
-    ## # … with 2,390,848 more rows
+    ## # A tibble: 2,476,514 × 5
+    ##    id           lat   lng altitude  time
+    ##    <chr>      <dbl> <dbl>    <dbl> <int>
+    ##  1 7904630680  48.2  9.02     758.     0
+    ##  2 7904630680  48.2  9.02     758.     1
+    ##  3 7904630680  48.2  9.02     758.     2
+    ##  4 7904630680  48.2  9.02     758.     3
+    ##  5 7904630680  48.2  9.02     758.     4
+    ##  6 7904630680  48.2  9.02     758.     5
+    ##  7 7904630680  48.2  9.02     758.     6
+    ##  8 7904630680  48.2  9.02     758.     7
+    ##  9 7904630680  48.2  9.02     758.     8
+    ## 10 7904630680  48.2  9.02     758.     9
+    ## # … with 2,476,504 more rows
 
 In the final plot every facet is one activity. Keep the rest of the plot
 as minimal as possible.

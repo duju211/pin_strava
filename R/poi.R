@@ -13,8 +13,7 @@ poi <- function(df_act, paths_meas,
     to_duckdb()
 
   strava_db |>
-    filter(
-      lng >= lng_min, lng <= lng_max, lat >= lat_min, lat <= lat_max) |>
+    filter(lat >= min(start_left_bottom[1], end_right_top[1])) |>
     select(-heartrate) |>
     collect() |>
     left_join(select(df_act, id, type, start_date), by = "id")

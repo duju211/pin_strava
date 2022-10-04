@@ -49,7 +49,7 @@ list(
       return(stream_path)
     },
     pattern = map(act_ids), cue = tar_cue("never"), format = "file"),
-  mapped_poi,
+  #mapped_poi,
   tar_target(df_meas_all, meas_all(meas)),
   tar_target(gg_meas, vis_meas(df_meas_all)),
   tar_target(png_meas, save_gg_meas(gg_meas, active_user_path)),
