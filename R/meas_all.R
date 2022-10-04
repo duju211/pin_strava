@@ -10,5 +10,6 @@ meas_all <- function(paths_meas) {
     to_duckdb() |>
     select(id, lat, lng, altitude, time) |>
     filter(!is.na(lat) & !is.na(lng)) |>
-    collect()
+    collect() |>
+    mutate(point = st_as_sfc(map2(lng, lat, ~ st_point(c(.x, .y)))))
 }
