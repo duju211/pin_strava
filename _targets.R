@@ -3,20 +3,20 @@ source("libraries.R")
 walk(dir_ls("R"), source)
 
 df_poi <- tribble(
-  ~target_name, ~act_type, ~start_left_bottom, ~start_right_top, ~end_left_bottom, ~end_right_top,
-  "lochen", "Ride", c(48.237931, 8.852108), c(48.238081, 8.852586), c(48.218262, 8.852467), c(48.218394, 8.852634))
+  ~target_name, ~act_type, ~start_1, ~start_2, ~finish_1, ~finish_2,
+  "lochen", "Ride", c(8.852108, 48.238081), c(8.852467, 48.237931), c(8.852355, 48.218347), c(8.852677, 48.218465),
+  "mess_steige", "Ride", c(9.011506, 48.208878), c(9.011577, 48.208750), c(8.999030, 48.203863), c(8.999406, 48.203921))
 
 mapped_poi <- tar_map(
-  df_poi, names = "target_name",
+  values = df_poi, names = "target_name",
   tar_target(
-    poi_file, command = {
-      poi_file <- file_create(poi_path, target_name);
-      df_poi_raw <- poi(
-        df_act, meas, start_left_bottom, start_right_top,
-        end_left_bottom, end_right_top);
-      write_rds(df_poi_raw, poi_file);
-      return(poi_file)
-  }, format = "file")
+    start_line,
+    st_cast(st_union(st_point(start_1), st_point(start_2)), "LINESTRING")),
+  tar_target(
+    finish_line,
+    st_cast(st_union(st_point(finish_1), st_point(finish_2)), "LINESTRING")),
+  tar_target(
+    df_poi_raw, poi_raw(df_meas_all, start_line, finish_line))
 )
 
 list(

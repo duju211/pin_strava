@@ -27,6 +27,7 @@ You will need the following packages:
     library(sf)
 
     conflict_prefer("filter", "dplyr")
+    conflict_prefer("lag", "dplyr")
 
 # Data
 
@@ -142,20 +143,20 @@ activities to read.
 
 The resulting data frame consists of one row per activity:
 
-    ## # A tibble: 717 × 57
+    ## # A tibble: 738 × 57
     ##    resource_state athlete$id name              distance moving_time elapsed_time
     ##             <int>      <int> <chr>                <dbl>       <int>        <int>
-    ##  1              2   26845822 "Unity Day"        38398.         6422         7011
-    ##  2              2   26845822 "🐂-Climb "        18170.         3352         3368
-    ##  3              2   26845822 "Short Danube "    28833          4770         5057
-    ##  4              2   26845822 "First Autumn 🍂…  50326.         7207         8447
-    ##  5              2   26845822 "Tan Side-Walls …  21518          3255         3485
-    ##  6              2   26845822 "Fahrt am Morgen"   5631           902          924
-    ##  7              2   26845822 "Bolt V2 🤩"       49068          7189         7488
-    ##  8              2   26845822 "Nachtradfahrt"        1.6           1            1
-    ##  9              2   26845822 "Fahrt am Nachmi…  38539.         8801        10331
-    ## 10              2   26845822 "Mittagsradfahrt"  40442.         9381        18789
-    ## # … with 707 more rows, and 52 more variables: athlete$resource_state <int>,
+    ##  1              2   26845822 "Zeit Verbrechen…    4628.        2030         2165
+    ##  2              2   26845822 "Bauerfeind rett…    4595.        1926         1938
+    ##  3              2   26845822 "Cui Bono"           4560.        1972         1996
+    ##  4              2   26845822 "Semi Final Run"     4620.        1897         1934
+    ##  5              2   26845822 "Too Many Tabs"      5794.        2778         2991
+    ##  6              2   26845822 "Hard Fork ChatG…    5129.        2396         2465
+    ##  7              2   26845822 "Invisible Run "     4195         1747         1775
+    ##  8              2   26845822 "Costa Run"          4322.        1823         1823
+    ##  9              2   26845822 "Pre Casper "        4550.        1897         1907
+    ## 10              2   26845822 "Advent 🏃 "         5422.        2379         2385
+    ## # … with 728 more rows, and 52 more variables: athlete$resource_state <int>,
     ## #   total_elevation_gain <dbl>, type <chr>, sport_type <chr>,
     ## #   workout_type <int>, id <dbl>, start_date <dttm>, start_date_local <chr>,
     ## #   timezone <chr>, utc_offset <dbl>, location_city <lgl>,
@@ -264,24 +265,23 @@ Insert them all into a duckdb and select relevant columns:
         to_duckdb() |>
         select(id, lat, lng, altitude, time) |>
         filter(!is.na(lat) & !is.na(lng)) |>
-        collect() |>
-        mutate(point = st_as_sfc(map2(lng, lat, ~ st_point(c(.x, .y)))))
+        collect()
     }
 
-    ## # A tibble: 2,476,514 × 6
-    ##    id           lat   lng altitude  time               point
-    ##    <chr>      <dbl> <dbl>    <dbl> <int>             <POINT>
-    ##  1 7904630680  48.2  9.02     758.     0 (9.018697 48.21485)
-    ##  2 7904630680  48.2  9.02     758.     1 (9.018743 48.21485)
-    ##  3 7904630680  48.2  9.02     758.     2 (9.018794 48.21485)
-    ##  4 7904630680  48.2  9.02     758.     3 (9.018855 48.21484)
-    ##  5 7904630680  48.2  9.02     758.     4 (9.018967 48.21484)
-    ##  6 7904630680  48.2  9.02     758.     5 (9.019081 48.21483)
-    ##  7 7904630680  48.2  9.02     758.     6 (9.019188 48.21482)
-    ##  8 7904630680  48.2  9.02     758.     7 (9.019301 48.21481)
-    ##  9 7904630680  48.2  9.02     758.     8  (9.019423 48.2148)
-    ## 10 7904630680  48.2  9.02     758.     9 (9.019545 48.21478)
-    ## # … with 2,476,504 more rows
+    ## # A tibble: 2,545,904 × 5
+    ##    id           lat   lng altitude  time
+    ##    <chr>      <dbl> <dbl>    <dbl> <int>
+    ##  1 8271787410  48.2  9.02     763.     0
+    ##  2 8271787410  48.2  9.02     763.     1
+    ##  3 8271787410  48.2  9.02     763.     7
+    ##  4 8271787410  48.2  9.02     763.    13
+    ##  5 8271787410  48.2  9.02     763.    14
+    ##  6 8271787410  48.2  9.02     763.    15
+    ##  7 8271787410  48.2  9.02     763.    16
+    ##  8 8271787410  48.2  9.02     763.    17
+    ##  9 8271787410  48.2  9.02     763.    18
+    ## 10 8271787410  48.2  9.02     763.    19
+    ## # … with 2,545,894 more rows
 
 In the final plot every facet is one activity. Keep the rest of the plot
 as minimal as possible.
