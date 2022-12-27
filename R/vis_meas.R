@@ -1,5 +1,5 @@
-vis_meas <- function(df_meas_pro) {
-  df_meas_pro %>%
+vis_meas <- function(df_meas) {
+  df_meas |>
     ggplot(aes(x = lng, y = lat)) +
     geom_path() +
     facet_wrap(~ id, scales = "free") +

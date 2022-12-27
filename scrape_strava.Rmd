@@ -13,6 +13,8 @@ output:
 repository_url: https://github.com/duju211/pin_strava
 creative_commons: CC BY
 base_url: https://www.datannery.com/posts/strava-data/
+editor_options: 
+  chunk_output_type: console
 ---
 
 I am an avid runner and cyclist. For the past couple of years,
@@ -166,15 +168,6 @@ Join all the activities into one data frame. To do this, get the paths to all
 the measurement files:
 
 ```{r, file="R/meas_paths.R"}
-```
-
-Insert them all into a duckdb and select relevant columns:
-
-```{r meas_all, file="R/meas_all.R"}
-```
-
-```{r, echo=FALSE}
-tar_read(df_meas_all)
 ```
 
 In the final plot every facet is one activity.

@@ -24,35 +24,27 @@ list(
   tar_age(
     access_token, rstudioapi::askForSecret("Strava Access Token"),
     age = as.difftime(6, units = "hours")),
+  tar_target(n_top, 10L),
 
   tar_target(
     json_active_user, active_user_json(access_token), cue = tar_cue("always")),
   tar_target(df_active_user, active_user(json_active_user, user_list_cols)),
   tar_target(active_user_id, df_active_user[["id"]]),
-  tar_target(active_user_path, dir_create(active_user_id)),
-  tar_target(meas_path, dir_create(active_user_path, "meas")),
-  tar_target(act_path, dir_create(active_user_path, "act")),
-  tar_target(user_path, dir_create(active_user_path, "user")),
-  tar_target(poi_path, dir_create(active_user_path, "poi")),
   tar_target(
     df_act_raw, read_all_activities(access_token, active_user_id),
     cue = tar_cue("always")),
   tar_target(
     df_act, pre_process_act(df_act_raw, active_user_id, meas_board)),
   tar_target(act_ids, rel_act_ids(df_act)),
+  tar_target(rel_type, "Ride"),
 
   tar_target(
-    meas, command = {
-      stream_path <- file_create(meas_path, act_ids);
-      df_stream <- read_activity_stream(act_ids, access_token);
-      write_parquet(df_stream, stream_path);
-      return(stream_path)
-    },
-    pattern = map(act_ids), cue = tar_cue("never"), format = "file"),
+    df_meas, read_activity_stream(act_ids, access_token),
+    pattern = map(act_ids), format = "parquet"),
   #mapped_poi,
-  tar_target(df_meas_all, meas_all(meas)),
-  tar_target(gg_meas, vis_meas(df_meas_all)),
+  tar_target(gg_meas, vis_meas(df_meas)),
   tar_target(png_meas, save_gg_meas(gg_meas, active_user_path)),
+  tar_target(tbl_act_top_n, act_top_n_tbl(df_act, n_top, rel_type)),
 
   tar_render(strava_report, "scrape_strava.Rmd"),
   tar_render(
