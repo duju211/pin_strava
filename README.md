@@ -13,12 +13,14 @@ You will need the following packages:
 
     library(tarchetypes)
     library(conflicted)
+    library(reactable)
     library(tidyverse)
     library(lubridate)
     library(jsonlite)
     library(targets)
     library(httpuv)
     library(duckdb)
+    library(shiny)
     library(httr2)
     library(arrow)
     library(pins)
@@ -94,15 +96,16 @@ In the end there is a data frame with one row for the currently
 authenticated user:
 
     ## # A tibble: 1 × 26
-    ##         id resource_state firstname lastname city    state country sex   premium
-    ##      <int>          <int> <chr>     <chr>    <chr>   <chr> <chr>   <chr> <lgl>  
-    ## 1 26845822              3 "Julian " During   Baling… Bade… Germany M     FALSE  
-    ## # … with 17 more variables: summit <lgl>, created_at <chr>, updated_at <chr>,
+    ##         id resource_s…¹ first…² lastn…³ city  state country sex   premium summit
+    ##      <int>        <int> <chr>   <chr>   <chr> <chr> <chr>   <chr> <lgl>   <lgl> 
+    ## 1 26845822            3 "Julia… During  Bali… Bade… Germany M     FALSE   FALSE 
+    ## # … with 16 more variables: created_at <chr>, updated_at <chr>,
     ## #   badge_type_id <int>, weight <dbl>, profile_medium <chr>, profile <chr>,
     ## #   blocked <lgl>, can_follow <lgl>, follower_count <int>, friend_count <int>,
     ## #   mutual_friend_count <int>, athlete_type <int>, date_preference <chr>,
     ## #   measurement_preference <chr>, is_winback_via_upload <lgl>,
-    ## #   is_winback_via_view <lgl>
+    ## #   is_winback_via_view <lgl>, and abbreviated variable names ¹​resource_state,
+    ## #   ²​firstname, ³​lastname
 
 ## Activities
 
@@ -143,26 +146,26 @@ activities to read.
 
 The resulting data frame consists of one row per activity:
 
-    ## # A tibble: 738 × 57
-    ##    resource_state athlete$id name              distance moving_time elapsed_time
-    ##             <int>      <int> <chr>                <dbl>       <int>        <int>
-    ##  1              2   26845822 "Zeit Verbrechen…    4628.        2030         2165
-    ##  2              2   26845822 "Bauerfeind rett…    4595.        1926         1938
-    ##  3              2   26845822 "Cui Bono"           4560.        1972         1996
-    ##  4              2   26845822 "Semi Final Run"     4620.        1897         1934
-    ##  5              2   26845822 "Too Many Tabs"      5794.        2778         2991
-    ##  6              2   26845822 "Hard Fork ChatG…    5129.        2396         2465
-    ##  7              2   26845822 "Invisible Run "     4195         1747         1775
-    ##  8              2   26845822 "Costa Run"          4322.        1823         1823
-    ##  9              2   26845822 "Pre Casper "        4550.        1897         1907
-    ## 10              2   26845822 "Advent 🏃 "         5422.        2379         2385
-    ## # … with 728 more rows, and 52 more variables: athlete$resource_state <int>,
-    ## #   total_elevation_gain <dbl>, type <chr>, sport_type <chr>,
-    ## #   workout_type <int>, id <dbl>, start_date <dttm>, start_date_local <chr>,
-    ## #   timezone <chr>, utc_offset <dbl>, location_city <lgl>,
-    ## #   location_state <lgl>, location_country <chr>, achievement_count <int>,
-    ## #   kudos_count <int>, comment_count <int>, athlete_count <int>,
-    ## #   photo_count <int>, map <df[,3]>, trainer <lgl>, commute <lgl>, …
+    ## # A tibble: 740 × 57
+    ##    resourc…¹ athle…² name  dista…³ movin…⁴ elaps…⁵ total…⁶ type  sport…⁷ worko…⁸
+    ##        <int>   <int> <chr>   <dbl>   <int>   <int>   <dbl> <chr> <chr>     <int>
+    ##  1         2  2.68e7 "Chr…   5056.    2217    2276   126.  Run   Run           0
+    ##  2         2  2.68e7 "Bit…   4614.    1958    2021    39.2 Run   Run           0
+    ##  3         2  2.68e7 "Zei…   4628.    2030    2165    39.2 Run   Run           0
+    ##  4         2  2.68e7 "Bau…   4595.    1926    1938    39.2 Run   Run           0
+    ##  5         2  2.68e7 "Cui…   4560.    1972    1996    39.2 Run   Run           0
+    ##  6         2  2.68e7 "Sem…   4620.    1897    1934    39.1 Run   Run           0
+    ##  7         2  2.68e7 "Too…   5794.    2778    2991    87.3 Run   Run           0
+    ##  8         2  2.68e7 "Har…   5129.    2396    2465   129.  Run   Run           0
+    ##  9         2  2.68e7 "Inv…   4195     1747    1775    29.8 Run   Run           0
+    ## 10         2  2.68e7 "Cos…   4322.    1823    1823    36   Run   Run           0
+    ## # … with 730 more rows, 48 more variables: athlete$resource_state <int>,
+    ## #   id <dbl>, start_date <dttm>, start_date_local <chr>, timezone <chr>,
+    ## #   utc_offset <dbl>, location_city <lgl>, location_state <lgl>,
+    ## #   location_country <chr>, achievement_count <int>, kudos_count <int>,
+    ## #   comment_count <int>, athlete_count <int>, photo_count <int>, map <df[,3]>,
+    ## #   trainer <lgl>, commute <lgl>, manual <lgl>, private <lgl>,
+    ## #   visibility <chr>, flagged <lgl>, gear_id <chr>, start_latlng <list>, …
 
 Make sure that all ID columns have a character format and improve the
 column names.
@@ -251,43 +254,11 @@ paths to all the measurement files:
         board_name, type = "file", regexp = "df_\\d.*\\.arrow$", recurse = TRUE)
     }
 
-Insert them all into a duckdb and select relevant columns:
-
-    meas_all <- function(paths_meas) {
-      act_col_types <- schema(
-        moving = boolean(), velocity_smooth = double(),
-        grade_smooth = double(), distance = double(),
-        altitude = double(), heartrate = int32(), time = int32(),
-        lat = double(), lng = double(), cadence = int32(),
-        watts = int32(), id = string())
-
-      open_dataset(paths_meas, format = "parquet", schema = act_col_types) |>
-        to_duckdb() |>
-        select(id, lat, lng, altitude, time) |>
-        filter(!is.na(lat) & !is.na(lng)) |>
-        collect()
-    }
-
-    ## # A tibble: 2,545,904 × 5
-    ##    id           lat   lng altitude  time
-    ##    <chr>      <dbl> <dbl>    <dbl> <int>
-    ##  1 8271787410  48.2  9.02     763.     0
-    ##  2 8271787410  48.2  9.02     763.     1
-    ##  3 8271787410  48.2  9.02     763.     7
-    ##  4 8271787410  48.2  9.02     763.    13
-    ##  5 8271787410  48.2  9.02     763.    14
-    ##  6 8271787410  48.2  9.02     763.    15
-    ##  7 8271787410  48.2  9.02     763.    16
-    ##  8 8271787410  48.2  9.02     763.    17
-    ##  9 8271787410  48.2  9.02     763.    18
-    ## 10 8271787410  48.2  9.02     763.    19
-    ## # … with 2,545,894 more rows
-
 In the final plot every facet is one activity. Keep the rest of the plot
 as minimal as possible.
 
-    vis_meas <- function(df_meas_pro) {
-      df_meas_pro %>%
+    vis_meas <- function(df_meas) {
+      df_meas |>
         ggplot(aes(x = lng, y = lat)) +
         geom_path() +
         facet_wrap(~ id, scales = "free") +

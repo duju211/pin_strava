@@ -1,14 +1,7 @@
-act_top_n_tbl <- function(df_act, n_top, rel_type) {
-  df_act_top_n <- df_act |>
-    filter(type == rel_type) |>
-    top_n(n = n_top, wt = distance) |>
-    select(id, name, distance) |>
-    arrange(desc(distance)) |>
-    mutate(distance = distance / 1000)
-
+act_top_n_tbl <- function(df_act_top_n) {
   df_act_top_n |>
     reactable(
-      selection = "multiple", defaultPageSize = n_top,
+      selection = "multiple", defaultPageSize = nrow(df_act_top_n),
       columns = list(
         distance = colDef(
           format = colFormat(digits = 1),

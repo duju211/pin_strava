@@ -31,6 +31,8 @@ list(
   tar_target(df_active_user, active_user(json_active_user, user_list_cols)),
   tar_target(active_user_id, df_active_user[["id"]]),
   tar_target(
+    user_board, board_folder(dir_create(active_user_id), versioned = FALSE)),
+  tar_target(
     df_act_raw, read_all_activities(access_token, active_user_id),
     cue = tar_cue("always")),
   tar_target(
@@ -39,12 +41,18 @@ list(
   tar_target(rel_type, "Ride"),
 
   tar_target(
-    df_meas, read_activity_stream(act_ids, access_token),
-    pattern = map(act_ids), format = "parquet"),
-  #mapped_poi,
+    meas, command = {
+      df_meas <- read_activity_stream(act_ids, access_token)
+      pin_write(user_board, df_meas, act_ids, type = "arrow")
+    },
+    pattern = map(act_ids)),
+  tar_target(
+    df_meas,
+    meas |>
+      map_df(~ pin_read(user_board, .x))),
   tar_target(gg_meas, vis_meas(df_meas)),
-  tar_target(png_meas, save_gg_meas(gg_meas, active_user_path)),
-  tar_target(tbl_act_top_n, act_top_n_tbl(df_act, n_top, rel_type)),
+  tar_target(df_act_top_n, act_top_n(df_act, n_top, rel_type)),
+  tar_target(tbl_act_top_n, act_top_n_tbl(df_act_top_n)),
 
   tar_render(strava_report, "scrape_strava.Rmd"),
   tar_render(
