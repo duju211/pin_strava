@@ -9,3 +9,4 @@ meas/
 26845822/
 test.R
 *.html
+.Renviron

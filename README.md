@@ -11,6 +11,7 @@ routes.
 
 You will need the following packages:
 
+    library(Microsoft365R)
     library(tarchetypes)
     library(conflicted)
     library(reactable)
@@ -89,23 +90,24 @@ interpreted as list columns.
       json_active_user[
         map_lgl(json_active_user, negate(is.null))
         & map_lgl(names(json_active_user), ~ !.x %in% user_list_cols)] |>
-        as_tibble()
+        as_tibble() |>
+        mutate(id = as.character(id))
     }
 
 In the end there is a data frame with one row for the currently
 authenticated user:
 
     ## # A tibble: 1 × 26
-    ##         id resource_s…¹ first…² lastn…³ city  state country sex   premium summit
-    ##      <int>        <int> <chr>   <chr>   <chr> <chr> <chr>   <chr> <lgl>   <lgl> 
-    ## 1 26845822            3 "Julia… During  Bali… Bade… Germany M     FALSE   FALSE 
-    ## # … with 16 more variables: created_at <chr>, updated_at <chr>,
-    ## #   badge_type_id <int>, weight <dbl>, profile_medium <chr>, profile <chr>,
-    ## #   blocked <lgl>, can_follow <lgl>, follower_count <int>, friend_count <int>,
+    ##   id    resou…¹ first…² lastn…³ city  state country sex   premium summit creat…⁴
+    ##   <chr>   <int> <chr>   <chr>   <chr> <chr> <chr>   <chr> <lgl>   <lgl>  <chr>  
+    ## 1 2684…       3 "Julia… During  Bali… Bade… Germany M     FALSE   FALSE  2017-1…
+    ## # … with 15 more variables: updated_at <chr>, badge_type_id <int>,
+    ## #   weight <dbl>, profile_medium <chr>, profile <chr>, blocked <lgl>,
+    ## #   can_follow <lgl>, follower_count <int>, friend_count <int>,
     ## #   mutual_friend_count <int>, athlete_type <int>, date_preference <chr>,
     ## #   measurement_preference <chr>, is_winback_via_upload <lgl>,
     ## #   is_winback_via_view <lgl>, and abbreviated variable names ¹​resource_state,
-    ## #   ²​firstname, ³​lastname
+    ## #   ²​firstname, ³​lastname, ⁴​created_at
 
 ## Activities
 
@@ -146,20 +148,20 @@ activities to read.
 
 The resulting data frame consists of one row per activity:
 
-    ## # A tibble: 740 × 57
+    ## # A tibble: 748 × 57
     ##    resourc…¹ athle…² name  dista…³ movin…⁴ elaps…⁵ total…⁶ type  sport…⁷ worko…⁸
     ##        <int>   <int> <chr>   <dbl>   <int>   <int>   <dbl> <chr> <chr>     <int>
-    ##  1         2  2.68e7 "Chr…   5056.    2217    2276   126.  Run   Run           0
-    ##  2         2  2.68e7 "Bit…   4614.    1958    2021    39.2 Run   Run           0
-    ##  3         2  2.68e7 "Zei…   4628.    2030    2165    39.2 Run   Run           0
-    ##  4         2  2.68e7 "Bau…   4595.    1926    1938    39.2 Run   Run           0
-    ##  5         2  2.68e7 "Cui…   4560.    1972    1996    39.2 Run   Run           0
-    ##  6         2  2.68e7 "Sem…   4620.    1897    1934    39.1 Run   Run           0
-    ##  7         2  2.68e7 "Too…   5794.    2778    2991    87.3 Run   Run           0
-    ##  8         2  2.68e7 "Har…   5129.    2396    2465   129.  Run   Run           0
-    ##  9         2  2.68e7 "Inv…   4195     1747    1775    29.8 Run   Run           0
-    ## 10         2  2.68e7 "Cos…   4322.    1823    1823    36   Run   Run           0
-    ## # … with 730 more rows, 48 more variables: athlete$resource_state <int>,
+    ##  1         2  2.68e7 "Sta…   5017     2476    2545   135.  Run   Run           0
+    ##  2         2  2.68e7 "Cui…   6432.    2868    3010   114.  Run   Run           0
+    ##  3         2  2.68e7 "Sta…   3544.    1717    5552    89.6 Run   Run           0
+    ##  4         2  2.68e7 "Zwi…   5527.     760     760    27   Virt… Virtua…      NA
+    ##  5         2  2.68e7 "Zwi…   5268.     842    1001    38   Virt… Virtua…      NA
+    ##  6         2  2.68e7 "3 K…   5101.    2424    2449   101.  Run   Run           0
+    ##  7         2  2.68e7 "Too…   4511     1950    1989    39.1 Run   Run           0
+    ##  8         2  2.68e7 "New…  33394.    5238    5283   457   Ride  Ride         10
+    ##  9         2  2.68e7 "Chr…   5056.    2217    2276   126.  Run   Run           0
+    ## 10         2  2.68e7 "Bit…   4614.    1958    2021    39.2 Run   Run           0
+    ## # … with 738 more rows, 48 more variables: athlete$resource_state <int>,
     ## #   id <dbl>, start_date <dttm>, start_date_local <chr>, timezone <chr>,
     ## #   utc_offset <dbl>, location_city <lgl>, location_state <lgl>,
     ## #   location_country <chr>, achievement_count <int>, kudos_count <int>,

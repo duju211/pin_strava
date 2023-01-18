@@ -2,23 +2,6 @@ source("libraries.R")
 
 walk(dir_ls("R"), source)
 
-df_poi <- tribble(
-  ~target_name, ~act_type, ~start_1, ~start_2, ~finish_1, ~finish_2,
-  "lochen", "Ride", c(8.852108, 48.238081), c(8.852467, 48.237931), c(8.852355, 48.218347), c(8.852677, 48.218465),
-  "mess_steige", "Ride", c(9.011506, 48.208878), c(9.011577, 48.208750), c(8.999030, 48.203863), c(8.999406, 48.203921))
-
-mapped_poi <- tar_map(
-  values = df_poi, names = "target_name",
-  tar_target(
-    start_line,
-    st_cast(st_union(st_point(start_1), st_point(start_2)), "LINESTRING")),
-  tar_target(
-    finish_line,
-    st_cast(st_union(st_point(finish_1), st_point(finish_2)), "LINESTRING")),
-  tar_target(
-    df_poi_raw, poi_raw(df_meas_all, start_line, finish_line))
-)
-
 list(
   tar_target(user_list_cols, c("shoes", "clubs", "bikes")),
   tar_age(
@@ -31,25 +14,22 @@ list(
   tar_target(df_active_user, active_user(json_active_user, user_list_cols)),
   tar_target(active_user_id, df_active_user[["id"]]),
   tar_target(
-    user_board, board_folder(dir_create(active_user_id), versioned = FALSE)),
+    user_board, connect_board(active_user_id), cue = tar_cue("always")),
   tar_target(
     df_act_raw, read_all_activities(access_token, active_user_id),
     cue = tar_cue("always")),
   tar_target(
     df_act, pre_process_act(df_act_raw, active_user_id, meas_board)),
+  tar_target(pin_act, pin_write(user_board, df_act, "df_act")),
   tar_target(act_ids, rel_act_ids(df_act)),
   tar_target(rel_type, "Ride"),
 
   tar_target(
-    meas, command = {
-      df_meas <- read_activity_stream(act_ids, access_token)
-      pin_write(user_board, df_meas, act_ids, type = "arrow")
-    },
-    pattern = map(act_ids)),
+    df_meas, read_activity_stream(act_ids, access_token),
+    pattern = map(act_ids), cue = tar_cue("never")),
   tar_target(
-    df_meas,
-    meas |>
-      map_df(~ pin_read(user_board, .x))),
+    pin_meas, pin_write(user_board, df_meas, act_ids, type = "arrow"),
+    pattern = map(df_meas, act_ids), cue = tar_cue("never")),
   tar_target(gg_meas, vis_meas(df_meas)),
   tar_target(df_act_top_n, act_top_n(df_act, n_top, rel_type)),
   tar_target(tbl_act_top_n, act_top_n_tbl(df_act_top_n)),
