@@ -4,11 +4,11 @@ walk(dir_ls("R"), source)
 
 list(
   tar_target(user_list_cols, c("shoes", "clubs", "bikes")),
+  tar_target(n_top, 10L),
+
   tar_age(
     access_token, rstudioapi::askForSecret("Strava Access Token"),
     age = as.difftime(6, units = "hours")),
-  tar_target(n_top, 10L),
-
   tar_target(
     json_active_user, active_user_json(access_token), cue = tar_cue("always")),
   tar_target(df_active_user, active_user(json_active_user, user_list_cols)),

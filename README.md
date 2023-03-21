@@ -148,20 +148,20 @@ activities to read.
 
 The resulting data frame consists of one row per activity:
 
-    ## # A tibble: 748 × 57
+    ## # A tibble: 774 × 57
     ##    resourc…¹ athle…² name  dista…³ movin…⁴ elaps…⁵ total…⁶ type  sport…⁷ worko…⁸
     ##        <int>   <int> <chr>   <dbl>   <int>   <int>   <dbl> <chr> <chr>     <int>
-    ##  1         2  2.68e7 "Sta…   5017     2476    2545   135.  Run   Run           0
-    ##  2         2  2.68e7 "Cui…   6432.    2868    3010   114.  Run   Run           0
-    ##  3         2  2.68e7 "Sta…   3544.    1717    5552    89.6 Run   Run           0
-    ##  4         2  2.68e7 "Zwi…   5527.     760     760    27   Virt… Virtua…      NA
-    ##  5         2  2.68e7 "Zwi…   5268.     842    1001    38   Virt… Virtua…      NA
-    ##  6         2  2.68e7 "3 K…   5101.    2424    2449   101.  Run   Run           0
-    ##  7         2  2.68e7 "Too…   4511     1950    1989    39.1 Run   Run           0
-    ##  8         2  2.68e7 "New…  33394.    5238    5283   457   Ride  Ride         10
-    ##  9         2  2.68e7 "Chr…   5056.    2217    2276   126.  Run   Run           0
-    ## 10         2  2.68e7 "Bit…   4614.    1958    2021    39.2 Run   Run           0
-    ## # … with 738 more rows, 48 more variables: athlete$resource_state <int>,
+    ##  1         2  2.68e7 "Har…   6602.    3231    3313   126.  Run   Run           0
+    ##  2         2  2.68e7 "Pio…   5036.    2518    2545   134.  Run   Run           0
+    ##  3         2  2.68e7 "Com…   5875.    2812    2905   119.  Run   Run           0
+    ##  4         2  2.68e7 "Zei…   5044.    2507    2553   134.  Run   Run           0
+    ##  5         2  2.68e7 "Auf…   4593.    2059    2097    39   Run   Run           0
+    ##  6         2  2.68e7 "Auf…   4658.    2059    2176    39   Run   Run           0
+    ##  7         2  2.68e7 "11k…   6349.    2938    3083   115.  Run   Run           0
+    ##  8         2  2.68e7 "Auf…   4870.    2351    2453   127.  Run   Run           0
+    ##  9         2  2.68e7 "Har…   4547.    1998    2112    38.9 Run   Run           0
+    ## 10         2  2.68e7 "Zei…   5325.    2403    2805   129.  Run   Run           0
+    ## # … with 764 more rows, 48 more variables: athlete$resource_state <int>,
     ## #   id <dbl>, start_date <dttm>, start_date_local <chr>, timezone <chr>,
     ## #   utc_offset <dbl>, location_city <lgl>, location_state <lgl>,
     ## #   location_country <chr>, achievement_count <int>, kudos_count <int>,
