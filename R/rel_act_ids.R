@@ -1,5 +1,5 @@
-rel_act_ids <- function(df_act) {
-  df_act %>%
-    filter(!manual) %>%
+rel_act_ids <- function(df_act_raw) {
+  df_act_raw |>
+    filter(!manual) |>
     pull(id)
 }

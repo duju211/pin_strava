@@ -25,5 +25,6 @@ read_all_activities <- function(access_token, active_user_id) {
     bind_rows() |>
     mutate(
       start_date = ymd_hms(start_date),
-      active_user_id = active_user_id)
+      active_user_id = active_user_id,
+      across(contains("id"), as.character))
 }

@@ -21,18 +21,19 @@ list(
   tar_target(
     df_act, pre_process_act(df_act_raw, active_user_id, meas_board)),
   tar_target(pin_act, pin_write(user_board, df_act, "df_act")),
-  tar_target(act_ids, rel_act_ids(df_act)),
+  tar_target(act_ids, rel_act_ids(df_act_raw)),
   tar_target(rel_type, "Ride"),
 
   tar_target(
-    df_meas, read_activity_stream(act_ids, access_token),
-    pattern = map(act_ids), cue = tar_cue("never")),
-  tar_target(
-    pin_meas, pin_write(user_board, df_meas, act_ids, type = "arrow"),
-    pattern = map(df_meas, act_ids), cue = tar_cue("never")),
+    pin_meas, command = {
+      df_meas <- read_activity_stream(act_ids, access_token);
+      pin_meas <- pin_write(user_board, df_meas, act_ids, type = "arrow");
+      folder <- pin_meta(user_board, pin_meas)[["local"]][["dir"]];
+      file <- pin_meta(user_board, pin_meas)[["file"]];
+      path_join(c(folder, file))
+    }, pattern = map(act_ids), format = "file", cue = tar_cue("never")),
+  tar_target(df_meas, meas(pin_meas)),
   tar_target(gg_meas, vis_meas(df_meas)),
-  tar_target(df_act_top_n, act_top_n(df_act, n_top, rel_type)),
-  tar_target(tbl_act_top_n, act_top_n_tbl(df_act_top_n)),
 
   tar_render(strava_report, "scrape_strava.Rmd"),
   tar_render(

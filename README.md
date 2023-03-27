@@ -11,14 +11,17 @@ routes.
 
 You will need the following packages:
 
-    library(Microsoft365R)
+    library(shinydashboard)
+    library(reactablefmtr)
     library(tarchetypes)
     library(conflicted)
     library(reactable)
     library(tidyverse)
     library(lubridate)
     library(jsonlite)
+    library(shinyjs)
     library(targets)
+    library(plotly)
     library(httpuv)
     library(duckdb)
     library(shiny)
@@ -143,45 +146,35 @@ activities to read.
         bind_rows() |>
         mutate(
           start_date = ymd_hms(start_date),
-          active_user_id = active_user_id)
+          active_user_id = active_user_id,
+          across(contains("id"), as.character))
     }
 
-The resulting data frame consists of one row per activity:
+The resulting data frame consists of one row per activity. Make sure
+that all ID columns have a character format and improve the column
+names.
 
-    ## # A tibble: 774 × 57
-    ##    resourc…¹ athle…² name  dista…³ movin…⁴ elaps…⁵ total…⁶ type  sport…⁷ worko…⁸
-    ##        <int>   <int> <chr>   <dbl>   <int>   <int>   <dbl> <chr> <chr>     <int>
-    ##  1         2  2.68e7 "Har…   6602.    3231    3313   126.  Run   Run           0
-    ##  2         2  2.68e7 "Pio…   5036.    2518    2545   134.  Run   Run           0
-    ##  3         2  2.68e7 "Com…   5875.    2812    2905   119.  Run   Run           0
-    ##  4         2  2.68e7 "Zei…   5044.    2507    2553   134.  Run   Run           0
-    ##  5         2  2.68e7 "Auf…   4593.    2059    2097    39   Run   Run           0
-    ##  6         2  2.68e7 "Auf…   4658.    2059    2176    39   Run   Run           0
-    ##  7         2  2.68e7 "11k…   6349.    2938    3083   115.  Run   Run           0
-    ##  8         2  2.68e7 "Auf…   4870.    2351    2453   127.  Run   Run           0
-    ##  9         2  2.68e7 "Har…   4547.    1998    2112    38.9 Run   Run           0
-    ## 10         2  2.68e7 "Zei…   5325.    2403    2805   129.  Run   Run           0
-    ## # … with 764 more rows, 48 more variables: athlete$resource_state <int>,
-    ## #   id <dbl>, start_date <dttm>, start_date_local <chr>, timezone <chr>,
-    ## #   utc_offset <dbl>, location_city <lgl>, location_state <lgl>,
-    ## #   location_country <chr>, achievement_count <int>, kudos_count <int>,
-    ## #   comment_count <int>, athlete_count <int>, photo_count <int>, map <df[,3]>,
-    ## #   trainer <lgl>, commute <lgl>, manual <lgl>, private <lgl>,
-    ## #   visibility <chr>, flagged <lgl>, gear_id <chr>, start_latlng <list>, …
-
-Make sure that all ID columns have a character format and improve the
-column names.
-
-    pre_process_act <- function(df_act_raw, active_user_id, meas_board) {
-      df_act_raw |>
-        mutate(across(contains("id"), as.character))
-    }
+    ## # A tibble: 775 × 6
+    ##    name                          id    start_date          dista…¹ total…² type 
+    ##    <chr>                         <chr> <dttm>                <dbl>   <dbl> <chr>
+    ##  1 "Hirschbach Zweribach Waterf… 7097… 2022-05-06 10:00:34  12175.   439   Hike 
+    ##  2 "Wacholderhöhe "              7205… 2022-05-26 08:46:20  10441.   236.  Hike 
+    ##  3 "Wanderung am Nachmittag"     4376… 2020-11-22 13:46:53   7521.   156.  Hike 
+    ##  4 "Wanderung am Nachmittag"     3937… 2020-08-19 15:29:49   5604.   158.  Hike 
+    ##  5 "Easter 🐣 Walk"              6997… 2022-04-17 13:25:57   4226.    18.8 Hike 
+    ##  6 "Wanderung am Nachmittag"     4825… 2021-02-21 14:20:06   2747.   118.  Hike 
+    ##  7 "Bruderherz besuchen "        3738… 2020-07-09 06:46:00 172524   1506   Ride 
+    ##  8 "Transalp_5"                  3669… 2020-06-25 07:06:29 117178   1576   Ride 
+    ##  9 "Transalp_1"                  3650… 2020-06-21 08:17:08 105979   1148   Ride 
+    ## 10 "Fahrt am Morgen"             2302… 2019-04-19 08:18:34 104153   1521   Ride 
+    ## # … with 765 more rows, and abbreviated variable names ¹​distance,
+    ## #   ²​total_elevation_gain
 
 Extract ids of all activities. Exclude activities which were recorded
 manually, because they don’t include additional data:
 
-    rel_act_ids <- function(df_act) {
-      df_act %>%
+    rel_act_ids <- function(df_act_raw) {
+      df_act_raw %>%
         filter(!manual) %>%
         pull(id)
     }
@@ -279,6 +272,27 @@ as minimal as possible.
           plot.background = element_blank(),
           strip.text = element_blank())
     }
+
+    ## `geom_path()`: Each group consists of only one observation.
+    ## ℹ Do you need to adjust the group aesthetic?
+    ## `geom_path()`: Each group consists of only one observation.
+    ## ℹ Do you need to adjust the group aesthetic?
+    ## `geom_path()`: Each group consists of only one observation.
+    ## ℹ Do you need to adjust the group aesthetic?
+    ## `geom_path()`: Each group consists of only one observation.
+    ## ℹ Do you need to adjust the group aesthetic?
+    ## `geom_path()`: Each group consists of only one observation.
+    ## ℹ Do you need to adjust the group aesthetic?
+    ## `geom_path()`: Each group consists of only one observation.
+    ## ℹ Do you need to adjust the group aesthetic?
+    ## `geom_path()`: Each group consists of only one observation.
+    ## ℹ Do you need to adjust the group aesthetic?
+    ## `geom_path()`: Each group consists of only one observation.
+    ## ℹ Do you need to adjust the group aesthetic?
+    ## `geom_path()`: Each group consists of only one observation.
+    ## ℹ Do you need to adjust the group aesthetic?
+    ## `geom_path()`: Each group consists of only one observation.
+    ## ℹ Do you need to adjust the group aesthetic?
 
 ![](README_files/figure-markdown_strict/gg_strava-1.png)
 

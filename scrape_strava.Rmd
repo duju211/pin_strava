@@ -117,16 +117,12 @@ It will break the execution of the loop if there are no more activities to read.
 ```{r, code=read_lines("R/read_all_activities.R"), eval=FALSE}
 ```
 
-The resulting data frame consists of one row per activity:
-
-```{r, echo=FALSE}
-tar_read(df_act_raw)
-```
-
+The resulting data frame consists of one row per activity.
 Make sure that all ID columns have a character format and improve the column
 names.
 
-```{r, code=read_lines("R/pre_process_act.R"), eval=FALSE}
+```{r, echo=FALSE}
+tar_read(df_act)
 ```
 
 Extract ids of all activities. Exclude activities which were recorded manually,
