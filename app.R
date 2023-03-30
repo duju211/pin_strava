@@ -11,8 +11,8 @@ source("libraries.R")
 
 walk(dir_ls("R"), source)
 
-tar_load(df_act)
-tar_load(user_board)
+user_board <- board_folder("26845822/")
+df_act <- pin_read(user_board, "df_act")
 
 ui <- dashboardPage(
   dashboardHeader(),
@@ -28,7 +28,7 @@ ui <- dashboardPage(
           value = today() - dweeks(16)),
         selectInput(
           "rel_types", label = "Activity Types",
-          choices = unique(df_act$type))
+          choices = unique(df_act$type), selected = "Run")
       ),
       hidden(
         menuItem("hidden_overview_act", tabName = "hidden_overview_act")

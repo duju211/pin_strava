@@ -154,7 +154,7 @@ The resulting data frame consists of one row per activity. Make sure
 that all ID columns have a character format and improve the column
 names.
 
-    ## # A tibble: 775 × 6
+    ## # A tibble: 776 × 6
     ##    name                          id    start_date          dista…¹ total…² type 
     ##    <chr>                         <chr> <dttm>                <dbl>   <dbl> <chr>
     ##  1 "Hirschbach Zweribach Waterf… 7097… 2022-05-06 10:00:34  12175.   439   Hike 
@@ -167,15 +167,15 @@ names.
     ##  8 "Transalp_5"                  3669… 2020-06-25 07:06:29 117178   1576   Ride 
     ##  9 "Transalp_1"                  3650… 2020-06-21 08:17:08 105979   1148   Ride 
     ## 10 "Fahrt am Morgen"             2302… 2019-04-19 08:18:34 104153   1521   Ride 
-    ## # … with 765 more rows, and abbreviated variable names ¹​distance,
+    ## # … with 766 more rows, and abbreviated variable names ¹​distance,
     ## #   ²​total_elevation_gain
 
 Extract ids of all activities. Exclude activities which were recorded
 manually, because they don’t include additional data:
 
     rel_act_ids <- function(df_act_raw) {
-      df_act_raw %>%
-        filter(!manual) %>%
+      df_act_raw |>
+        filter(!manual) |>
         pull(id)
     }
 
