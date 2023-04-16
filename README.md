@@ -21,6 +21,7 @@ You will need the following packages:
     library(jsonlite)
     library(shinyjs)
     library(targets)
+    library(scales)
     library(plotly)
     library(httpuv)
     library(duckdb)
@@ -98,19 +99,7 @@ interpreted as list columns.
     }
 
 In the end there is a data frame with one row for the currently
-authenticated user:
-
-    ## # A tibble: 1 × 26
-    ##   id    resou…¹ first…² lastn…³ city  state country sex   premium summit creat…⁴
-    ##   <chr>   <int> <chr>   <chr>   <chr> <chr> <chr>   <chr> <lgl>   <lgl>  <chr>  
-    ## 1 2684…       3 "Julia… During  Bali… Bade… Germany M     FALSE   FALSE  2017-1…
-    ## # … with 15 more variables: updated_at <chr>, badge_type_id <int>,
-    ## #   weight <dbl>, profile_medium <chr>, profile <chr>, blocked <lgl>,
-    ## #   can_follow <lgl>, follower_count <int>, friend_count <int>,
-    ## #   mutual_friend_count <int>, athlete_type <int>, date_preference <chr>,
-    ## #   measurement_preference <chr>, is_winback_via_upload <lgl>,
-    ## #   is_winback_via_view <lgl>, and abbreviated variable names ¹​resource_state,
-    ## #   ²​firstname, ³​lastname, ⁴​created_at
+authenticated user.
 
 ## Activities
 
@@ -154,20 +143,20 @@ The resulting data frame consists of one row per activity. Make sure
 that all ID columns have a character format and improve the column
 names.
 
-    ## # A tibble: 776 × 6
+    ## # A tibble: 781 × 6
     ##    name                          id    start_date          dista…¹ total…² type 
     ##    <chr>                         <chr> <dttm>                <dbl>   <dbl> <chr>
-    ##  1 "Hirschbach Zweribach Waterf… 7097… 2022-05-06 10:00:34  12175.   439   Hike 
-    ##  2 "Wacholderhöhe "              7205… 2022-05-26 08:46:20  10441.   236.  Hike 
-    ##  3 "Wanderung am Nachmittag"     4376… 2020-11-22 13:46:53   7521.   156.  Hike 
-    ##  4 "Wanderung am Nachmittag"     3937… 2020-08-19 15:29:49   5604.   158.  Hike 
-    ##  5 "Easter 🐣 Walk"              6997… 2022-04-17 13:25:57   4226.    18.8 Hike 
-    ##  6 "Wanderung am Nachmittag"     4825… 2021-02-21 14:20:06   2747.   118.  Hike 
-    ##  7 "Bruderherz besuchen "        3738… 2020-07-09 06:46:00 172524   1506   Ride 
-    ##  8 "Transalp_5"                  3669… 2020-06-25 07:06:29 117178   1576   Ride 
-    ##  9 "Transalp_1"                  3650… 2020-06-21 08:17:08 105979   1148   Ride 
-    ## 10 "Fahrt am Morgen"             2302… 2019-04-19 08:18:34 104153   1521   Ride 
-    ## # … with 766 more rows, and abbreviated variable names ¹​distance,
+    ##  1 "Kuenser Waalweg Dorf Tirol"  8899… 2023-04-12 09:37:46  12166.    558. Hike 
+    ##  2 "Mendel + Gampenpass"         8867… 2023-04-10 10:28:23  61899.   1602  Ride 
+    ##  3 "Schnugger Waal"              8899… 2023-04-09 09:34:55  11080.    515. Hike 
+    ##  4 "New Gear ⚙️ Day "             8831… 2023-04-04 13:29:55  37783.    711  Ride 
+    ##  5 "Benutze Ohr 👂 mit Lautspre… 8818… 2023-04-02 10:35:11   5034.    135. Run  
+    ##  6 "Dark Matters "               8792… 2023-03-28 15:47:42   6019.    118. Run  
+    ##  7 "Hard Fork "                  8769… 2023-03-24 14:03:54   4988.    134. Run  
+    ##  8 "Hard Fork"                   8729… 2023-03-17 13:48:18   6602.    126. Run  
+    ##  9 "Pioneer Briefing "           8713… 2023-03-14 16:37:51   5036.    134. Run  
+    ## 10 "Computer und Kommunikation"  8700… 2023-03-12 09:50:10   5875.    119. Run  
+    ## # … with 771 more rows, and abbreviated variable names ¹​distance,
     ## #   ²​total_elevation_gain
 
 Extract ids of all activities. Exclude activities which were recorded

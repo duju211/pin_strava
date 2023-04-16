@@ -5,6 +5,8 @@ walk(dir_ls("R"), source)
 list(
   tar_target(user_list_cols, c("shoes", "clubs", "bikes")),
   tar_target(n_top, 10L),
+  tar_target(rel_type, "Run"),
+  tar_target(earliest_datetime, now() - dweeks(16)),
 
   tar_age(
     access_token, rstudioapi::askForSecret("Strava Access Token"),
@@ -22,7 +24,9 @@ list(
     df_act, pre_process_act(df_act_raw, active_user_id, meas_board)),
   tar_target(pin_act, pin_write(user_board, df_act, "df_act")),
   tar_target(act_ids, rel_act_ids(df_act_raw)),
-  tar_target(rel_type, "Ride"),
+  tar_target(
+    df_act_ex,
+    filter(df_act, start_date >= earliest_datetime)),
 
   tar_target(
     pin_meas, command = {

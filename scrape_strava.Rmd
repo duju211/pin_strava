@@ -102,11 +102,7 @@ interpreted as list columns.
 ```
 
 In the end there is a data frame with one row for the currently authenticated
-user:
-
-```{r, echo=FALSE}
-tar_read(df_active_user)
-```
+user.
 
 ## Activities
 
