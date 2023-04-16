@@ -15,6 +15,8 @@ creative_commons: CC BY
 base_url: https://www.datannery.com/posts/strava-data/
 editor_options: 
   chunk_output_type: console
+params:
+  read_me: FALSE
 ---
 
 I am an avid runner and cyclist. For the past couple of years,
@@ -117,7 +119,7 @@ The resulting data frame consists of one row per activity.
 Make sure that all ID columns have a character format and improve the column
 names.
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, eval=!params$read_me}
 tar_read(df_act)
 ```
 
@@ -168,7 +170,7 @@ Keep the rest of the plot as minimal as possible.
 ```{r, code=read_lines("R/vis_meas.R"), eval=FALSE}
 ```
 
-```{r gg_strava, echo=FALSE, fig.height=11, fig.width=11}
+```{r gg_strava, echo=FALSE, fig.height=11, fig.width=11, eval=!params$read_me}
 tar_read(gg_meas)
 ```
 

@@ -143,22 +143,6 @@ The resulting data frame consists of one row per activity. Make sure
 that all ID columns have a character format and improve the column
 names.
 
-    ## # A tibble: 781 × 6
-    ##    name                          id    start_date          dista…¹ total…² type 
-    ##    <chr>                         <chr> <dttm>                <dbl>   <dbl> <chr>
-    ##  1 "Kuenser Waalweg Dorf Tirol"  8899… 2023-04-12 09:37:46  12166.    558. Hike 
-    ##  2 "Mendel + Gampenpass"         8867… 2023-04-10 10:28:23  61899.   1602  Ride 
-    ##  3 "Schnugger Waal"              8899… 2023-04-09 09:34:55  11080.    515. Hike 
-    ##  4 "New Gear ⚙️ Day "             8831… 2023-04-04 13:29:55  37783.    711  Ride 
-    ##  5 "Benutze Ohr 👂 mit Lautspre… 8818… 2023-04-02 10:35:11   5034.    135. Run  
-    ##  6 "Dark Matters "               8792… 2023-03-28 15:47:42   6019.    118. Run  
-    ##  7 "Hard Fork "                  8769… 2023-03-24 14:03:54   4988.    134. Run  
-    ##  8 "Hard Fork"                   8729… 2023-03-17 13:48:18   6602.    126. Run  
-    ##  9 "Pioneer Briefing "           8713… 2023-03-14 16:37:51   5036.    134. Run  
-    ## 10 "Computer und Kommunikation"  8700… 2023-03-12 09:50:10   5875.    119. Run  
-    ## # … with 771 more rows, and abbreviated variable names ¹​distance,
-    ## #   ²​total_elevation_gain
-
 Extract ids of all activities. Exclude activities which were recorded
 manually, because they don’t include additional data:
 
@@ -261,29 +245,6 @@ as minimal as possible.
           plot.background = element_blank(),
           strip.text = element_blank())
     }
-
-    ## `geom_path()`: Each group consists of only one observation.
-    ## ℹ Do you need to adjust the group aesthetic?
-    ## `geom_path()`: Each group consists of only one observation.
-    ## ℹ Do you need to adjust the group aesthetic?
-    ## `geom_path()`: Each group consists of only one observation.
-    ## ℹ Do you need to adjust the group aesthetic?
-    ## `geom_path()`: Each group consists of only one observation.
-    ## ℹ Do you need to adjust the group aesthetic?
-    ## `geom_path()`: Each group consists of only one observation.
-    ## ℹ Do you need to adjust the group aesthetic?
-    ## `geom_path()`: Each group consists of only one observation.
-    ## ℹ Do you need to adjust the group aesthetic?
-    ## `geom_path()`: Each group consists of only one observation.
-    ## ℹ Do you need to adjust the group aesthetic?
-    ## `geom_path()`: Each group consists of only one observation.
-    ## ℹ Do you need to adjust the group aesthetic?
-    ## `geom_path()`: Each group consists of only one observation.
-    ## ℹ Do you need to adjust the group aesthetic?
-    ## `geom_path()`: Each group consists of only one observation.
-    ## ℹ Do you need to adjust the group aesthetic?
-
-![](README_files/figure-markdown_strict/gg_strava-1.png)
 
 And there it is: All your Strava data in a few tidy data frames and a
 nice-looking plot. Future updates to the data shouldn’t take too long,
