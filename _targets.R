@@ -7,6 +7,8 @@ list(
   tar_target(n_top, 10L),
   tar_target(rel_type, "Run"),
   tar_target(earliest_datetime, now() - dweeks(16)),
+  tar_target(agg_unit, "week"),
+  tar_target(agg_nr, 1L),
 
   tar_age(
     access_token, rstudioapi::askForSecret("Strava Access Token"),
@@ -21,7 +23,8 @@ list(
     df_act_raw, read_all_activities(access_token, active_user_id),
     cue = tar_cue("always")),
   tar_target(
-    df_act, pre_process_act(df_act_raw, active_user_id, meas_board)),
+    df_act, pre_process_act(df_act_raw, active_user_id)),
+  tar_target(df_act_agg, act_agg(df_act, agg_unit, earliest_datetime)),
   tar_target(pin_act, pin_write(user_board, df_act, "df_act")),
   tar_target(act_ids, rel_act_ids(df_act_raw)),
   tar_target(
