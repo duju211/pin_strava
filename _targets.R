@@ -25,6 +25,7 @@ list(
   tar_target(
     df_act, pre_process_act(df_act_raw, active_user_id)),
   tar_target(df_act_agg, act_agg(df_act, agg_unit, earliest_datetime)),
+  tar_target(gg_act_agg, vis_act_agg(df_act_agg)),
   tar_target(pin_act, pin_write(user_board, df_act, "df_act")),
   tar_target(act_ids, rel_act_ids(df_act_raw)),
   tar_target(

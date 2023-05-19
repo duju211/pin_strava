@@ -6,5 +6,7 @@ act_agg <- function(df_act, agg_unit, earliest_datetime) {
     group_by(type, .add = TRUE) |>
     summarise(anz = n(), .groups = "drop_last") |>
     fill_gaps(anz = 0L) |>
-    ungroup()
+    ungroup() |>
+    as_tibble() |>
+    mutate(agg = as_date(agg))
 }

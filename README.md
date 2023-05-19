@@ -19,6 +19,7 @@ You will need the following packages:
     library(tidyverse)
     library(lubridate)
     library(jsonlite)
+    library(tsibble)
     library(shinyjs)
     library(targets)
     library(scales)
