@@ -35,7 +35,7 @@ list(
   tar_target(
     pin_meas, command = {
       df_meas <- read_activity_stream(act_ids, access_token);
-      pin_meas <- pin_write(user_board, df_meas, act_ids, type = "arrow");
+      pin_meas <- pin_write(user_board, df_meas, act_ids, type = "parquet");
       folder <- pin_meta(user_board, pin_meas)[["local"]][["dir"]];
       file <- pin_meta(user_board, pin_meas)[["file"]];
       path_join(c(folder, file))

@@ -119,7 +119,7 @@ The resulting data frame consists of one row per activity.
 Make sure that all ID columns have a character format and improve the column
 names.
 
-```{r, echo=FALSE, eval=!params$read_me}
+```{r, echo=FALSE}
 tar_read(df_act)
 ```
 
@@ -170,7 +170,7 @@ Keep the rest of the plot as minimal as possible.
 ```{r, code=read_lines("R/vis_meas.R"), eval=FALSE}
 ```
 
-```{r gg_strava, echo=FALSE, fig.height=11, fig.width=11, eval=!params$read_me}
+```{r gg_strava, echo=FALSE, fig.height=11, fig.width=11}
 tar_read(gg_meas)
 ```
 
