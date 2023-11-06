@@ -27,7 +27,9 @@ list(
   tar_target(df_act_agg, act_agg(df_act, agg_unit, earliest_datetime)),
   tar_target(gg_act_agg, vis_act_agg(df_act_agg)),
   tar_target(
-    pin_act, pin_write(user_board, df_act, "df_act", type = "parquet")),
+    pin_act,
+    pin_write(
+      user_board, df_act, paste0("df_act_", active_user_id), type = "parquet")),
   tar_target(act_ids, rel_act_ids(df_act_raw)),
   tar_target(
     df_act_ex,
@@ -37,7 +39,10 @@ list(
     df_meas, read_activity_stream(act_ids, access_token),
     pattern = map(act_ids), cue = tar_cue("never")),
   tar_target(
-    pin_meas, pin_write(user_board, df_meas, "df_meas", type = "parquet")),
+    pin_meas,
+    pin_write(
+      user_board, df_meas, paste0("df_meas_", active_user_id),
+      type = "parquet")),
   tar_target(gg_meas, vis_meas(df_meas)),
 
   tar_render(strava_report, "scrape_strava.Rmd"),
