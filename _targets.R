@@ -26,21 +26,16 @@ list(
     df_act, pre_process_act(df_act_raw, active_user_id)),
   tar_target(df_act_agg, act_agg(df_act, agg_unit, earliest_datetime)),
   tar_target(gg_act_agg, vis_act_agg(df_act_agg)),
-  tar_target(pin_act, pin_write(user_board, df_act, "df_act")),
+  tar_target(pin_act, pin_write(user_board, df_act, "df_act", type = "rds")),
   tar_target(act_ids, rel_act_ids(df_act_raw)),
   tar_target(
     df_act_ex,
     filter(df_act, start_date >= earliest_datetime)),
 
   tar_target(
-    pin_meas, command = {
-      df_meas <- read_activity_stream(act_ids, access_token);
-      pin_meas <- pin_write(user_board, df_meas, act_ids, type = "parquet");
-      folder <- pin_meta(user_board, pin_meas)[["local"]][["dir"]];
-      file <- pin_meta(user_board, pin_meas)[["file"]];
-      path_join(c(folder, file))
-    }, pattern = map(act_ids), format = "file", cue = tar_cue("never")),
-  tar_target(df_meas, meas(pin_meas)),
+    df_meas, read_activity_stream(act_ids, access_token),
+    pattern = map(act_ids), cue = tar_cue("never")),
+  tar_target(pin_meas, pin_write(user_board, df_meas, "df_meas", type = "rds")),
   tar_target(gg_meas, vis_meas(df_meas)),
 
   tar_render(strava_report, "scrape_strava.Rmd"),

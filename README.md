@@ -144,6 +144,21 @@ The resulting data frame consists of one row per activity. Make sure
 that all ID columns have a character format and improve the column
 names.
 
+    ## # A tibble: 839 × 7
+    ##    name   id    start_date              week distance total_elevation_gain type 
+    ##    <chr>  <chr> <dttm>                <week>    <dbl>                <dbl> <chr>
+    ##  1 "Fahr… 1015… 2023-11-04 12:24:35 2023 W44   17984.                 70.9 Ride 
+    ##  2 "Zeit… 1014… 2023-11-01 09:50:16 2023 W44    5206.                132.  Run  
+    ##  3 "Hard… 1011… 2023-10-27 15:20:42 2023 W43    6018.                127.  Run  
+    ##  4 "11KM" 1009… 2023-10-24 16:15:44 2023 W43    4562.                 38.5 Run  
+    ##  5 "Pick… 1005… 2023-10-16 14:52:57 2023 W42    4720.                121.  Run  
+    ##  6 "Cicl… 1003… 2023-10-13 14:21:21 2023 W41   38116.                513   Ride 
+    ##  7 "1210… 1002… 2023-10-12 17:16:59 2023 W41    4538.                 38.5 Run  
+    ##  8 "Mona… 1001… 2023-10-10 15:54:22 2023 W41    4718                  84.1 Run  
+    ##  9 "Mord… 9995… 2023-10-07 16:06:55 2023 W40    6101.                126.  Run  
+    ## 10 "Hard… 9988… 2023-10-06 15:07:33 2023 W40    4904.                128.  Run  
+    ## # ℹ 829 more rows
+
 Extract ids of all activities. Exclude activities which were recorded
 manually, because they don’t include additional data:
 
@@ -246,6 +261,8 @@ as minimal as possible.
           plot.background = element_blank(),
           strip.text = element_blank())
     }
+
+![](README_files/figure-markdown_strict/gg_strava-1.png)
 
 And there it is: All your Strava data in a few tidy data frames and a
 nice-looking plot. Future updates to the data shouldn’t take too long,
