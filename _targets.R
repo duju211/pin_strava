@@ -14,14 +14,13 @@ list(
     access_token, rstudioapi::askForSecret("Strava Access Token"),
     age = as.difftime(6, units = "hours")),
   tar_target(
-    json_active_user, active_user_json(access_token), cue = tar_cue("always")),
+    json_active_user, active_user_json(access_token)),
   tar_target(df_active_user, active_user(json_active_user, user_list_cols)),
   tar_target(active_user_id, df_active_user[["id"]]),
   tar_target(
     user_board, connect_board(active_user_id), cue = tar_cue("always")),
   tar_target(
-    df_act_raw, read_all_activities(access_token, active_user_id),
-    cue = tar_cue("always")),
+    df_act_raw, read_all_activities(access_token, active_user_id)),
   tar_target(
     df_act, pre_process_act(df_act_raw, active_user_id)),
   tar_target(df_act_agg, act_agg(df_act, agg_unit, earliest_datetime)),
@@ -42,7 +41,7 @@ list(
     pin_meas,
     pin_write(
       user_board, df_meas, paste0("df_meas_", active_user_id),
-      type = "parquet")),
+      type = "parquet", force_identical_write = TRUE)),
   tar_target(gg_meas, vis_meas(df_meas)),
 
   tar_render(strava_report, "scrape_strava.Rmd"),

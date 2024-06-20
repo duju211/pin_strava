@@ -13,12 +13,14 @@ You will need the following packages:
 
     library(shinydashboard)
     library(reactablefmtr)
+    library(Microsoft365R)
     library(tarchetypes)
     library(conflicted)
     library(reactable)
     library(tidyverse)
     library(lubridate)
     library(jsonlite)
+    library(distill)
     library(tsibble)
     library(shinyjs)
     library(targets)
@@ -144,20 +146,26 @@ The resulting data frame consists of one row per activity. Make sure
 that all ID columns have a character format and improve the column
 names.
 
-    ## # A tibble: 839 × 7
-    ##    name   id    start_date              week distance total_elevation_gain type 
-    ##    <chr>  <chr> <dttm>                <week>    <dbl>                <dbl> <chr>
-    ##  1 "Fahr… 1015… 2023-11-04 12:24:35 2023 W44   17984.                 70.9 Ride 
-    ##  2 "Zeit… 1014… 2023-11-01 09:50:16 2023 W44    5206.                132.  Run  
-    ##  3 "Hard… 1011… 2023-10-27 15:20:42 2023 W43    6018.                127.  Run  
-    ##  4 "11KM" 1009… 2023-10-24 16:15:44 2023 W43    4562.                 38.5 Run  
-    ##  5 "Pick… 1005… 2023-10-16 14:52:57 2023 W42    4720.                121.  Run  
-    ##  6 "Cicl… 1003… 2023-10-13 14:21:21 2023 W41   38116.                513   Ride 
-    ##  7 "1210… 1002… 2023-10-12 17:16:59 2023 W41    4538.                 38.5 Run  
-    ##  8 "Mona… 1001… 2023-10-10 15:54:22 2023 W41    4718                  84.1 Run  
-    ##  9 "Mord… 9995… 2023-10-07 16:06:55 2023 W40    6101.                126.  Run  
-    ## 10 "Hard… 9988… 2023-10-06 15:07:33 2023 W40    4904.                128.  Run  
-    ## # ℹ 829 more rows
+    ## # A tibble: 893 × 58
+    ##    resource_state athlete$id name              distance moving_time elapsed_time
+    ##             <int>      <int> <chr>                <dbl>       <int>        <int>
+    ##  1              2   26845822 Vergecast            4517.        1917         2010
+    ##  2              2   26845822 Ball you need is…    4364.        1887         1893
+    ##  3              2   26845822 Zeit Verbrechen      5919.        2881         2944
+    ##  4              2   26845822 Radfahrt am Abend   17690         2390         2391
+    ##  5              2   26845822 Weltspiegel          5906.        2718         2776
+    ##  6              2   26845822 TSG Fulda           16793.        2286         2446
+    ##  7              2   26845822 Vergecast            4699.        2228         2294
+    ##  8              2   26845822 Ball you need is…    6011.        2688         2710
+    ##  9              2   26845822 CopaTS               4581.        1939         1939
+    ## 10              2   26845822 Tieringen           16131.        2818         2818
+    ## # ℹ 883 more rows
+    ## # ℹ 53 more variables: athlete$resource_state <int>,
+    ## #   total_elevation_gain <dbl>, type <chr>, sport_type <chr>,
+    ## #   workout_type <int>, id <chr>, start_date <dttm>, start_date_local <chr>,
+    ## #   timezone <chr>, utc_offset <dbl>, location_city <lgl>,
+    ## #   location_state <lgl>, location_country <chr>, achievement_count <int>,
+    ## #   kudos_count <int>, comment_count <int>, athlete_count <int>, …
 
 Extract ids of all activities. Exclude activities which were recorded
 manually, because they don’t include additional data:
@@ -190,7 +198,11 @@ columns.
           "distance,time,latlng,altitude,velocity_smooth,heartrate,cadence,",
           "watts,temp,moving,grade_smooth")) |>
         req_url_path_append(id) |>
-        req_url_path_append("streams")
+        req_url_path_append("streams") |>
+        req_retry(
+          is_transient = \(resp) resp_status(resp) %in% c(429),
+          max_tries = 2,
+          after = ~ 905)
 
       resp <- req_perform(req)
 
@@ -199,23 +211,23 @@ columns.
       df_stream_raw <- resp |>
         resp_body_json(simplifyVector = TRUE) |>
         as_tibble() |>
-        mutate(id = id) %>%
+        mutate(id = id) |>
         pivot_wider(names_from = type, values_from = data)
 
       if ("latlng" %in% colnames(df_stream_raw)) {
-        df_stream <- df_stream_raw %>%
+        df_stream <- df_stream_raw |>
           mutate(
             lat = map(
               .x = latlng, .f = ~ .x[, 1]),
             lng = map(
-              .x = latlng, .f = ~ .x[, 2])) %>%
+              .x = latlng, .f = ~ .x[, 2])) |>
           select(-latlng)
       } else {
         df_stream <- df_stream_raw
       }
 
-      df_stream %>%
-        unnest(where(is_list)) %>%
+      df_stream |>
+        unnest(where(is_list)) |>
         mutate(id = id)
     }
 
