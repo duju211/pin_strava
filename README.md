@@ -146,20 +146,20 @@ The resulting data frame consists of one row per activity. Make sure
 that all ID columns have a character format and improve the column
 names.
 
-    ## # A tibble: 893 × 58
+    ## # A tibble: 950 × 58
     ##    resource_state athlete$id name              distance moving_time elapsed_time
     ##             <int>      <int> <chr>                <dbl>       <int>        <int>
-    ##  1              2   26845822 Vergecast            4517.        1917         2010
-    ##  2              2   26845822 Ball you need is…    4364.        1887         1893
-    ##  3              2   26845822 Zeit Verbrechen      5919.        2881         2944
-    ##  4              2   26845822 Radfahrt am Abend   17690         2390         2391
-    ##  5              2   26845822 Weltspiegel          5906.        2718         2776
-    ##  6              2   26845822 TSG Fulda           16793.        2286         2446
-    ##  7              2   26845822 Vergecast            4699.        2228         2294
-    ##  8              2   26845822 Ball you need is…    6011.        2688         2710
-    ##  9              2   26845822 CopaTS               4581.        1939         1939
-    ## 10              2   26845822 Tieringen           16131.        2818         2818
-    ## # ℹ 883 more rows
+    ##  1              2   26845822 "Zeit Verbrechen"    4475         2082         2116
+    ##  2              2   26845822 "Hard Fork"          6023.        3100         3143
+    ##  3              2   26845822 "OK, America?"       4464.        2082         2130
+    ##  4              2   26845822 "Last Outdoor Ri…   15319         3052         3128
+    ##  5              2   26845822 "Frische Luft sc…   13860.        2331         2480
+    ##  6              2   26845822 "Stay Forever"       4450.        2219         2222
+    ##  7              2   26845822 "Hard Fork"          4426.        2017         2021
+    ##  8              2   26845822 "Autumn Danube"     52256.        8037        10156
+    ##  9              2   26845822 "Dry Lube"          19501.        3271         3271
+    ## 10              2   26845822 "Kopenhagen 2"       4634.        1937         1942
+    ## # ℹ 940 more rows
     ## # ℹ 53 more variables: athlete$resource_state <int>,
     ## #   total_elevation_gain <dbl>, type <chr>, sport_type <chr>,
     ## #   workout_type <int>, id <chr>, start_date <dttm>, start_date_local <chr>,

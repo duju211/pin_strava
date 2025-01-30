@@ -28,7 +28,7 @@ list(
   tar_target(
     pin_act,
     pin_write(
-      user_board, df_act, paste0("df_act_", active_user_id), type = "parquet")),
+      user_board, df_act, paste0("df_act_", active_user_id), type = "rds")),
   tar_target(act_ids, rel_act_ids(df_act_raw)),
   tar_target(
     df_act_ex,
