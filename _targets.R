@@ -51,5 +51,6 @@ list(
     output_file = "scrape_strava_post.html"),
   tar_render(
     strava_readme, "scrape_strava.Rmd", output_format = "md_document",
-    output_file = "README.md", params = list(read_me = TRUE))
+    output_file = "README.md", params = list(read_me = TRUE),
+    cue = tar_cue("never"))
 )

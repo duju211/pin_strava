@@ -146,20 +146,20 @@ The resulting data frame consists of one row per activity. Make sure
 that all ID columns have a character format and improve the column
 names.
 
-    ## # A tibble: 950 × 58
+    ## # A tibble: 967 × 58
     ##    resource_state athlete$id name              distance moving_time elapsed_time
     ##             <int>      <int> <chr>                <dbl>       <int>        <int>
-    ##  1              2   26845822 "Zeit Verbrechen"    4475         2082         2116
-    ##  2              2   26845822 "Hard Fork"          6023.        3100         3143
-    ##  3              2   26845822 "OK, America?"       4464.        2082         2130
-    ##  4              2   26845822 "Last Outdoor Ri…   15319         3052         3128
-    ##  5              2   26845822 "Frische Luft sc…   13860.        2331         2480
-    ##  6              2   26845822 "Stay Forever"       4450.        2219         2222
-    ##  7              2   26845822 "Hard Fork"          4426.        2017         2021
-    ##  8              2   26845822 "Autumn Danube"     52256.        8037        10156
-    ##  9              2   26845822 "Dry Lube"          19501.        3271         3271
-    ## 10              2   26845822 "Kopenhagen 2"       4634.        1937         1942
-    ## # ℹ 940 more rows
+    ##  1              2   26845822 Hard Fork            5348         2614         2622
+    ##  2              2   26845822 Zeit Verbrechen      5369.        2382         2396
+    ##  3              2   26845822 CopaTS               5399.        2420         2420
+    ##  4              2   26845822 Foggy Vergecast      4994.        2367         2525
+    ##  5              2   26845822 Hello America        5372.        2484         2490
+    ##  6              2   26845822 Alles Gesagt         5416.        2517         2545
+    ##  7              2   26845822 Hard Fork            4586.        2191         2211
+    ##  8              2   26845822 Icy Holy Three K…    5954.        3216         3345
+    ##  9              2   26845822 Icy New Year         4802.        2291         2311
+    ## 10              2   26845822 Wirecard             4598.        2049         2134
+    ## # ℹ 957 more rows
     ## # ℹ 53 more variables: athlete$resource_state <int>,
     ## #   total_elevation_gain <dbl>, type <chr>, sport_type <chr>,
     ## #   workout_type <int>, id <chr>, start_date <dttm>, start_date_local <chr>,
