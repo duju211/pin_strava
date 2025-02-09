@@ -1,5 +1,5 @@
 strava_oauth_token <- function() {
-  if (Sys.getenv("STRAVA_KEY") == "" | Sys.getenv("STRAVA_SECRET") == "")
+  if (Sys.getenv("STRAVA_KEY") == "" || Sys.getenv("STRAVA_SECRET") == "")
     stop(str_glue(
       "Please set system variables 'STRAVA_KEY' and 'STRAVA_SECRET' before ",
       "continuing. How you can create these variables is described here: ",
