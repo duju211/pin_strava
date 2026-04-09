@@ -1,6 +1,5 @@
 library(shinydashboard)
 library(reactablefmtr)
-library(Microsoft365R)
 library(tarchetypes)
 library(conflicted)
 library(reactable)

@@ -10,3 +10,4 @@ meas/
 test.R
 *.html
 .Renviron
+.positai

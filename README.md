@@ -13,7 +13,6 @@ You will need the following packages:
 
     library(shinydashboard)
     library(reactablefmtr)
-    library(Microsoft365R)
     library(tarchetypes)
     library(conflicted)
     library(reactable)
@@ -47,10 +46,10 @@ package. You can learn more about the package and its functionalities
 
 In order to reproduce the analysis, perform the following steps:
 
--   Clone the repository: <https://github.com/duju211/pin_strava>
--   Install the packages listed in the `libraries.R` file
--   Run the target pipeline by executing `targets::tar_make()` command
--   Follow the instructions printed in the console
+- Clone the repository: <https://github.com/duju211/pin_strava>
+- Install the packages listed in the `libraries.R` file
+- Run the target pipeline by executing `targets::tar_make()` command
+- Follow the instructions printed in the console
 
 ## Target Plan
 
@@ -146,26 +145,26 @@ The resulting data frame consists of one row per activity. Make sure
 that all ID columns have a character format and improve the column
 names.
 
-    ## # A tibble: 967 × 58
+    ## # A tibble: 1,010 × 59
     ##    resource_state athlete$id name              distance moving_time elapsed_time
     ##             <int>      <int> <chr>                <dbl>       <int>        <int>
-    ##  1              2   26845822 Hard Fork            5348         2614         2622
-    ##  2              2   26845822 Zeit Verbrechen      5369.        2382         2396
-    ##  3              2   26845822 CopaTS               5399.        2420         2420
-    ##  4              2   26845822 Foggy Vergecast      4994.        2367         2525
-    ##  5              2   26845822 Hello America        5372.        2484         2490
-    ##  6              2   26845822 Alles Gesagt         5416.        2517         2545
-    ##  7              2   26845822 Hard Fork            4586.        2191         2211
-    ##  8              2   26845822 Icy Holy Three K…    5954.        3216         3345
-    ##  9              2   26845822 Icy New Year         4802.        2291         2311
-    ## 10              2   26845822 Wirecard             4598.        2049         2134
-    ## # ℹ 957 more rows
-    ## # ℹ 53 more variables: athlete$resource_state <int>,
+    ##  1              2   26845822 Ct                   5349.        2864         2907
+    ##  2              2   26845822 Crime Time           5409         2929         2999
+    ##  3              2   26845822 Conan needs a fr…    5410         2957         3051
+    ##  4              2   26845822 Hard Fork            5299.        2900         2955
+    ##  5              2   26845822 Vergecast            5402.        2874         3017
+    ##  6              2   26845822 Vergecast            5426.        3090         3228
+    ##  7              2   26845822 Ball you need is…    5324.        2930         2999
+    ##  8              2   26845822 1975                25976.        4593         5067
+    ##  9              2   26845822 Kolibri             12581.        1671         1735
+    ## 10              2   26845822 Ball you need is…    5257.        2768         2793
+    ## # ℹ 1,000 more rows
+    ## # ℹ 54 more variables: athlete$resource_state <int>,
     ## #   total_elevation_gain <dbl>, type <chr>, sport_type <chr>,
-    ## #   workout_type <int>, id <chr>, start_date <dttm>, start_date_local <chr>,
-    ## #   timezone <chr>, utc_offset <dbl>, location_city <lgl>,
-    ## #   location_state <lgl>, location_country <chr>, achievement_count <int>,
-    ## #   kudos_count <int>, comment_count <int>, athlete_count <int>, …
+    ## #   workout_type <int>, device_name <chr>, id <chr>, start_date <dttm>,
+    ## #   start_date_local <chr>, timezone <chr>, utc_offset <dbl>,
+    ## #   location_city <lgl>, location_state <lgl>, location_country <lgl>,
+    ## #   achievement_count <int>, kudos_count <int>, comment_count <int>, …
 
 Extract ids of all activities. Exclude activities which were recorded
 manually, because they don’t include additional data:
@@ -273,6 +272,9 @@ as minimal as possible.
           plot.background = element_blank(),
           strip.text = element_blank())
     }
+
+    ## Warning: Removed 7659 rows containing missing values or values outside the scale range
+    ## (`geom_path()`).
 
 ![](README_files/figure-markdown_strict/gg_strava-1.png)
 
